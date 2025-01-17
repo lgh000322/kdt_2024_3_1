@@ -5,6 +5,7 @@ const Loading = <div>Loading ...</div>;
 
 const Main = lazy(() => import("../pages/MainPage"));
 const Login = lazy(() => import("../pages/LoginPage"));
+const Mypage = lazy(() => import("../pages/Mypage"))
 
 const root = createBrowserRouter([
   {
@@ -18,6 +19,7 @@ const root = createBrowserRouter([
         <Main />
       </Suspense>
     ),
+ 
   },
   {
     path: "login",
@@ -27,6 +29,14 @@ const root = createBrowserRouter([
       </Suspense>
     ),
   },
+  { 
+    path: "mypage/order-list",
+    element: (
+      <Suspense fallback={Loading}>
+        <Mypage/>
+      </Suspense>
+    ),
+  }
 ]);
 
 export default root;
