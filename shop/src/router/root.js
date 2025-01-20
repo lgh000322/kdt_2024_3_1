@@ -10,6 +10,7 @@ const Winter = lazy(() => import("../pages/WinterPage"));
 const Men = lazy(() => import("../pages/MenPage"));
 const Women = lazy(() => import("../pages/WomenPage"));
 const Kids = lazy(() => import("../pages/KidsPage"));
+const Mypage = lazy(() => import("../pages/Mypage"))
 
 const root = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ const root = createBrowserRouter([
         <Main />
       </Suspense>
     ),
+ 
   },
   {
     path: "login",
@@ -72,6 +74,14 @@ const root = createBrowserRouter([
       </Suspense>
     )
   },
+  { 
+    path: "mypage/order-list",
+    element: (
+      <Suspense fallback={Loading}>
+        <Mypage/>
+      </Suspense>
+    ),
+  }
 ]);
 
 export default root;
