@@ -25,3 +25,4 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         mapper.writeValue(response.getWriter(), ResponseFormat.fail(HttpStatus.UNAUTHORIZED.value(), "로그인 후에 이용해주세요."));
     }
 }
+
