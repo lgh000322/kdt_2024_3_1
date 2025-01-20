@@ -20,7 +20,7 @@ const HeaderComponent = () => {
           {/* 로고 - 좌측 정렬 */}
           <div className="flex-shrink-0">
             <Link to="/">
-              <img src="img/logo.png" alt="신발 로고" className="w-40 h-20" />
+              <img src="/img/logo.png" alt="신발 로고" className="w-40 h-20" />
             </Link>
           </div>
 
