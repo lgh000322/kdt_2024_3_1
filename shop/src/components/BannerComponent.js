@@ -3,6 +3,14 @@ import React, { useState, useEffect } from "react";
 function BannerComponent() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      nextSlide(); // 일정 시간마다 다음 슬라이드로 이동
+    }, 5000); // 5초 간격
+  
+    return () => clearInterval(timer); // 컴포넌트 언마운트 시 타이머 정리
+  }, [currentSlide]);
+
   // 배너 이미지 배열
   const banners = [
     { id: 1, image: "img/logo.png", text: "베너사진1" },
@@ -26,7 +34,7 @@ function BannerComponent() {
   };
 
   return (
-    <div className="relative w-full overflow-hidden h-[300px]">
+    <div className="relative w-full overflow-hidden h-[400px] pt-13">
       {/* 배너 슬라이드 */}
       <div
         className="flex transition-transform duration-500 ease-in-out h-full"
@@ -37,10 +45,10 @@ function BannerComponent() {
             <img
               src={banner.image}
               alt={banner.text}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
             <div className="absolute inset-0 flex items-center justify-center">
-              <h2 className="text-4xl font-bold text-white">{banner.text}</h2>
+              <h2 className="text-4xl font-bold text-red-500">{banner.text}</h2>
             </div>
           </div>
         ))}
@@ -67,7 +75,7 @@ function BannerComponent() {
             key={index}
             onClick={() => goToSlide(index)}
             className={`w-3 h-3 rounded-full transition-colors ${
-              currentSlide === index ? "bg-white" : "bg-white/50"
+              currentSlide === index ? "bg-black" : "bg-black/50"
             }`}
           />
         ))}
