@@ -1,8 +1,8 @@
-package shop.shopBE.global.exception.errorcode;
+package shop.shopBE.global.exception.code;
 
 import org.springframework.http.HttpStatus;
 
-public interface ErrorCode {
+public interface ExceptionCode {
     HttpStatus getHttpStatus();
     String getMessage();
 }

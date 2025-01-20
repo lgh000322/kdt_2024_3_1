@@ -10,8 +10,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import shop.shopBE.global.config.security.handler.CustomSuccessHandler;
 import shop.shopBE.global.config.security.handler.JwtAccessDeniedHandler;
 import shop.shopBE.global.config.security.entry.JwtAuthenticationEntryPoint;
+import shop.shopBE.global.config.security.service.CustomOauth2Service;
 import shop.shopBE.global.filter.JwtAuthenticationFilter;
 
 @Configuration
@@ -21,8 +23,9 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final CustomOauth2Service customOauth2Service;
+    private final CustomSuccessHandler customSuccessHandler;
 
-    //Todo
 
     private final String[] WHITE_LIST = {
             "/swagger-ui/**",
@@ -45,7 +48,7 @@ public class SecurityConfig {
                 })
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                                .userService(customOAuthService))
+                                .userService(customOauth2Service))
                         .successHandler(customSuccessHandler)
                 )
                 .sessionManagement(

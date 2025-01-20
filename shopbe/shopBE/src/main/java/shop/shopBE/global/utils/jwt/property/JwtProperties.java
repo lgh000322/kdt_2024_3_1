@@ -1,4 +1,4 @@
-package shop.shopBE.global.utils;
+package shop.shopBE.global.utils.jwt.property;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
