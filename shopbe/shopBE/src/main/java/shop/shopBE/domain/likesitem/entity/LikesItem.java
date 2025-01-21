@@ -26,4 +26,11 @@ public class LikesItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    public static LikesItem createLikesItem(Likes likes, Product product) {
+        return LikesItem.builder()
+                .likes(likes)
+                .product(product)
+                .build();
+    }
 }

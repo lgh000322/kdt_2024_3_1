@@ -29,6 +29,9 @@ public class Destination {
     // 우편번호
     private Long zipCode;
 
+    // 기본 배송지: true => 기본 배송지 설정됨
+    private boolean isSelectedDestination;
+
     private String deliveryMessage;
 
     @ManyToOne(fetch = FetchType.LAZY)
