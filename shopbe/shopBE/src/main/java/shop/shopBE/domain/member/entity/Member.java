@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.shopBE.domain.member.entity.enums.Gender;
 import shop.shopBE.domain.member.entity.enums.Role;
+import shop.shopBE.domain.member.request.MemberUpdateInfo;
 
 import java.util.UUID;
 
@@ -27,6 +28,9 @@ public class Member {
 
     private String email;
 
+    // 휴대폰 번호로 자신의 정보 조회
+    private String tel;
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -38,13 +42,19 @@ public class Member {
     private UUID sub;
 
     public static Member createDefaultMember(String username, String name, String email, Role role) {
-        return Member.builder()
+        return shop.shopBE.domain.member.entity.Member.builder()
                 .username(username)
                 .name(name)
                 .role(role)
                 .email(email)
                 .sub(UUID.randomUUID())
                 .build();
+    }
+
+    public void updateMember(MemberUpdateInfo memberUpdateInfo) {
+        this.gender=memberUpdateInfo.gender();
+        this.tel=memberUpdateInfo.tel();
+        this.role = memberUpdateInfo.role();
     }
 
 }

@@ -11,16 +11,18 @@ import shop.shopBE.domain.member.entity.enums.Role;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Builder
 @Getter
 @AllArgsConstructor
 public class AuthToken implements OAuth2User {
-    private final Long id;
-    private final String name;
-    private final String username;
-    private final List<String> roles;
+    private final Long id; // 회원의 기본키
+    private final String name; // 회원의 이름
+    private final String username; // ex) google 1223123123
+    private final List<String> roles;// 회원의 역할
+    private final UUID sub; // jwt에 들어가는 UUID 값
 
     @Override
     public Map<String, Object> getAttributes() {
@@ -39,7 +41,9 @@ public class AuthToken implements OAuth2User {
                 .id(id)
                 .name(name)
                 .username(username)
+                .sub(UUID.randomUUID())
                 .roles(List.of(role.getRoleDescription()))
                 .build();
     }
+
 }
