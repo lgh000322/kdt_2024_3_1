@@ -10,7 +10,8 @@ const Winter = lazy(() => import("../pages/WinterPage"));
 const Men = lazy(() => import("../pages/MenPage"));
 const Women = lazy(() => import("../pages/WomenPage"));
 const Kids = lazy(() => import("../pages/KidsPage"));
-const Mypage = lazy(() => import("../pages/Mypage"))
+const Mypage = lazy(() => import("../pages/Mypage"));
+const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"));
 
 const root = createBrowserRouter([
   {
@@ -79,6 +80,14 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <Mypage/>
+      </Suspense>
+    ),
+  },
+  {
+    path: "mypage/seller-registration",
+    element: (
+      <Suspense fallback={Loading}>
+        <SellerRegistration/>
       </Suspense>
     ),
   }
