@@ -12,6 +12,7 @@ const Women = lazy(() => import("../pages/WomenPage"));
 const Kids = lazy(() => import("../pages/KidsPage"));
 const Mypage = lazy(() => import("../pages/Mypage"));
 const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"));
+const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
 
 const root = createBrowserRouter([
   {
@@ -88,6 +89,14 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <SellerRegistration/>
+      </Suspense>
+    ),
+  },
+  {
+    path: "productupload",
+    element: (
+      <Suspense fallback={Loading}>
+        <ProductUploadPage/>
       </Suspense>
     ),
   }
