@@ -9,6 +9,7 @@ import shop.shopBE.domain.member.entity.enums.Gender;
 import shop.shopBE.domain.member.entity.enums.Role;
 import shop.shopBE.domain.member.request.MemberUpdateInfo;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -41,13 +42,16 @@ public class Member {
     @Column(name = "sub", unique = true)
     private UUID sub;
 
+    private LocalDateTime createdAt;
+
     public static Member createDefaultMember(String username, String name, String email, Role role) {
-        return shop.shopBE.domain.member.entity.Member.builder()
+        return Member.builder()
                 .username(username)
                 .name(name)
                 .role(role)
                 .email(email)
                 .sub(UUID.randomUUID())
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 

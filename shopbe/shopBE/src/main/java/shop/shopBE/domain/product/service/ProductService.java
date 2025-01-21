@@ -6,7 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.shopBE.domain.product.entity.Product;
 import shop.shopBE.domain.product.exception.ProductExceptionCode;
 import shop.shopBE.domain.product.repository.ProductRepository;
+import shop.shopBE.domain.product.response.ProductListViewModel;
 import shop.shopBE.global.exception.custom.CustomException;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,5 +21,11 @@ public class ProductService {
     public Product findById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new CustomException(ProductExceptionCode.NOT_FOUND));
+    }
+
+    public List<ProductListViewModel> getProductListViewModels(List<Long> productIds) {
+        return productIds.stream()
+                .map(productRepository::getProductListViewModels)
+                .toList();
     }
 }
