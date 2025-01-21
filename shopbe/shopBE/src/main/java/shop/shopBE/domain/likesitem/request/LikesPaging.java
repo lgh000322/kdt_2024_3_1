@@ -10,6 +10,6 @@ public record LikesPaging(
 
         @Min(value = 10)
         @NotEmpty
-        int offset
+        int size
 ) {
 }

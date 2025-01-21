@@ -39,4 +39,6 @@ public class MemberController {
         MemberInformation memberInformation = memberFacadeService.findMemberInfoById(authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("회원 조회 성공", memberInformation));
     }
+
+    // Todo 관리자의 권한 허가 API 추가해야함
 }
