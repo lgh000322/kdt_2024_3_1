@@ -13,7 +13,7 @@ function MyPageLayout({ children, role }) {
 
   return (
     <>
-      role = seller;
+   
       {/* 헤더 컴포넌트 */}
       <HeaderComponent />
 

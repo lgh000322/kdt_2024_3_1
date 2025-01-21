@@ -75,12 +75,18 @@ const root = createBrowserRouter([
     )
   },
   { 
-    path: "mypage/order-list",
-    element: (
-      <Suspense fallback={Loading}>
-        <Mypage/>
-      </Suspense>
-    ),
+    path: "mypage",
+    element:  <Navigate to="/mypage/order-list" />,
+    children: [
+      {
+        path: "order-list",
+        element: (
+          <Suspense fallback={Loading}>
+            <Mypage />  {/* 여기에서 Mypage 컴포넌트가 아니라 실제 OrderList 컴포넌트를 사용해야 할 수도 있습니다. */}
+          </Suspense>
+        ),
+      },
+    ],
   }
 ]);
 
