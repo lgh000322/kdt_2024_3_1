@@ -21,13 +21,18 @@ public class LikesItemService {
     private final LikesItemRepository likesItemRepository;
 
     @Transactional
-    public void setLikesItems(List<LikesItem> likesItemList) {
-        likesItemRepository.saveAll(likesItemList);
+    public void setLikesItems(LikesItem likesItem) {
+        likesItemRepository.save(likesItem);
     }
 
     public List<Long> getLikesItems(Pageable pageable, Long likesId) {
         return likesItemRepository.getLikesItems(pageable, likesId)
                 .orElseThrow(() -> new CustomException(LikesItemExceptionCode.LIKES_ITEM_EMPTY));
+    }
+
+    @Transactional
+    public void deleteLikesItemById(Long likesItemId) {
+        likesItemRepository.deleteById(likesItemId);
     }
 
 
