@@ -10,7 +10,10 @@ const Winter = lazy(() => import("../pages/WinterPage"));
 const Men = lazy(() => import("../pages/MenPage"));
 const Women = lazy(() => import("../pages/WomenPage"));
 const Kids = lazy(() => import("../pages/KidsPage"));
-const Mypage = lazy(() => import("../pages/Mypage"))
+const Mypage = lazy(() => import("../pages/Mypage"));
+const SellerRegistration = lazy(() =>import("../pages/SellerRegistrationPage"));
+const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
+const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 
 const root = createBrowserRouter([
   {
@@ -24,7 +27,6 @@ const root = createBrowserRouter([
         <Main />
       </Suspense>
     ),
- 
   },
   {
     path: "login",
@@ -40,7 +42,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Summer />
       </Suspense>
-    )
+    ),
   },
   {
     path: "winter",
@@ -48,7 +50,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Winter />
       </Suspense>
-    )
+    ),
   },
   {
     path: "men",
@@ -56,7 +58,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Men />
       </Suspense>
-    )
+    ),
   },
   {
     path: "women",
@@ -64,7 +66,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Women />
       </Suspense>
-    )
+    ),
   },
   {
     path: "kids",
@@ -72,21 +74,39 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Kids />
       </Suspense>
-    )
+    ),
   },
-  { 
-    path: "mypage",
-    element:  <Navigate to="/mypage/order-list" />,
-    children: [
-      {
-        path: "order-list",
-        element: (
-          <Suspense fallback={Loading}>
-            <Mypage />  {/* 여기에서 Mypage 컴포넌트가 아니라 실제 OrderList 컴포넌트를 사용해야 할 수도 있습니다. */}
-          </Suspense>
-        ),
-      },
-    ],
+  {
+    path: "mypage/order-list",
+    element: (
+      <Suspense fallback={Loading}>
+        <Mypage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "mypage/seller-registration",
+    element: (
+      <Suspense fallback={Loading}>
+        <SellerRegistration />
+      </Suspense>
+    ),
+  },
+  {
+    path: "productupload",
+    element: (
+      <Suspense fallback={Loading}>
+        <ProductUploadPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "lookupproduct",
+    element: (
+      <Suspense fallback={Loading}>
+        <LookUpProduct />
+      </Suspense>
+    )
   }
 ]);
 
