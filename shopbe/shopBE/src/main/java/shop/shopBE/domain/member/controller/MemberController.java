@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.shopBE.domain.member.request.MemberUpdateInfo;
 import shop.shopBE.domain.member.response.MemberInformation;
 import shop.shopBE.domain.member.service.MemberFacadeService;
-import shop.shopBE.domain.member.service.MemberService;
 import shop.shopBE.global.config.security.mapper.token.AuthToken;
 import shop.shopBE.global.response.ResponseFormat;
 
@@ -40,5 +39,4 @@ public class MemberController {
         return ResponseEntity.ok().body(ResponseFormat.of("회원 조회 성공", memberInformation));
     }
 
-    // Todo 관리자의 권한 허가 API 추가해야함
 }

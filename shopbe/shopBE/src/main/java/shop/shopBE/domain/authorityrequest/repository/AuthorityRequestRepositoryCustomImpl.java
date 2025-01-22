@@ -3,7 +3,9 @@ package shop.shopBE.domain.authorityrequest.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import shop.shopBE.domain.authorityrequest.entity.AuthorityRequest;
 import shop.shopBE.domain.authorityrequest.response.AuthorityResponseListViewModel;
+import shop.shopBE.domain.member.entity.QMember;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +30,17 @@ public class AuthorityRequestRepositoryCustomImpl implements AuthorityRequestRep
                 .offset(page)
                 .limit(size)
                 .fetch();
+
+        return Optional.ofNullable(result);
+    }
+
+    @Override
+    public Optional<AuthorityRequest> findByIdFetchJoin(Long authorityId) {
+        AuthorityRequest result = queryFactory
+                .select(authorityRequest)
+                .from(authorityRequest.member, member).fetchJoin()
+                .where(authorityRequest.id.eq(authorityId))
+                .fetchOne();
 
         return Optional.ofNullable(result);
     }

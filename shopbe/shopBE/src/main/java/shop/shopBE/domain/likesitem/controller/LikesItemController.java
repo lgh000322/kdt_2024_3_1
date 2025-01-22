@@ -6,10 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import shop.shopBE.domain.likesitem.request.LikesItemInfo;
 import shop.shopBE.domain.likesitem.request.LikesPaging;
 import shop.shopBE.domain.likesitem.service.LikesItemFacadeService;
@@ -27,9 +24,9 @@ public class LikesItemController {
 
     private final LikesItemFacadeService likesItemFacadeService;
 
-    @PostMapping("/likes/items")
+    @PostMapping("/likes/item")
     @Operation(summary = "찜 아이템 저장", description = "현재 로그인 한 회원의 찜아이템 목록을 추가한다.")
-    public ResponseEntity<ResponseFormat<Void>> addLikesItems(@RequestBody @Valid List<LikesItemInfo> likesItemInfo,
+    public ResponseEntity<ResponseFormat<Void>> addLikesItems(@RequestBody @Valid LikesItemInfo likesItemInfo,
                                                               @AuthenticationPrincipal AuthToken authToken) {
         likesItemFacadeService.setLikesItems(likesItemInfo, authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("찜 아이템 등록에 성공했습니다."));
@@ -38,8 +35,15 @@ public class LikesItemController {
     @GetMapping("/likes/items")
     @Operation(summary = "찜 아이템 조회", description = "현재 로그인 한 회원의 찜아이템 목록을 조회한다.")
     public ResponseEntity<ResponseFormat<List<ProductListViewModel>>> getLikesItems(@RequestBody @Valid LikesPaging likesPaging,
-                                                           @AuthenticationPrincipal AuthToken authToken) {
+                                                                                    @AuthenticationPrincipal AuthToken authToken) {
         List<ProductListViewModel> likesItems = likesItemFacadeService.findLikesItems(likesPaging, authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("찜 아이템 조회 성공.", likesItems));
+    }
+
+    @DeleteMapping("/likes/item/{likesItemId}")
+    @Operation(summary = "찜 아이템 삭제", description = "현재 로그인 한 회원의 찜 아이템 1개를 삭제한다.")
+    public ResponseEntity<ResponseFormat<Void>> deleteLikesItem(@PathVariable(name = "likesItemId") Long likesItemId) {
+        likesItemFacadeService.deleteById(likesItemId);
+        return ResponseEntity.ok().body(ResponseFormat.of("찜 아이템 삭제에 성공했습니다."));
     }
 }

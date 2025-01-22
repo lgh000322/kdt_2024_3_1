@@ -29,19 +29,19 @@ public class LikesItemFacadeService {
     private final MemberService memberService;
     private final ProductService productService;
 
-    public void setLikesItems(List<LikesItemInfo> likesItems, Long memberId) {
+    public void setLikesItems(LikesItemInfo likesItems, Long memberId) {
         //회원의 찜 보관함이 없으면 만들고 있으면 사용한다.(readonly = true) & (readonly = false)
         Likes likes = likesService.findLikesByMemberId(memberId)
                 .orElseGet(() -> createLikes(memberId));
 
         // likesItems의 모든 상품의 기본키로 상품엔터티를 조회한다.
-        List<Product> products = findProducts(likesItems); // (readonly = true)
+        Product product = productService.findById(likesItems.productId());// (readonly = true)
 
         // 찜 상품 목록 생성
-        List<LikesItem> likesItemList = setLikesItemList(products, likes);
+        LikesItem likesItem = LikesItem.createLikesItem(likes, product);
 
         // 찜 상품 목록 저장
-        likesItemService.setLikesItems(likesItemList); //(readonly = false)
+        likesItemService.setLikesItems(likesItem); //(readonly = false)
 
     }
 
@@ -60,17 +60,6 @@ public class LikesItemFacadeService {
         return productService.getProductListViewModels(productIds);
     }
 
-    private List<LikesItem> setLikesItemList(List<Product> products, Likes likes) {
-        return products.stream()
-                .map(product -> LikesItem.createLikesItem(likes, product))
-                .toList();
-    }
-
-    private List<Product> findProducts(List<LikesItemInfo> likesItems) {
-        return likesItems.stream()
-                .map(likesItemInfo -> productService.findById(likesItemInfo.productId()))
-                .toList();
-    }
 
     private Likes createLikes(Long memberId) {
         Likes likes = Likes.builder()
@@ -78,6 +67,10 @@ public class LikesItemFacadeService {
                 .build();
 
         return likesService.save(likes);
+    }
+
+    public void deleteById(Long likesItemId) {
+        likesItemService.deleteLikesItemById(likesItemId);
     }
 
 }

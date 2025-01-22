@@ -40,4 +40,17 @@ public class OrderProduct {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    /*
+        주문상품 응답 DTO
+         */
+    public static record OrderProductDto(
+            Long id, //주문상품 번호
+            int productCount, //상품 갯수
+            DeliveryStatus deliveryStatus, //배송상태
+            LocalDateTime createdAt, //배송 시작 날짜
+            OrderHistory orderHistory, //주문내역Id
+            Product product //상품
+    ) {
+    }
 }

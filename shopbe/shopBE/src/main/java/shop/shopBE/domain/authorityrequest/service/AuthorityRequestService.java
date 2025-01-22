@@ -12,6 +12,9 @@ import shop.shopBE.domain.authorityrequest.response.AuthorityResponseListViewMod
 import shop.shopBE.domain.authorityrequestfile.request.FileData;
 import shop.shopBE.domain.authorityrequestfile.service.AuthorityRequestFileService;
 import shop.shopBE.domain.member.entity.Member;
+import shop.shopBE.domain.member.entity.enums.Role;
+import shop.shopBE.domain.member.repository.MemberRepository;
+import shop.shopBE.domain.member.request.MemberUpdateInfo;
 import shop.shopBE.global.exception.custom.CustomException;
 import shop.shopBE.global.utils.s3.S3Utils;
 
@@ -30,16 +33,18 @@ public class AuthorityRequestService {
     public void save(String content,  List<MultipartFile> files, Member member) {
         AuthorityRequest authorityRequest = authorityRequestRepository.save(AuthorityRequest.createDefaultAuthorityRequest(content, member));
         List<FileData> fileData = uploadFiles(files);
-
-        // Todo 데이터베이스 저장에 실패했을 때 파일을 삭제하는 작업 추가해야 함
         authorityRequestFileService.saveAll(fileData, authorityRequest);
     }
 
     @Transactional
     public void updateAuthority(Long authorityId) {
-        AuthorityRequest authorityRequest = authorityRequestRepository.findById(authorityId)
+        // 페치 조인하지 않으면 회원을 가져올 때 N+1 문제가 발생함..
+        AuthorityRequest authorityRequest = authorityRequestRepository.findByIdFetchJoin(authorityId)
                 .orElseThrow(() -> new CustomException(AuthorityExceptionCode.AUTHORITY_NOT_FOUND));
 
+        Member member = authorityRequest.getMember();
+        MemberUpdateInfo memberUpdateInfo = MemberUpdateInfo.createDefaultMemberUpdateInfo(member.getGender(), member.getTel(), Role.SELLER);
+        member.updateMember(memberUpdateInfo);
         authorityRequest.update(true);
     }
 
