@@ -11,6 +11,13 @@ const Men = lazy(() => import("../pages/MenPage"));
 const Women = lazy(() => import("../pages/WomenPage"));
 const Kids = lazy(() => import("../pages/KidsPage"));
 const Mypage = lazy(() => import("../pages/Mypage"))
+const AdminUserPage = lazy(() => import("../pages/AdminUserPage"));
+const AdminSellerPage = lazy(() => import("../pages/AdminSellerPage"))
+const AdminAcceptPage = lazy(()=> import("../pages/AdminAcceptPage"))
+const AdminStatisticPage = lazy(()=> import("../pages/AdminStatisticPage"))
+const AdminBannerPage = lazy(()=> import("../pages/AdminBannerPage"))
+const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"));
+const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
 
 const root = createBrowserRouter([
   {
@@ -79,6 +86,62 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <Mypage/>
+      </Suspense>
+    ),
+  },
+  {
+    path: "admin_user",
+    element: (
+      <Suspense fallback={Loading}>
+        <AdminUserPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "admin_seller",
+    element:(
+      <Suspense fallback={Loading}>
+        <AdminSellerPage />
+      </Suspense>
+    )
+  },
+  {
+    path: "admin_accept",
+    element:(
+      <Suspense fallback={Loading}>
+        <AdminAcceptPage />
+      </Suspense>
+    )
+  },
+  {
+    path: "admin_statistic",
+    element:(
+      <Suspense fallback={Loading}>
+        <AdminStatisticPage />
+      </Suspense>
+    )
+  },
+  {
+    path: "admin_banner",
+    element:(
+      <Suspense fallback={Loading}>
+        <AdminBannerPage />
+      </Suspense>
+    )
+  },
+  {
+    path: "mypage/seller-registration",
+    element: (
+      <Suspense fallback={Loading}>
+        <SellerRegistration/>
+      </Suspense>
+    ),
+  },
+  {
+    path: "productupload",
+    element: (
+      <Suspense fallback={Loading}>
+        <ProductUploadPage/>
       </Suspense>
     ),
   }

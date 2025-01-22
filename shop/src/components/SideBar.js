@@ -20,11 +20,12 @@ const Sidebar = ({ onMenuClick, role}) => {
   ];
 
   const managerMenuItems = [
-    { id: 1, title: '회원관리', path: '/mypage/member-management', content: '회원관리 관련 콘텐츠' },
-    { id: 2, title: '판매자 목록', path: '/mypage/seller-list', content: '판매자 목록 관련 콘텐츠' },
-    { id: 3, title: '판매자 승인', path: '/mypage/seller-approve', content: '판매자 승인 관련 콘텐츠' },
-    { id: 4, title: '통계분석', path: '/mypage/analysis', content: '통계분석 관련 콘텐츠' },
+    { id: 1, title: '회원관리', path: '/admin_user', content: '회원관리 관련 콘텐츠' },
+    { id: 2, title: '판매자 목록', path: '/admin_seller', content: '판매자 목록 관련 콘텐츠' },
+    { id: 3, title: '판매자 승인', path: '/admin_accept', content: '판매자 승인 관련 콘텐츠' },
+    { id: 4, title: '통계분석', path: '/admin_statistic', content: '통계분석 관련 콘텐츠' },
     { id: 5, title: '고객지원(1:1 상담)', path: '/mypage/counsel', content: '고객지원(1대1 상담) 관련 콘텐츠' },
+    { id: 6, title: '배너 관리', path: '/admin_banner', content: '배너관리 관련 콘텐츠' },
   ];
 
 
