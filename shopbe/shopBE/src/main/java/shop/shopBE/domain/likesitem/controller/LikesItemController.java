@@ -24,7 +24,7 @@ public class LikesItemController {
 
     private final LikesItemFacadeService likesItemFacadeService;
 
-    @PostMapping("/likes/items")
+    @PostMapping("/likes/item")
     @Operation(summary = "찜 아이템 저장", description = "현재 로그인 한 회원의 찜아이템 목록을 추가한다.")
     public ResponseEntity<ResponseFormat<Void>> addLikesItems(@RequestBody @Valid LikesItemInfo likesItemInfo,
                                                               @AuthenticationPrincipal AuthToken authToken) {

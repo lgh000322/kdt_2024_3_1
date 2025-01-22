@@ -32,7 +32,7 @@ public class BannerController {
         return ResponseEntity.ok().body(ResponseFormat.of("배너 사진 저장에 성공했습니다."));
     }
 
-    @GetMapping("/banner")
+    @GetMapping("/banners")
     @Operation(summary = "배너 사진 조회", description = "모든 사용자는 배너 사진을 조회할 수 있다.")
     public ResponseEntity<ResponseFormat<List<BannerResponse>>> getBanners() {
         List<BannerResponse> banners = bannerFacadeService.getBanners();
@@ -47,7 +47,7 @@ public class BannerController {
         return ResponseEntity.ok().body(ResponseFormat.of("배너를 지우는데 성공했습니다."));
     }
 
-    @PutMapping("/banners")
+    @PutMapping("/banner")
     @Operation(summary = "배너 사진 전체 업데이트", description = "관리자는 현재 등록된 배너 사진을 모두 업데이트 할 수 있다.")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseFormat<Void>> updateBanners(@RequestPart(name = "saveFile") List<MultipartFile> saveFiles,

@@ -45,13 +45,13 @@ public class JwtUtils {
         Date accessValidity = new Date(now + jwtProperties.accessTokenExpiration());
 
         return Jwts.builder()
-                .setIssuedAt(new Date(now))
-                .setExpiration(accessValidity)
-                .setIssuer(jwtProperties.issuer())
-                .setSubject(memberSub.toString())
-                .addClaims(Map.of(MEMBER_ROLE, roles))
-                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .setIssuedAt(new Date(now)) // jwt 발급 시간
+                .setExpiration(accessValidity) // jwt 만료 시간
+                .setIssuer(jwtProperties.issuer()) // jwt 발급한 주체 (서버의 이름)
+                .setSubject(memberSub.toString()) // 토큰의 주체.
+                .addClaims(Map.of(MEMBER_ROLE, roles)) // jwt 의 추가적인 정보
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE) // JWT 헤더
+                .signWith(key, SignatureAlgorithm.HS512) // Signature 방법
                 .compact();
     }
 
