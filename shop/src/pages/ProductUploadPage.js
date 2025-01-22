@@ -11,6 +11,7 @@ function ProductUploadPage() {
   const [hoveredImage, setHoveredImage] = useState(null); // 팝업 이미지 상태
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
 
+  {/* 상품 대표 이미지(단일) */}
   const handleRepresentImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -21,6 +22,7 @@ function ProductUploadPage() {
     }
   };
 
+  {/* 상품 추가 이미지 업로드(다수) */}
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files).map((file) => ({
       file,
@@ -29,6 +31,7 @@ function ProductUploadPage() {
     setImages((prevImages) => [...prevImages, ...files]);
   };
 
+  {/* 상품 이미지 삭제 */}
   const handleRemoveImage = (index) => {
     setImages((prevImages) => {
       URL.revokeObjectURL(prevImages[index].preview);
@@ -36,6 +39,17 @@ function ProductUploadPage() {
     });
   };
 
+  {/* 상품 대표 이미지 팝업 위치 조정 */}
+  const handleHoverRepresentImage = (image, event) => {
+    const imageRect = event.currentTarget.getBoundingClientRect();
+    setHoveredImage(image.preview);
+    setPopupPosition({
+      x: imageRect.left + 250,
+      y: imageRect.top + 180,
+    });
+  };
+
+  {/* 상품 추가 이미지 팝업 위치 조정 */}
   const handleHoverImage = (image, event) => {
     const imageRect = event.currentTarget.getBoundingClientRect();
     setHoveredImage(image.preview);
@@ -45,10 +59,12 @@ function ProductUploadPage() {
     });
   };
 
+  {/* 상품 이미지 팝업 상호작용 */}
   const handleMouseLeave = () => {
     setHoveredImage(null);
   };
 
+  {/* 상품 등록 버튼 */}
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({
@@ -82,8 +98,8 @@ function ProductUploadPage() {
                 <img
                   src={representImage.preview}
                   alt="대표 이미지"
-                  className="w-full h-32 object-cover rounded-lg"
-                  onMouseMove={(e) => handleHoverImage(representImage, e)}
+                  className="w-60 h-auto object-cover rounded-lg"
+                  onMouseMove={(e) => handleHoverRepresentImage(representImage, e)}
                   onMouseLeave={handleMouseLeave}
                 />
                 <button
@@ -121,7 +137,7 @@ function ProductUploadPage() {
                   <img
                     src={image.preview}
                     alt={`uploaded-${index}`}
-                    className="w-full h-32 object-cover rounded-lg"
+                    className="w-60 h-auto object-cover rounded-lg"
                   />
                   <button
                     type="button"
@@ -166,6 +182,21 @@ function ProductUploadPage() {
               <option value="women">여성용</option>
               <option value="kids">유아용</option>
             </select>
+          </div>
+
+          {/* 상품 설명란 */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2" htmlFor="description"> 
+              상품 설명
+            </label>
+            <textarea
+              id="description"
+              rows="5"
+              placeholder="상품에 대한 설명을 입력하세요"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full border px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+            />
           </div>
 
           {/* 상품 가격 */}

@@ -11,8 +11,8 @@ import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.domain.member.exception.MemberExceptionCode;
 import shop.shopBE.domain.member.repository.MemberRepository;
 import shop.shopBE.global.exception.custom.CustomException;
+import shop.shopBE.global.filter.exception.JwtExceptionCode;
 import shop.shopBE.global.utils.jwt.property.JwtProperties;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
@@ -76,17 +76,27 @@ public class JwtUtils {
                 .compact();
     }
 
-    public boolean validateToken(final String token) {
+    public void validateToken(final String token) {
         try {
-            log.info("now date: {}", new Date());
+            log.info("Current date: {}", new Date());
+
+            // 토큰 파싱 및 검증
             Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
+                    .setSigningKey(key) // 서명 키 설정
                     .build()
                     .parseClaimsJws(token);
-            return claims.getBody().getExpiration().after(new Date());
-        } catch (Exception e) {
-            log.error("Token validation error: ", e);
-            return false;
+
+            // 토큰의 만료일 확인 (파싱 과정에서 유효성 검증이 자동으로 수행됨)
+            Date expiration = claims.getBody().getExpiration();
+            log.info("Token expiration date: {}", expiration);
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(JwtExceptionCode.JWT_EXPIRED);
+        } catch (UnsupportedJwtException e) {
+            throw new CustomException(JwtExceptionCode.JWT_NOT_SUPPORTED);
+        } catch (MalformedJwtException e) {
+            throw new CustomException(JwtExceptionCode.JWT_WRONG_FORM);
+        } catch (JwtException e) {
+            throw new CustomException(JwtExceptionCode.JWT_NOT_VALID);
         }
     }
 

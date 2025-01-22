@@ -18,6 +18,7 @@ const AdminStatisticPage = lazy(()=> import("../pages/AdminStatisticPage"))
 const AdminBannerPage = lazy(()=> import("../pages/AdminBannerPage"))
 const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"));
 const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
+const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 
 const root = createBrowserRouter([
   {
@@ -31,7 +32,6 @@ const root = createBrowserRouter([
         <Main />
       </Suspense>
     ),
- 
   },
   {
     path: "login",
@@ -47,7 +47,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Summer />
       </Suspense>
-    )
+    ),
   },
   {
     path: "winter",
@@ -55,7 +55,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Winter />
       </Suspense>
-    )
+    ),
   },
   {
     path: "men",
@@ -63,7 +63,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Men />
       </Suspense>
-    )
+    ),
   },
   {
     path: "women",
@@ -71,7 +71,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Women />
       </Suspense>
-    )
+    ),
   },
   {
     path: "kids",
@@ -79,13 +79,13 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Kids />
       </Suspense>
-    )
+    ),
   },
-  { 
+  {
     path: "mypage/order-list",
     element: (
       <Suspense fallback={Loading}>
-        <Mypage/>
+        <Mypage />
       </Suspense>
     ),
   },
@@ -144,6 +144,14 @@ const root = createBrowserRouter([
         <ProductUploadPage/>
       </Suspense>
     ),
+  },
+  {
+    path: "lookupproduct",
+    element: (
+      <Suspense fallback={Loading}>
+        <LookUpProduct />
+      </Suspense>
+    )
   }
 ]);
 
