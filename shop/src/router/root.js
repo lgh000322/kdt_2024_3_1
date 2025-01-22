@@ -11,8 +11,9 @@ const Men = lazy(() => import("../pages/MenPage"));
 const Women = lazy(() => import("../pages/WomenPage"));
 const Kids = lazy(() => import("../pages/KidsPage"));
 const Mypage = lazy(() => import("../pages/Mypage"));
-const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"));
+const SellerRegistration = lazy(() =>import("../pages/SellerRegistrationPage"));
 const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
+const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 
 const root = createBrowserRouter([
   {
@@ -26,7 +27,6 @@ const root = createBrowserRouter([
         <Main />
       </Suspense>
     ),
- 
   },
   {
     path: "login",
@@ -42,7 +42,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Summer />
       </Suspense>
-    )
+    ),
   },
   {
     path: "winter",
@@ -50,7 +50,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Winter />
       </Suspense>
-    )
+    ),
   },
   {
     path: "men",
@@ -58,7 +58,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Men />
       </Suspense>
-    )
+    ),
   },
   {
     path: "women",
@@ -66,7 +66,7 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Women />
       </Suspense>
-    )
+    ),
   },
   {
     path: "kids",
@@ -74,13 +74,13 @@ const root = createBrowserRouter([
       <Suspense fallback={Loading}>
         <Kids />
       </Suspense>
-    )
+    ),
   },
-  { 
+  {
     path: "mypage/order-list",
     element: (
       <Suspense fallback={Loading}>
-        <Mypage/>
+        <Mypage />
       </Suspense>
     ),
   },
@@ -88,7 +88,7 @@ const root = createBrowserRouter([
     path: "mypage/seller-registration",
     element: (
       <Suspense fallback={Loading}>
-        <SellerRegistration/>
+        <SellerRegistration />
       </Suspense>
     ),
   },
@@ -96,9 +96,17 @@ const root = createBrowserRouter([
     path: "productupload",
     element: (
       <Suspense fallback={Loading}>
-        <ProductUploadPage/>
+        <ProductUploadPage />
       </Suspense>
     ),
+  },
+  {
+    path: "lookupproduct",
+    element: (
+      <Suspense fallback={Loading}>
+        <LookUpProduct />
+      </Suspense>
+    )
   }
 ]);
 

@@ -40,7 +40,7 @@ function ProductUploadPage() {
     const imageRect = event.currentTarget.getBoundingClientRect();
     setHoveredImage(image.preview);
     setPopupPosition({
-      x: imageRect.left + 15, // 마우스 포인터 기준 위치 조정
+      x: imageRect.left + 250, // 마우스 포인터 기준 위치 조정
       y: imageRect.top,
     });
   };
@@ -166,6 +166,21 @@ function ProductUploadPage() {
               <option value="women">여성용</option>
               <option value="kids">유아용</option>
             </select>
+          </div>
+
+          {/* 상품 설명란 */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2" htmlFor="description"> 
+              상품 설명
+            </label>
+            <textarea
+              id="description"
+              rows="5"
+              placeholder="상품에 대한 설명을 입력하세요"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full border px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+            />
           </div>
 
           {/* 상품 가격 */}
