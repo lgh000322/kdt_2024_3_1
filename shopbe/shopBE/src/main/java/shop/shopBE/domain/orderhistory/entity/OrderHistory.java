@@ -34,4 +34,11 @@ public class OrderHistory {
     @JoinColumn(name = "member_id")
     private Member member;
 
+
+    public OrderHistory(int orderPrice, LocalDateTime createdAt, Destination destination, Member member) {
+        this.orderPrice = orderPrice;
+        this.createdAt = createdAt;
+        this.destination = destination;
+        this.member = member;
+    }
 }
