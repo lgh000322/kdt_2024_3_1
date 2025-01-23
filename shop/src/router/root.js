@@ -21,7 +21,7 @@ const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"))
 const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
 const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 const OrderListPage = lazy(() => import("../pages/OrderListPage"));
-
+const WishListPage = lazy(() => import("../pages/WishListPage"));
 
 
 const root = createBrowserRouter([
@@ -162,6 +162,14 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <LookUpProduct />
+      </Suspense>
+    )
+  },
+  {
+    path: "wishlistpage",
+    element: (
+      <Suspense fallback={Loading}>
+        <WishListPage />
       </Suspense>
     )
   }
