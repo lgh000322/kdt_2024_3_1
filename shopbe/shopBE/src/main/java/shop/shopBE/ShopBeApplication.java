@@ -12,5 +12,4 @@ public class ShopBeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ShopBeApplication.class, args);
 	}
-
 }
