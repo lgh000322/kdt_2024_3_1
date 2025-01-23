@@ -16,40 +16,58 @@ const WishlistPage = () => {
       price: 40000,
     },
     {
-      id: "ORD005",
+      id: "ORD004",
       image: "https://via.placeholder.com/150",
-      title: "상품 E",
-      price: 50000,
+      title: "상품 D",
+      price: 40000,
     },
     {
-      id: "ORD006",
+      id: "ORD004",
       image: "https://via.placeholder.com/150",
-      title: "상품 H",
-      price: 50000,
+      title: "상품 D",
+      price: 40000,
     },
     {
-      id: "ORD007",
+      id: "ORD004",
       image: "https://via.placeholder.com/150",
-      title: "상품 Z",
-      price: 50000,
+      title: "상품 D",
+      price: 40000,
     },
     {
-      id: "ORD005",
+      id: "ORD004",
       image: "https://via.placeholder.com/150",
-      title: "상품 E",
-      price: 50000,
+      title: "상품 D",
+      price: 40000,
     },
     {
-      id: "ORD005",
+      id: "ORD004",
       image: "https://via.placeholder.com/150",
-      title: "상품 E",
-      price: 50000,
+      title: "상품 D",
+      price: 40000,
     },
     {
-      id: "ORD005",
+      id: "ORD004",
       image: "https://via.placeholder.com/150",
-      title: "상품 E",
-      price: 50000,
+      title: "상품 D",
+      price: 40000,
+    },
+    {
+      id: "ORD004",
+      image: "https://via.placeholder.com/150",
+      title: "상품 D",
+      price: 40000,
+    },
+    {
+      id: "ORD004",
+      image: "https://via.placeholder.com/150",
+      title: "상품 D",
+      price: 40000,
+    },
+    {
+      id: "ORD004",
+      image: "https://via.placeholder.com/150",
+      title: "상품 D",
+      price: 40000,
     },
   ]);
 
@@ -64,24 +82,31 @@ const WishlistPage = () => {
     <WishLayout>
       <div style={{ padding: "40px" }}>
         <h1 style={{ textAlign: "left", fontSize: "27px", fontWeight: "bold" }}>찜한 상품</h1>
-        <hr />
+        <hr/>
+        <br/>
         {wishlist.length > 0 ? (
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: "20px",
+              display: "flex",
+              gap: "28px",
+              flexWrap: "wrap",
+              justifyContent: "flex-start",
             }}
           >
             {wishlist.map((item) => (
               <div
                 key={item.id}
                 style={{
+                  width: "215px", // 고정된 너비
+                  height: "320px", // 고정된 높이
                   boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
                   borderRadius: "8px",
                   padding: "10px",
                   textAlign: "center",
                   backgroundColor: "#fff",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between", // 상하 정렬
                 }}
               >
                 <img

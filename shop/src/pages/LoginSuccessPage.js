@@ -118,6 +118,12 @@ const Button = styled.button`
 `;
 
 function LoginSuccessPage() {
+    const cookies = document.cookie.split(';');
+
+    cookies.forEach((cookie) => {
+  const [name, value] = cookie.trim().split('=');
+  console.log(`${name}=${value}`);
+});
     const [formData, setFormData] = useState({
         email: "asdsad@asdasd",
         name: "홍길동",
