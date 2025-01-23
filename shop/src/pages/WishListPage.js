@@ -5,69 +5,45 @@ const WishlistPage = () => {
   const [wishlist, setWishlist] = useState([
     {
       id: "ORD003",
-      image: "https://via.placeholder.com/150", // 임시 이미지 URL
+      image: "/img/logo.png", // 임시 이미지 URL
+      title: "상품 A",
+      price: 8000,
+    },
+    {
+      id: "ORD004",
+      image: "/img/naver.jpg",
+      title: "상품 B",
+      price: 20000,
+    },
+    {
+      id: "ORD004",
+      image: "/img/logo.png",
       title: "상품 C",
-      price: 30000,
+      price: 15000,
     },
     {
       id: "ORD004",
-      image: "https://via.placeholder.com/150",
+      image: "/img/naver.jpg",
       title: "상품 D",
-      price: 40000,
+      price: 56000,
     },
     {
       id: "ORD004",
-      image: "https://via.placeholder.com/150",
-      title: "상품 D",
-      price: 40000,
+      image: "/img/logo.png",
+      title: "상품 E",
+      price: 13000,
     },
     {
       id: "ORD004",
-      image: "https://via.placeholder.com/150",
-      title: "상품 D",
-      price: 40000,
+      image: "/img/naver.jpg",
+      title: "상품 F",
+      price: 4500,
     },
     {
       id: "ORD004",
-      image: "https://via.placeholder.com/150",
-      title: "상품 D",
-      price: 40000,
-    },
-    {
-      id: "ORD004",
-      image: "https://via.placeholder.com/150",
-      title: "상품 D",
-      price: 40000,
-    },
-    {
-      id: "ORD004",
-      image: "https://via.placeholder.com/150",
-      title: "상품 D",
-      price: 40000,
-    },
-    {
-      id: "ORD004",
-      image: "https://via.placeholder.com/150",
-      title: "상품 D",
-      price: 40000,
-    },
-    {
-      id: "ORD004",
-      image: "https://via.placeholder.com/150",
-      title: "상품 D",
-      price: 40000,
-    },
-    {
-      id: "ORD004",
-      image: "https://via.placeholder.com/150",
-      title: "상품 D",
-      price: 40000,
-    },
-    {
-      id: "ORD004",
-      image: "https://via.placeholder.com/150",
-      title: "상품 D",
-      price: 40000,
+      image: "/img/logo.png",
+      title: "상품 G",
+      price: 23000,
     },
   ]);
 
@@ -114,13 +90,14 @@ const WishlistPage = () => {
                   alt={item.title}
                   style={{
                     width: "100%",
-                    height: "150px",
+                    height: "250px",
                     objectFit: "cover",
-                    borderRadius: "8px",
+                    borderRadius: "5px",
                   }}
                 />
-                <h3 style={{ fontSize: "16px", margin: "10px 0" }}>{item.title}</h3>
-                <p style={{ color: "#888", marginBottom: "10px" }}>{item.price.toLocaleString()}원</p>
+                <hr/>
+                <h3 style={{ fontSize: "16px", margin: "5px" }}>{item.title}</h3>
+                <p style={{ color: "#888"}}>{item.price.toLocaleString()}원</p>
                 <button
                   // onClick={() => removeFromWishlist(item.id)}
                   style={{
