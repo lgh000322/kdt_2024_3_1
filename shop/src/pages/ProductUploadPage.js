@@ -10,6 +10,8 @@ function ProductUploadPage() {
   const [images, setImages] = useState([]);
   const [hoveredImage, setHoveredImage] = useState(null); // 팝업 이미지 상태
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
+  const fileInputRef = React.useRef(null);
+  const multiFileInputRef = React.useRef(null);
 
   {/* 상품 대표 이미지(단일) */}
   const handleRepresentImageUpload = (e) => {
@@ -31,11 +33,21 @@ function ProductUploadPage() {
     setImages((prevImages) => [...prevImages, ...files]);
   };
 
+  {/* 대표 이미지 삭제 */}
+  const handleRemoveRepresentImage = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    setRepresentImage(null);
+  };
+  
   {/* 상품 이미지 삭제 */}
   const handleRemoveImage = (index) => {
     setImages((prevImages) => {
+      const updatedImages = prevImages.filter((_, i) => i !== index); // 이미지 삭제
+      // 업로드된 파일 URL 해제
       URL.revokeObjectURL(prevImages[index].preview);
-      return prevImages.filter((_, i) => i !== index);
+      return updatedImages;
     });
   };
 
@@ -88,6 +100,7 @@ function ProductUploadPage() {
               대표 이미지 업로드
             </label>
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={handleRepresentImageUpload}
@@ -104,8 +117,7 @@ function ProductUploadPage() {
                 />
                 <button
                   type="button"
-                  onClick={() => setRepresentImage(null)}
-                  F
+                  onClick={handleRemoveRepresentImage}
                   className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-sm rounded-full"
                 >
                   삭제
@@ -120,6 +132,7 @@ function ProductUploadPage() {
               상품 이미지 업로드
             </label>
             <input
+              ref={multiFileInputRef}
               type="file"
               multiple
               accept="image/*"

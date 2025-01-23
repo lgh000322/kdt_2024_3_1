@@ -5,6 +5,7 @@ const Loading = <div>Loading ...</div>;
 
 const Main = lazy(() => import("../pages/MainPage"));
 const Login = lazy(() => import("../pages/LoginPage"));
+const LoginSuccess = lazy(() => import("../pages/LoginSuccessPage"));
 const Summer = lazy(() => import("../pages/SummerPage"));
 const Winter = lazy(() => import("../pages/WinterPage"));
 const Men = lazy(() => import("../pages/MenPage"));
@@ -19,6 +20,9 @@ const AdminBannerPage = lazy(()=> import("../pages/AdminBannerPage"))
 const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"));
 const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
 const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
+const OrderListPage = lazy(() => import("../pages/OrderListPage"));
+
+
 
 const root = createBrowserRouter([
   {
@@ -38,6 +42,14 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <Login />
+      </Suspense>
+    ),
+  },
+  {
+    path: "login/success",
+    element: (
+      <Suspense fallback={Loading}>
+        <LoginSuccess />
       </Suspense>
     ),
   },
@@ -85,7 +97,7 @@ const root = createBrowserRouter([
     path: "mypage/order-list",
     element: (
       <Suspense fallback={Loading}>
-        <Mypage />
+        <OrderListPage />
       </Suspense>
     ),
   },
