@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.shopBE.domain.product.entity.enums.ProductCategory;
-import shop.shopBE.domain.product.entity.enums.ProductStatus;
 
 import java.time.LocalDateTime;
 
@@ -26,12 +25,10 @@ public class Product {
 
     private String productName;
 
-    private int stock;
+    private int totalStock;
 
     private int price;
 
-    @Enumerated(EnumType.STRING)
-    private ProductStatus productStatus;
 
     private String description;
 
