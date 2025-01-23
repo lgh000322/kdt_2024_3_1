@@ -3,7 +3,6 @@ package shop.shopBE.domain.member.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import shop.shopBE.domain.member.entity.QMember;
 import shop.shopBE.domain.member.response.MemberInformation;
 
 import java.util.Optional;
