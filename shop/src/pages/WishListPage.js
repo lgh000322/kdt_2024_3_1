@@ -5,51 +5,45 @@ const WishlistPage = () => {
   const [wishlist, setWishlist] = useState([
     {
       id: "ORD003",
-      image: "https://via.placeholder.com/150", // 임시 이미지 URL
-      title: "상품 C",
-      price: 30000,
+      image: "/img/logo.png", // 임시 이미지 URL
+      title: "상품 A",
+      price: 8000,
     },
     {
       id: "ORD004",
-      image: "https://via.placeholder.com/150",
+      image: "/img/naver.jpg",
+      title: "상품 B",
+      price: 20000,
+    },
+    {
+      id: "ORD004",
+      image: "/img/logo.png",
+      title: "상품 C",
+      price: 15000,
+    },
+    {
+      id: "ORD004",
+      image: "/img/naver.jpg",
       title: "상품 D",
-      price: 40000,
+      price: 56000,
     },
     {
-      id: "ORD005",
-      image: "https://via.placeholder.com/150",
+      id: "ORD004",
+      image: "/img/logo.png",
       title: "상품 E",
-      price: 50000,
+      price: 13000,
     },
     {
-      id: "ORD006",
-      image: "https://via.placeholder.com/150",
-      title: "상품 H",
-      price: 50000,
+      id: "ORD004",
+      image: "/img/naver.jpg",
+      title: "상품 F",
+      price: 4500,
     },
     {
-      id: "ORD007",
-      image: "https://via.placeholder.com/150",
-      title: "상품 Z",
-      price: 50000,
-    },
-    {
-      id: "ORD005",
-      image: "https://via.placeholder.com/150",
-      title: "상품 E",
-      price: 50000,
-    },
-    {
-      id: "ORD005",
-      image: "https://via.placeholder.com/150",
-      title: "상품 E",
-      price: 50000,
-    },
-    {
-      id: "ORD005",
-      image: "https://via.placeholder.com/150",
-      title: "상품 E",
-      price: 50000,
+      id: "ORD004",
+      image: "/img/logo.png",
+      title: "상품 G",
+      price: 23000,
     },
   ]);
 
@@ -64,24 +58,31 @@ const WishlistPage = () => {
     <WishLayout>
       <div style={{ padding: "40px" }}>
         <h1 style={{ textAlign: "left", fontSize: "27px", fontWeight: "bold" }}>찜한 상품</h1>
-        <hr />
+        <hr/>
+        <br/>
         {wishlist.length > 0 ? (
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-              gap: "20px",
+              display: "flex",
+              gap: "28px",
+              flexWrap: "wrap",
+              justifyContent: "flex-start",
             }}
           >
             {wishlist.map((item) => (
               <div
                 key={item.id}
                 style={{
+                  width: "215px", // 고정된 너비
+                  height: "320px", // 고정된 높이
                   boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
                   borderRadius: "8px",
                   padding: "10px",
                   textAlign: "center",
                   backgroundColor: "#fff",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between", // 상하 정렬
                 }}
               >
                 <img
@@ -89,13 +90,14 @@ const WishlistPage = () => {
                   alt={item.title}
                   style={{
                     width: "100%",
-                    height: "150px",
+                    height: "250px",
                     objectFit: "cover",
-                    borderRadius: "8px",
+                    borderRadius: "5px",
                   }}
                 />
-                <h3 style={{ fontSize: "16px", margin: "10px 0" }}>{item.title}</h3>
-                <p style={{ color: "#888", marginBottom: "10px" }}>{item.price.toLocaleString()}원</p>
+                <hr/>
+                <h3 style={{ fontSize: "16px", margin: "5px" }}>{item.title}</h3>
+                <p style={{ color: "#888"}}>{item.price.toLocaleString()}원</p>
                 <button
                   // onClick={() => removeFromWishlist(item.id)}
                   style={{
