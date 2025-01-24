@@ -28,7 +28,7 @@ public class MemberFacadeService {
     }
 
     public List<MemberListResponseView> getMemberList(MemberListRequest memberListRequest) {
-        Pageable pageable = PageRequest.of(memberListRequest.page(), memberListRequest.size());
+        Pageable pageable = PageRequest.of(memberListRequest.page() - 1, memberListRequest.size());
         List<MemberListResponse> memberList = memberService.getMemberList(pageable);
         return getViewResponse(memberList);
     }

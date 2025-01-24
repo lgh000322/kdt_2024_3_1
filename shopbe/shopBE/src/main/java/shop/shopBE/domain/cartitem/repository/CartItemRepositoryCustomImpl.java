@@ -27,15 +27,15 @@ public class CartItemRepositoryCustomImpl implements CartItemRepositoryCustom{
     public Optional<List<CartItemInform>> findCartItemInfromsById(Long cartId, Pageable pageable) {
         List<CartItemInform> informs = queryFactory
                 .select(Projections.constructor(CartItemInform.class,
-                       product.id,
-                        cartItem.id,
-                        productImage.savedName,
-                        null,
-                        product.productName,
-                        productDetail.shoesSize,
-                        productDetail.sizeStock,
-                        cartItem.itemCount,
-                        cartItem.itemPrice))
+                       product.id,        // 상품 번호
+                        cartItem.id,            // 장바구니 상품 번호
+                        productImage.savedName, // 이미지 url
+                        null,                   // 프로덕트 상태 (판매중, 품절) 해당 데이터는 서비스에서 설정
+                        product.productName,    // 상품이름
+                        productDetail.shoesSize, // 상품(신발)사이즈
+                        productDetail.sizeStock, // 상품 사이즈별 수량
+                        cartItem.itemCount,      // 장바구니 아이템수량 (사용자가 장바구니에 담은 상품수량)
+                        cartItem.itemPrice))     // 장바구니 아이템 가격(상품수량 X 가격)
                 .from(cartItem)
                 .join(product)
                 .on(cartItem.product.eq(product))

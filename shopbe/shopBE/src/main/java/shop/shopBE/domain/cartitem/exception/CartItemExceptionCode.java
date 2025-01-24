@@ -8,9 +8,9 @@ import shop.shopBE.global.exception.code.ExceptionCode;
 @Getter
 @AllArgsConstructor
 public enum CartItemExceptionCode implements ExceptionCode {
-    CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니에 상품이 없습니다.");
+    CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니 상품을 찾을수 없습니다."),
+    CART_ITEM_EMPTY(HttpStatus.NOT_FOUND, "장바구니에 상품이 없습니다.");
 
     private final HttpStatus httpStatus;
-
     private final String message;
 }
