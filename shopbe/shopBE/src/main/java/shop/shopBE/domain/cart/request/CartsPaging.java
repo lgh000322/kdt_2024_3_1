@@ -1,4 +1,4 @@
-package shop.shopBE.domain.cartitem.request;
+package shop.shopBE.domain.cart.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
