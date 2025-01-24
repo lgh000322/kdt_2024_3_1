@@ -3,8 +3,7 @@ package shop.shopBE.domain.destination.response;
 /*
 배송지 응답 Dto
  */
-public record DestinationResponse(
-        Long id,              // 배송지 ID
+public record DestinationListInfo(
         String destinationName, // 배송지 이름
         String receiverName,    // 수령인
         String tel,             // 전화번호
