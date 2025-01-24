@@ -38,7 +38,7 @@ public class CartItemService {
         return cartItemInforms;
     }
 
-    private static void setProductStatus(List<CartItemInform> cartItemInforms) {
+    private void setProductStatus(List<CartItemInform> cartItemInforms) {
         for (CartItemInform cartItemInform : cartItemInforms) {
             if(cartItemInform.getSizeStock() > 0) {
                 cartItemInform.setProductStatus("판매 중");
