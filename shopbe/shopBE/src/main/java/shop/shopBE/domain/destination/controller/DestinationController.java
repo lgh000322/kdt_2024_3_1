@@ -54,12 +54,12 @@ public class DestinationController {
 
     @PutMapping("/destination")
     @Operation(summary="배송지 수정",description = "회원의 배송지 수정")
-    public void updateDestinationList(
+    public ResponseEntity<ResponseFormat<Void>> updateDestinationList(
             @RequestBody @Valid UpdateDestinationRequest UpdateDestinationRequest,
             @AuthenticationPrincipal AuthToken authToken
     ){
         destinationFadeService.updateDestination(UpdateDestinationRequest);
-
+        return ResponseEntity.ok().body(ResponseFormat.of("회원의 배송지 수정에 성공했습니다."));
     }
 
 

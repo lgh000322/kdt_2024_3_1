@@ -5,16 +5,22 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import shop.shopBE.domain.member.request.MemberListRequest;
 import shop.shopBE.domain.member.request.MemberUpdateInfo;
 import shop.shopBE.domain.member.response.MemberInformation;
+import shop.shopBE.domain.member.response.MemberListResponse;
+import shop.shopBE.domain.member.response.MemberListResponseView;
 import shop.shopBE.domain.member.service.MemberFacadeService;
 import shop.shopBE.global.config.security.mapper.token.AuthToken;
 import shop.shopBE.global.response.ResponseFormat;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,6 +43,14 @@ public class MemberController {
 
         MemberInformation memberInformation = memberFacadeService.findMemberInfoById(authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("회원 조회 성공", memberInformation));
+    }
+
+    @GetMapping("members")
+    @Operation(summary = "회원 정보 전체 조회", description = "관리자는 모든 회원의 정보를 조회할 수 있다")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ResponseFormat<List<MemberListResponseView>>> getMembers(@RequestBody @Valid MemberListRequest memberListRequest) {
+        List<MemberListResponseView> memberList = memberFacadeService.getMemberList(memberListRequest);
+        return ResponseEntity.ok().body(ResponseFormat.of("회원 리스트 조회에 성공했습니다.", memberList));
     }
 
 }
