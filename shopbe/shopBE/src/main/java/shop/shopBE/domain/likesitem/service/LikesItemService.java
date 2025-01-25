@@ -9,6 +9,8 @@ import shop.shopBE.domain.likesitem.entity.LikesItem;
 import shop.shopBE.domain.likesitem.exception.LikesItemExceptionCode;
 import shop.shopBE.domain.likesitem.repository.LikesItemRepository;
 import shop.shopBE.domain.product.entity.Product;
+import shop.shopBE.domain.product.exception.ProductExceptionCode;
+import shop.shopBE.domain.product.repository.ProductRepository;
 import shop.shopBE.global.exception.custom.CustomException;
 
 import java.util.List;
@@ -19,11 +21,16 @@ import java.util.List;
 public class LikesItemService {
 
     private final LikesItemRepository likesItemRepository;
+    private final ProductRepository productRepository;
 
     @Transactional
-    public void setLikesItems(LikesItem likesItem, Product product) {
+    public void setLikesItems(Likes likes, Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new CustomException(ProductExceptionCode.NOT_FOUND));
+
+        LikesItem likesItem = LikesItem.createLikesItem(likes, product);
         likesItemRepository.save(likesItem);
-        // 상품의 likeCount를 1증가시킴
+
         product.plusLikeCount();
     }
 
