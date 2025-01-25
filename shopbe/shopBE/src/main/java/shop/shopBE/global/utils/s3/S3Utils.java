@@ -51,13 +51,10 @@ public class S3Utils {
         try {
             amazonS3.deleteObject(bucket, fileName);
         } catch (AmazonServiceException e) {
-            System.err.println("AWS 서비스 오류: " + e.getMessage());
             throw new RuntimeException("AWS 서비스 오류: " + e.getMessage(), e);
         } catch (AmazonClientException e) {
-            System.err.println("AWS 클라이언트 오류: " + e.getMessage());
             throw new RuntimeException("AWS 클라이언트 오류: " + e.getMessage(), e);
         } catch (Exception e) {
-            System.err.println("파일 삭제 실패: " + e.getMessage());
             throw new RuntimeException("파일 삭제 실패: " + e.getMessage(), e);
         }
     }
