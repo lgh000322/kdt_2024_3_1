@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import shop.shopBE.domain.likesitem.request.LikesItemDeleteInfo;
 import shop.shopBE.domain.likesitem.request.LikesItemInfo;
 import shop.shopBE.domain.likesitem.request.LikesPaging;
 import shop.shopBE.domain.likesitem.service.LikesItemFacadeService;
@@ -42,8 +43,9 @@ public class LikesItemController {
 
     @DeleteMapping("/likes/item/{likesItemId}")
     @Operation(summary = "찜 아이템 삭제", description = "현재 로그인 한 회원의 찜 아이템 1개를 삭제한다.")
-    public ResponseEntity<ResponseFormat<Void>> deleteLikesItem(@PathVariable(name = "likesItemId") Long likesItemId) {
-        likesItemFacadeService.deleteById(likesItemId);
+    public ResponseEntity<ResponseFormat<Void>> deleteLikesItem(@PathVariable(name = "likesItemId") Long likesItemId,
+                                                                @RequestBody @Valid LikesItemDeleteInfo likesItemDeleteInfo) {
+        likesItemFacadeService.deleteById(likesItemId, likesItemDeleteInfo.productId());
         return ResponseEntity.ok().body(ResponseFormat.of("찜 아이템 삭제에 성공했습니다."));
     }
 }

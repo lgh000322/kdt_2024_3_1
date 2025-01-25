@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 @Slf4j
 class LikesItemFacadeServiceTest {
 

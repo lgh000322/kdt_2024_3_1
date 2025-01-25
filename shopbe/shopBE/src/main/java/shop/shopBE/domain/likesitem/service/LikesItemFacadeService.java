@@ -43,7 +43,7 @@ public class LikesItemFacadeService {
         // 페이징 정보
         Pageable pageable = PageRequest.of(likesPaging.page() - 1, likesPaging.size());
 
-        // 찜 보관함 조회
+        // 찜 보관함 조회 or 추가
         Likes likes = likesService.findLikesByMemberId(memberId)
                 .orElseGet(() -> createLikes(memberId));
 
@@ -63,10 +63,8 @@ public class LikesItemFacadeService {
         return likesService.save(likes);
     }
 
-    public void deleteById(Long likesItemId) {
-        Long productId = likesItemService.findProductIdByLikesId(likesItemId);
-        Product product = productService.findById(productId);
-        likesItemService.deleteLikesItemById(likesItemId, product);
+    public void deleteById(Long likesItemId,Long productId) {
+        likesItemService.deleteById(likesItemId, productId);
     }
 
 }
