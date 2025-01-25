@@ -19,6 +19,7 @@ import shop.shopBE.domain.product.service.ProductService;
 import shop.shopBE.global.exception.custom.CustomException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class LikesItemFacadeService {
         LikesItem likesItem = LikesItem.createLikesItem(likes, product);
 
         // 찜 상품 목록 저장
-        likesItemService.setLikesItems(likesItem); //(readonly = false)
+        likesItemService.setLikesItems(likesItem, product); //(readonly = false)
 
     }
 
@@ -70,7 +71,9 @@ public class LikesItemFacadeService {
     }
 
     public void deleteById(Long likesItemId) {
-        likesItemService.deleteLikesItemById(likesItemId);
+        Long productId = likesItemService.findProductIdByLikesId(likesItemId);
+        Product product = productService.findById(productId);
+        likesItemService.deleteLikesItemById(likesItemId, product);
     }
 
 }

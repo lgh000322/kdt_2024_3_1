@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface LikesItemRepositoryCustom {
     Optional<List<Long>> getLikesItems(Pageable pageable, Long likesId);
+    Optional<Long> findOneProductIdByLikesId(Long likesId);
 }

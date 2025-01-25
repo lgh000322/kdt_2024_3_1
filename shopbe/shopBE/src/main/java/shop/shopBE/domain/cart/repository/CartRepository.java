@@ -8,6 +8,6 @@ import shop.shopBE.domain.cart.entity.Cart;
 import java.util.Optional;
 
 
-public interface CartRepository extends JpaRepository<Cart, Long>, CartRepositoryCustom  {
+public interface CartRepository extends JpaRepository<Cart, Long> {
     Optional<Cart> findByMemberId(Long MemberId);
 }
