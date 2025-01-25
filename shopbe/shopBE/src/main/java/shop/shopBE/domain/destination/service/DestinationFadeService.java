@@ -16,12 +16,11 @@ public class DestinationFadeService {
 
     //배송지 조회
     public List<DestinationListInfo> findDestinationList(Long memberId){
-
         return destinationService.findDestinationList(memberId);
     }
 
-    public void updateDestination(UpdateDestinationRequest updateDestinationRequest) {
-        destinationService.updateDestination(updateDestinationRequest);
+    public void updateDestination(UpdateDestinationRequest updateDestinationRequest,Long destinationId) {
+        destinationService.updateDestination(updateDestinationRequest,destinationId);
     }
 
 }

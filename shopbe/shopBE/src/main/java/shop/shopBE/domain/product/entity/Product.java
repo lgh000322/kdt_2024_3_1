@@ -39,8 +39,10 @@ public class Product {
 
     private int price;
 
+    @Builder.Default
     private int salesVolume = 0; // 상품 판매량 (1월 25일 추가) -> 상품 판매량(인기순) 조회시 사용, default = 0;
 
+    @Builder.Default
     private int likeCount = 0; // 인기순 확인(좋아요숫자) 을 위한 count 디폴트 0;
 
     private String description;

@@ -21,7 +21,11 @@ public class OrderHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 상품의 총 가격
     private int orderPrice;
+
+    // 총 주문한 상품의 수
+    private int orderCount;
 
     // 주문 날짜
     private LocalDateTime createdAt;
@@ -34,11 +38,4 @@ public class OrderHistory {
     @JoinColumn(name = "member_id")
     private Member member;
 
-
-    public OrderHistory(int orderPrice, LocalDateTime createdAt, Destination destination, Member member) {
-        this.orderPrice = orderPrice;
-        this.createdAt = createdAt;
-        this.destination = destination;
-        this.member = member;
-    }
 }

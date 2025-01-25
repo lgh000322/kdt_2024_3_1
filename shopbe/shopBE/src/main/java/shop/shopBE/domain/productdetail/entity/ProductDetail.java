@@ -7,24 +7,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.shopBE.domain.product.entity.Product;
 
+@Entity
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Getter
 public class ProductDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
-
     int shoesSize;
 
     int sizeStock;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     public static ProductDetail createDefaultProductDetail(Product product, int shoesSize, int sizeStock) {
         return ProductDetail.builder()
