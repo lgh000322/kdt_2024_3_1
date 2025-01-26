@@ -44,15 +44,22 @@ public class Member {
 
     private LocalDateTime createdAt;
 
-    public static Member createDefaultMember(String username, String name, String email, Role role) {
+    private boolean authenticated;
+
+    public static Member createDefaultMember(String username, String name, String email, Role role, boolean authenticated) {
         return Member.builder()
                 .username(username)
                 .name(name)
                 .role(role)
                 .email(email)
                 .sub(UUID.randomUUID())
+                .authenticated(authenticated)
                 .createdAt(LocalDateTime.now())
                 .build();
+    }
+
+    public void authenticateMember(boolean authenticated) {
+        this.authenticated = authenticated;
     }
 
     public void updateMember(MemberUpdateInfo memberUpdateInfo) {

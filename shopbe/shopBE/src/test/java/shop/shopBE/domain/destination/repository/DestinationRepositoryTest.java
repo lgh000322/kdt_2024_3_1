@@ -32,7 +32,7 @@ class DestinationRepositoryTest{
     @Test
     void 배송지검색(){
         //given
-        Member member = Member.createDefaultMember("홍길동","홍길동", "asdf1234@naver.com",Role.USER);
+        Member member = Member.createDefaultMember("홍길동", "홍길동", "asdf1234@naver.com", Role.USER, false);
         Member save = memberRepository.save(member);
 
         List<Destination> destinationList = new ArrayList<>();

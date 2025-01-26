@@ -10,6 +10,7 @@ public record MemberUpdateInfo(
         @NotNull Gender gender,
         @NotNull String tel,
         @NotNull Role role
+
 ) {
     public static MemberUpdateInfo createDefaultMemberUpdateInfo(Gender gender, String tel, Role role) {
         return MemberUpdateInfo.builder()

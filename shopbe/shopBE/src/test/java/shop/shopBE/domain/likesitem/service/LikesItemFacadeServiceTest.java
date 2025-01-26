@@ -45,7 +45,7 @@ class LikesItemFacadeServiceTest {
 
     @BeforeEach
     void init() {
-        Member member = Member.createDefaultMember("usernameTest", "nameTest", "aaa@aaa.com", Role.USER);
+        Member member = Member.createDefaultMember("usernameTest", "nameTest", "aaa@aaa.com", Role.USER, false);
         Member savedMember = memberRepository.save(member);
 
         Product product = Product.builder()
