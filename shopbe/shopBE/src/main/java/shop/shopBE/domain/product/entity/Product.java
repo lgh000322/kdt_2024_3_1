@@ -50,6 +50,10 @@ public class Product {
 
     private String description;
 
+    // 상품 등록 날짜
+    private LocalDateTime createdAt;
+
+
     public static Product createDefaultProduct(ProductCategory productCategory,
                                                PersonCategory personCategory,
                                                SeasonCategory seasonCategory,
@@ -67,9 +71,6 @@ public class Product {
                 .description(description)
                 .build();
     }
-
-    // 상품 등록 날짜
-    private LocalDateTime createdAt;
 
     // 상품 재고감소 (업데이트) 메서드 - 상품재고가 0인 상태에서 minusTotalStock을 한다면 에러를 보내줌
     public void minusTotalStock(int stock) {

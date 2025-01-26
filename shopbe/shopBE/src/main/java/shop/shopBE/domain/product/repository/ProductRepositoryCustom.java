@@ -1,6 +1,11 @@
 package shop.shopBE.domain.product.repository;
 
-import shop.shopBE.domain.product.response.ProductCardsViewModel;
+import org.springframework.data.domain.Pageable;
+import shop.shopBE.domain.product.entity.enums.PersonCategory;
+import shop.shopBE.domain.product.entity.enums.ProductCategory;
+import shop.shopBE.domain.product.entity.enums.SeasonCategory;
+import shop.shopBE.domain.product.request.SortingOption;
+import shop.shopBE.domain.product.response.ProductCardViewModel;
 import shop.shopBE.domain.product.response.ProductListViewModel;
 
 import java.util.List;
@@ -12,5 +17,33 @@ public interface ProductRepositoryCustom {
     ProductListViewModel getProductListViewModels(Long productId);
 
     // 메인페이지에 보여줄 상품정보 - 인기순 (likeCount로 내림차순)
-    Optional<List<ProductCardsViewModel>> findMainProductCardsOderByLikeCountDesc();
+    Optional<List<ProductCardViewModel>> findMainProductCardsOderByLikeCountDesc(Pageable pageable);
+
+    //시즌별 상품 조회메서드 - 인기순
+    Optional<List<ProductCardViewModel>> findSeasonProductsOrderByLikeCountDesc(Pageable pageable, SeasonCategory seasonCategory);
+
+    // 시즌별 상품 조회 메서드 - 판매량순
+    Optional<List<ProductCardViewModel>> findSeasonProductsOrderBySalesVolumeDesc(Pageable pageable, SeasonCategory seasonCategory);
+
+    // 시즌별 상품 조회 메서드 - 신상품순(입고순)
+    Optional<List<ProductCardViewModel>> findSeasonProductsOrderByCreateAtDesc(Pageable pageable, SeasonCategory seasonCategory);
+
+    // 시즌별 상품 조회 메서드 - 낮은가격순
+    Optional<List<ProductCardViewModel>> findSeasonProductsOrderByPriceAsc(Pageable pageable, SeasonCategory seasonCategory);
+
+    
+    // 남자 상품 카테고리별 조회 - 인기순
+    Optional<List<ProductCardViewModel>> findPersonProductsOrderByLikeCountDesc(Pageable pageable, PersonCategory personCategory, ProductCategory productCategory);
+
+    // 남자 상품 카테고리별 조회 - 판매량순
+    Optional<List<ProductCardViewModel>> findPersonProductsOrderBySalesVolumeDesc(Pageable pageable, PersonCategory personCategory);
+
+    // 남자 상품 카테고리별 조회 - 신상품순(입고순)
+    Optional<List<ProductCardViewModel>> findPersonProductsOrderByCreateAtDesc(Pageable pageable, PersonCategory personCategory);
+
+    // 남자 상품 카테고리별 조회 - 낮은 가격순
+    Optional<List<ProductCardViewModel>> findPersonProductsOrderByPriceAsc(Pageable pageable, PersonCategory personCategory);
+
+    
+    
 }
