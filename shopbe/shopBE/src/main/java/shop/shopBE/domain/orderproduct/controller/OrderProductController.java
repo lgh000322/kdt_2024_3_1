@@ -23,13 +23,12 @@ import java.util.List;
 public class OrderProductController {
 
     private final OrderProductService orderProductService;
-    
+
+    // Todo
     @GetMapping("/orderProduct")
     @Operation(summary = "주문상품 상세조회", description = "현재 로그인한 회원의 주문상품 상세조회")
-    public ResponseEntity<ResponseFormat<List<OrderProductInfo>>> findOrderProduct(
-            @RequestBody @Valid OrderHistory orderHistory){
-            List<OrderProductInfo> findOrderProductlist = orderProductService.findOrderProductByHistoryId(orderHistory.getId());
-
+    public ResponseEntity<ResponseFormat<List<OrderProductInfo>>> findOrderProduct(@RequestBody @Valid OrderHistory orderHistory) {
+        List<OrderProductInfo> findOrderProductlist = orderProductService.findOrderProductByHistoryId(orderHistory.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("주문 상세조회 성공", findOrderProductlist));
     }
 

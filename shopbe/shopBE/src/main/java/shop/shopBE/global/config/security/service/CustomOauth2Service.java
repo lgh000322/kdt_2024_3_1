@@ -34,7 +34,7 @@ public class CustomOauth2Service extends DefaultOAuth2UserService {
 
         Member member = getOrCreateMember(username, userMapper);
 
-        return AuthToken.createToken(member.getId(), member.getName(), member.getUsername(), member.getRole());
+        return AuthToken.createToken(member.getId(), member.getName(), member.getUsername(), member.getRole(), member.isAuthenticated());
     }
 
     private UserMapper chooseUserMapper(String registrationId, Map<String, Object> attributes) {
@@ -47,7 +47,7 @@ public class CustomOauth2Service extends DefaultOAuth2UserService {
 
     private Member getOrCreateMember(String username, UserMapper userMapper) {
         return memberRepository.findByUsername(username)
-                .orElseGet(() -> memberRepository.save(Member.createDefaultMember(username, userMapper.getName(), userMapper.getEmail(), Role.USER)));
+                .orElseGet(() -> memberRepository.save(Member.createDefaultMember(username, userMapper.getName(), userMapper.getEmail(), Role.USER, false)));
     }
 
 }

@@ -23,11 +23,6 @@ public class DestinationRepositoryCustomImpl implements DestinationRepositoryCus
 
     private final JPAQueryFactory queryFactory;
 
-    //private final DestinationRepository destinationRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
-
     //배송지 조회(리스트)
     @Override
     public Optional<List<DestinationListInfo>>findDestinationListByMemberId(Long memberId) {
@@ -44,44 +39,5 @@ public class DestinationRepositoryCustomImpl implements DestinationRepositoryCus
                         .fetch();
 
         return Optional.ofNullable(result);
-    }
-
-
-    @Override
-    public Destination addDestinationByMemberId(Long memberId, AddDestinationRequest addDestinationResponse) {
-
-        // 회원 조회
-        Member memberEntity = queryFactory
-                .selectFrom(member)
-                .where(member.id.eq(memberId))
-                .fetchOne();
-
-        if (memberEntity == null) {
-            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
-        }
-
-        // 새로운 배송지 객체 생성 후 save
-        Destination newDestination = Destination.builder()
-                .member(memberEntity)
-                .destinationName(addDestinationResponse.destinationName())
-                .receiverName(addDestinationResponse.receiverName())
-                .tel(addDestinationResponse.tel())
-                .address(addDestinationResponse.address())
-                .zipCode(addDestinationResponse.zipCode())
-                .isSelectedDestination(addDestinationResponse.isSelectedDestination())
-                .deliveryMessage("")
-                .build();
-
-        return newDestination;
-    }
-
-
-    // 특정 배송지 삭제 (QueryDSL)
-    @Override
-    public void deleteDestinationByID(Long destinationId) {
-        Destination destinationEntity = entityManager.find(Destination.class, destinationId);
-        if (destinationEntity != null) {
-            entityManager.remove(destinationEntity);
-        }
     }
 }

@@ -11,11 +11,4 @@ import java.util.Optional;
 public interface DestinationRepositoryCustom {
     //배송지 조회
     Optional<List<DestinationListInfo>> findDestinationListByMemberId(Long memberId);
-
-    //배송지 추가
-    Destination addDestinationByMemberId(Long memberId, AddDestinationRequest addDestinationResponse);
-
-
-    //배송지 삭제
-    void deleteDestinationByID(Long destinationId);
 }
