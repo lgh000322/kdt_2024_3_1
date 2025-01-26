@@ -64,10 +64,9 @@ public class CartService {
     // 장바구니 상품 업데이트 트랜잭션은 cartItem에서 연다.
     public void updateCartItem(Long cartItemId,
                                UpdateCartItemInform updateCartItemInform) {
-        // 장바구니 상품을 찾고 없으면 예외를 터트림
-        CartItem cartItem = cartItemService.findById(cartItemId);
+
         // 장바구니 상품 정보수정
-        cartItemService.updateCartItem(cartItem, updateCartItemInform);
+        cartItemService.updateCartItem(cartItemId, updateCartItemInform);
     }
 
 

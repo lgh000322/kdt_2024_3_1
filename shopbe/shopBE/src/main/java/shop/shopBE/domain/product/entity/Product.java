@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.shopBE.domain.member.entity.Member;
+import shop.shopBE.domain.member.entity.enums.Role;
 import shop.shopBE.domain.product.entity.enums.PersonCategory;
 import shop.shopBE.domain.product.entity.enums.ProductCategory;
 import shop.shopBE.domain.product.entity.enums.SeasonCategory;
@@ -12,6 +14,7 @@ import shop.shopBE.domain.product.exception.ProductExceptionCode;
 import shop.shopBE.global.exception.custom.CustomException;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @AllArgsConstructor
@@ -44,6 +47,24 @@ public class Product {
     private int likeCount = 0; // 인기순 확인(좋아요숫자) 을 위한 count 디폴트 0;
 
     private String description;
+
+    public static Product createDefaultProduct(ProductCategory productCategory,
+                                               PersonCategory personCategory,
+                                               SeasonCategory seasonCategory,
+                                               String productName,
+                                               int totalStock,
+                                               int price,
+                                               String description) {
+        return Product.builder()
+                .productCategory(productCategory)
+                .personCategory(personCategory)
+                .seasonCategory(seasonCategory)
+                .productName(productName)
+                .totalStock(totalStock)
+                .price(price)
+                .description(description)
+                .build();
+    }
 
     // 상품 등록 날짜
     private LocalDateTime createdAt;

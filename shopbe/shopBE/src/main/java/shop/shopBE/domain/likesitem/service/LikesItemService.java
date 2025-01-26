@@ -21,10 +21,9 @@ public class LikesItemService {
     private final LikesItemRepository likesItemRepository;
 
     @Transactional
-    public void setLikesItems(LikesItem likesItem, Product product) {
+    public void setLikesItems(LikesItem likesItem) {
         likesItemRepository.save(likesItem);
-        // 상품의 likeCount를 1증가시킴
-        product.plusLikeCount();
+
     }
 
     public List<Long> getLikesItems(Pageable pageable, Long likesId) {
@@ -38,8 +37,8 @@ public class LikesItemService {
     }
 
     @Transactional
-    public void deleteLikesItemById(Long likesItemId, Product product) {
-        product.minusLikeCount();
+    public void deleteLikesItemById(Long likesItemId) {
+
         likesItemRepository.deleteById(likesItemId);
     }
 

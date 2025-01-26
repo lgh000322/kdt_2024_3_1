@@ -42,7 +42,7 @@ public class LikesItemFacadeService {
         LikesItem likesItem = LikesItem.createLikesItem(likes, product);
 
         // 찜 상품 목록 저장
-        likesItemService.setLikesItems(likesItem, product); //(readonly = false)
+        likesItemService.setLikesItems(likesItem); //(readonly = false)
 
     }
 
@@ -71,9 +71,7 @@ public class LikesItemFacadeService {
     }
 
     public void deleteById(Long likesItemId) {
-        Long productId = likesItemService.findProductIdByLikesId(likesItemId);
-        Product product = productService.findById(productId);
-        likesItemService.deleteLikesItemById(likesItemId, product);
+        likesItemService.deleteLikesItemById(likesItemId);
     }
 
 }
