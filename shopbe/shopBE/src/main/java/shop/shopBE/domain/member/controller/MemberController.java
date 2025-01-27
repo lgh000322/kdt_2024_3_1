@@ -44,7 +44,7 @@ public class MemberController {
 
     @GetMapping("members")
     @Operation(summary = "회원 정보 전체 조회", description = "관리자는 모든 회원의 정보를 조회할 수 있다")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseFormat<List<MemberListResponseView>>> getMembers(@RequestBody @Valid MemberListRequest memberListRequest) {
         List<MemberListResponseView> memberList = memberFacadeService.getMemberList(memberListRequest);
         return ResponseEntity.ok().body(ResponseFormat.of("회원 리스트 조회에 성공했습니다.", memberList));

@@ -22,6 +22,6 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getWriter(), ResponseFormat.fail(HttpStatus.UNAUTHORIZED.value(), "로그인 후 이용해주세요."));
+        mapper.writeValue(response.getWriter(), ResponseFormat.fail(HttpStatus.UNAUTHORIZED.value(), "요청한 항목에 대한 권한이 없습니다."));
     }
 }

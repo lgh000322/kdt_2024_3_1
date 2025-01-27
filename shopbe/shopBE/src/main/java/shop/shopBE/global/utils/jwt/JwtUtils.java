@@ -11,7 +11,6 @@ import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.domain.member.exception.MemberExceptionCode;
 import shop.shopBE.domain.member.repository.MemberRepository;
 import shop.shopBE.global.exception.custom.CustomException;
-import shop.shopBE.global.filter.exception.JwtExceptionCode;
 import shop.shopBE.global.utils.jwt.property.JwtProperties;
 import java.security.Key;
 import java.util.Date;

@@ -29,12 +29,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String token = resolveToken(request);
-        String requestURI = request.getRequestURI();
 
         if (StringUtils.hasText(token) && jwtUtils.validateToken(token)) {
             Member member = jwtUtils.getMember(token);
             authenticationUtils.makeAuthToken(member);
-            log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", member.getId(), requestURI);
         }
 
         filterChain.doFilter(request, response);
