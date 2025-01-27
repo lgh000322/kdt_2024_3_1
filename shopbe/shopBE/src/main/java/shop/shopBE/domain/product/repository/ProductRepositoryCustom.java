@@ -32,18 +32,18 @@ public interface ProductRepositoryCustom {
     Optional<List<ProductCardViewModel>> findSeasonProductsOrderByPriceAsc(Pageable pageable, SeasonCategory seasonCategory);
 
     
-    // 남자 상품 카테고리별 조회 - 인기순
+    // 사람(남자, 여자) + 전체 상품 카테고리별 조회 , 아동일경우 아동만 - 인기순
     Optional<List<ProductCardViewModel>> findPersonProductsOrderByLikeCountDesc(Pageable pageable, PersonCategory personCategory, ProductCategory productCategory);
 
-    // 남자 상품 카테고리별 조회 - 판매량순
-    Optional<List<ProductCardViewModel>> findPersonProductsOrderBySalesVolumeDesc(Pageable pageable, PersonCategory personCategory);
+    // 사람(남자, 여자) + 전체 상품 카테고리별 조회, 아동일경우 아동만  - 판매량순
+    Optional<List<ProductCardViewModel>> findPersonProductsOrderBySalesVolumeDesc(Pageable pageable, PersonCategory personCategory, ProductCategory productCategory);
 
-    // 남자 상품 카테고리별 조회 - 신상품순(입고순)
-    Optional<List<ProductCardViewModel>> findPersonProductsOrderByCreateAtDesc(Pageable pageable, PersonCategory personCategory);
+    // 사람(남자, 여자) + 전체 상품 카테고리별 조회 , 아동일경우 아동만 - 신상품순(입고순)
+    Optional<List<ProductCardViewModel>> findPersonProductsOrderByCreateAtDesc(Pageable pageable, PersonCategory personCategory, ProductCategory productCategory);
 
-    // 남자 상품 카테고리별 조회 - 낮은 가격순
-    Optional<List<ProductCardViewModel>> findPersonProductsOrderByPriceAsc(Pageable pageable, PersonCategory personCategory);
+    // 사람(남자, 여자) + 전체 상품 카테고리별 조회 , 아동일경우 아동만 - 낮은 가격순
+    Optional<List<ProductCardViewModel>> findPersonProductsOrderByPriceAsc(Pageable pageable, PersonCategory personCategory, ProductCategory productCategory);
 
-    
+
     
 }

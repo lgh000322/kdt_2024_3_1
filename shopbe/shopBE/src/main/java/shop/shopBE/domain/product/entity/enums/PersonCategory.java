@@ -9,7 +9,7 @@ public enum PersonCategory {
     MEN("남성"),
     WOMEN("여성"),
     CHILDREN("아동"),
-    ALL_PERSON("전체");
+    ALL_PERSON("남여공용");
 
     private final String description;
 }

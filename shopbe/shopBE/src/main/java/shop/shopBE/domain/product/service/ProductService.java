@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.shopBE.domain.product.entity.Product;
@@ -65,6 +66,70 @@ public class ProductService {
                                                                        String option) {
         Pageable pageable = PageRequest.of(productPaging.page() - 1, productPaging.size());
 
+
+        return getFilteredSeasonProductsByOption(seasonCategory, option, pageable);
+    }
+
+
+
+    //사람(남, 여, 아동) 카테고리 - 상품카테고리별 상품 조회(인기순)
+    public List<ProductCardViewModel> findPersonProductInformsByProductCategory(ProductPaging productPaging, PersonCategory personCategory, String productCategory) {
+
+        Pageable pageable =  PageRequest.of(productPaging.page() - 1, productPaging.size());
+
+        ProductCategory checkedProductCategory = validProductCategory(productCategory);
+
+        List<ProductCardViewModel> productCardViewModels = productRepository
+                .findPersonProductsOrderByLikeCountDesc(pageable, personCategory, checkedProductCategory)
+                .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
+
+        return productCardViewModels;
+    }
+
+
+    //사람(남, 여, 아동)아래 상품카테고리(슬리퍼, 부츠, 운동화 등등)아래 정렬조건(낮은가격, 인기순, 판매순 등) 조회
+    public List<ProductCardViewModel> findPersonProductInformsByOption(@Valid ProductPaging productPaging,
+                                                                       PersonCategory personCategory,
+                                                                       String productCategory,
+                                                                       String option) {
+
+        Pageable pageable = PageRequest.of(productPaging.page() - 1, productPaging.size());
+
+        ProductCategory checkedProductCategory = validProductCategory(productCategory);
+
+        return getFilteredPersonProductsByOption(personCategory, option, pageable, checkedProductCategory);
+    }
+
+
+    public List<ProductListViewModel> getProductListViewModels(List<Long> productIds) {
+        return productIds.stream()
+                .map(productRepository::getProductListViewModels)
+                .toList();
+    }
+
+
+    // =======================================검증 로직 ========================================================//
+
+    // 상품 카테고리 확인 메서드
+    private ProductCategory validProductCategory(String productCategory) {
+
+        //프로덕트 카테고리 이넘값으로 배열을 만듦.
+        ProductCategory[] productCategories = ProductCategory.values();
+
+        // 파라미터로 받은 문자열과 일치하는 productCategory를 찾음
+        for (ProductCategory category : productCategories) {
+            if(category.toString().equals(productCategory)) {
+                return category;
+            }
+        }
+
+        // 없으면 에러를 터트려줌.
+        throw new CustomException(ProductExceptionCode.INVALID_PRODUCT_CATEGORY);
+    }
+
+
+    // 옵션(낮은가격순, 인기순등) 으로 필터링한 시즌상품을 반환
+    private List<ProductCardViewModel> getFilteredSeasonProductsByOption(SeasonCategory seasonCategory, String option, Pageable pageable) {
         // 낮은가격순 조회일경우
         if(option.equals(SortingOption.LOW_PRICE.toString())){
             return productRepository
@@ -93,50 +158,39 @@ public class ProductService {
         throw new CustomException(ProductExceptionCode.INVALID_OPTION);
     }
 
-
-    //사람(남, 여, 아동) 카테고리 - 상품카테고리별 상품 조회(인기순)
-    public List<ProductCardViewModel> findPersonProductInformsByProductCategory(ProductPaging productPaging, PersonCategory personCategory, String productCategory) {
-
-        Pageable pageable =  PageRequest.of(productPaging.page() - 1, productPaging.size());
-
-        ProductCategory checkedProductCategory = validProductCategory(productCategory);
-
-        List<ProductCardViewModel> productCardViewModels = productRepository
-                .findPersonProductsOrderByLikeCountDesc(pageable, personCategory, checkedProductCategory)
-                .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-
-        return productCardViewModels;
-    }
-
-
-    public List<ProductListViewModel> getProductListViewModels(List<Long> productIds) {
-        return productIds.stream()
-                .map(productRepository::getProductListViewModels)
-                .toList();
-    }
-
-    // 상품 카테고리 확인 메서드
-    private ProductCategory validProductCategory(String productCategory) {
-
-        //프로덕트 카테고리 이넘값으로 배열을 만듦.
-        ProductCategory[] productCategories = ProductCategory.values();
-
-        // 파라미터로 받은 문자열과 일치하는 productCategory를 찾음
-        for (ProductCategory category : productCategories) {
-            if(category.toString().equals(productCategory)) {
-                return category;
-            }
+    // 옵션으로 필터링한 사람카테고리별 상품 반환
+    private List<ProductCardViewModel> getFilteredPersonProductsByOption(PersonCategory personCategory,
+                                                                         String option,
+                                                                         Pageable pageable,
+                                                                         ProductCategory checkedProductCategory) {
+        // 낮은가격순 조회일경우
+        if(option.equals(SortingOption.LOW_PRICE.toString())){
+            return productRepository
+                    .findPersonProductsOrderByPriceAsc(pageable, personCategory, checkedProductCategory)
+                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
+        }
+        // 신상품순 조회일 경우
+        if(option.equals(SortingOption.NEW_PRODUCT.toString())){
+            return productRepository
+                    .findPersonProductsOrderByCreateAtDesc(pageable, personCategory, checkedProductCategory)
+                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
+        }
+        // 판매량순 조회일경우
+        if(option.equals(SortingOption.BEST_SELLERS.toString())){
+            return productRepository
+                    .findPersonProductsOrderBySalesVolumeDesc(pageable, personCategory, checkedProductCategory)
+                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
+        }
+        // 인기순 조회일경우
+        if(option.equals(SortingOption.POPULAR.toString())){
+            return productRepository
+                    .findPersonProductsOrderByLikeCountDesc(pageable, personCategory, checkedProductCategory)
+                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
         }
 
-        // 없으면 에러를 터트려줌.
-        throw new CustomException(ProductExceptionCode.INVALID_PRODUCT_CATEGORY);
+        //위 조건에 걸리지 않으면 예외처리
+        throw new CustomException(ProductExceptionCode.INVALID_OPTION);
     }
-
-
-
-
-
-
 
 /*
 
