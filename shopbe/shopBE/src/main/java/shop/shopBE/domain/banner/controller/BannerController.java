@@ -25,7 +25,7 @@ public class BannerController {
 
     @PostMapping(value = "/banner", consumes = {"multipart/form-data"})
     @Operation(summary = "배너 사진 저장", description = "관리자만 배너 사진을 저장할 수 있다.")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseFormat<Void>> saveBanners(@RequestPart(name = "file") List<MultipartFile> files,
                                                             @AuthenticationPrincipal AuthToken authToken) {
         bannerFacadeService.saveBanners(files, authToken.getId());
@@ -41,7 +41,7 @@ public class BannerController {
 
     @DeleteMapping("/banner/{bannerId}")
     @Operation(summary = "배너 삭제", description = "관리자는 배너 사진을 삭제할 수 있다.")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseFormat<Void>> deleteBanner(@PathVariable(name = "bannerId") Long bannerId) {
         bannerFacadeService.deleteById(bannerId);
         return ResponseEntity.ok().body(ResponseFormat.of("배너를 지우는데 성공했습니다."));
@@ -49,7 +49,7 @@ public class BannerController {
 
     @PutMapping("/banner")
     @Operation(summary = "배너 사진 전체 업데이트", description = "관리자는 현재 등록된 배너 사진을 모두 업데이트 할 수 있다.")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseFormat<Void>> updateBanners(@RequestPart(name = "saveFile") List<MultipartFile> saveFiles,
                                                               @RequestPart(name = "deleteBannerId") List<BannerUpdateRequestForDelete> bannerUpdateRequestForDeletes,
                                                               @AuthenticationPrincipal AuthToken authToken) {
