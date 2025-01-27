@@ -10,7 +10,7 @@ public record OrderProductInfo(
         int productCount, //구매상품 수량
         int productTotalPrice, //총 구매 가격
         DeliveryStatus deliveryState, //배송 상태
-        LocalDateTime createdAt,
+        LocalDateTime changedAt,
         Product product
 ) {
 }

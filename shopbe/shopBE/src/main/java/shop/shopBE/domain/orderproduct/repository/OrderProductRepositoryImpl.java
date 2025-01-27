@@ -3,14 +3,8 @@ package shop.shopBE.domain.orderproduct.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import shop.shopBE.domain.orderhistory.entity.QOrderHistory;
-import shop.shopBE.domain.orderhistory.request.OrderHistoryInfo;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
-import shop.shopBE.domain.orderhistory.response.OrderHistoryResponse;
-import shop.shopBE.domain.orderproduct.entity.QOrderProduct;
 import shop.shopBE.domain.orderproduct.request.OrderProductInfo;
-import shop.shopBE.domain.product.entity.QProduct;
-import shop.shopBE.domain.productimage.entity.QProductImage;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +27,8 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
                         orderProduct.id,
                         orderProduct.productCount,
                         orderProduct.productTotalPrice,
-                        orderProduct.deliveryStatus,
-                        orderProduct.createdAt,
+                        orderProduct.currentDeliveryStatus,
+                        orderProduct.changedAt,
                         orderProduct.product
                 ))
                 .from(orderProduct)
@@ -61,4 +55,6 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
 
         return Optional.ofNullable(result);
     }
+
+
 }

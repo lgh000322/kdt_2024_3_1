@@ -14,4 +14,6 @@ public interface OrderHistoryRepositoryCustom {
 
     Optional<List<OrderHistory>> findAllByMemberWithPaging(Long memberId, Pageable pageable);
 
+    Optional<OrderHistory> findByOrderHistoryId(Long historyId);
+
 }

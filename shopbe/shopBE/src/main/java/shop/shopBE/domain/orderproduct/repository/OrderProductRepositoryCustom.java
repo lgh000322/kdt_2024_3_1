@@ -1,7 +1,6 @@
 package shop.shopBE.domain.orderproduct.repository;
 
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
-import shop.shopBE.domain.orderhistory.response.OrderHistoryResponse;
 import shop.shopBE.domain.orderproduct.request.OrderProductInfo;
 
 import java.util.List;
