@@ -76,29 +76,20 @@ public class JwtUtils {
                 .compact();
     }
 
-    public void validateToken(final String token) {
+    public boolean validateToken(final String token) {
         try {
-            log.info("Current date: {}", new Date());
-
-            // 토큰 파싱 및 검증
+            log.info("now date: {}", new Date());
             Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(key) // 서명 키 설정
+                    .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
-
-            // 토큰의 만료일 확인 (파싱 과정에서 유효성 검증이 자동으로 수행됨)
-            Date expiration = claims.getBody().getExpiration();
-            log.info("Token expiration date: {}", expiration);
-        } catch (ExpiredJwtException e) {
-            throw new CustomException(JwtExceptionCode.JWT_EXPIRED);
-        } catch (UnsupportedJwtException e) {
-            throw new CustomException(JwtExceptionCode.JWT_NOT_SUPPORTED);
-        } catch (MalformedJwtException e) {
-            throw new CustomException(JwtExceptionCode.JWT_WRONG_FORM);
-        } catch (JwtException e) {
-            throw new CustomException(JwtExceptionCode.JWT_NOT_VALID);
+            return claims.getBody().getExpiration().after(new Date());
+        } catch (Exception e) {
+            log.error("Token validation error: ", e);
+            return false;
         }
     }
+
 
     public Member getMember(String token) {
         String sub = Jwts.parserBuilder().setSigningKey(key).build()
