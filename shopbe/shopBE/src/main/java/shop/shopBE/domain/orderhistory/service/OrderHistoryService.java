@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import shop.shopBE.domain.destination.entity.Destination;
 import shop.shopBE.domain.destination.exception.DestinationException;
 import shop.shopBE.domain.destination.repository.DestinationRepository;
@@ -16,8 +17,8 @@ import shop.shopBE.domain.orderhistory.exception.OrderHistoryException;
 import shop.shopBE.domain.orderhistory.repository.OrderHistoryRepository;
 import shop.shopBE.domain.orderhistory.request.OrderRequest;
 import shop.shopBE.domain.orderproduct.entity.OrderProduct;
+import shop.shopBE.domain.orderproduct.entity.request.OrderProductDeliveryInfo;
 import shop.shopBE.domain.orderproduct.entity.enums.DeliveryStatus;
-import shop.shopBE.domain.orderproduct.exception.OrderProductException;
 import shop.shopBE.domain.orderproduct.repository.OrderProductRepository;
 import shop.shopBE.domain.orderproduct.request.OrderProductRequest;
 import shop.shopBE.domain.product.entity.Product;
@@ -52,7 +53,23 @@ public class OrderHistoryService {
     //주문내역 삭제
     @Transactional
     public void deleteOrderHistoryByHistoryId(Long historyId){
-        // Todo 주문 배송정보를 이전에 삭제해야 함 OR 주문 기록을 논리삭제로 변경해야 함.
+        // 1. 주문내역의 배송지 정보를 제거
+        OrderHistory deleteOrderHistory = orderHistoryRepository.findByOrderHistoryId(historyId)
+                .orElseThrow(() -> new CustomException(OrderHistoryException.OrderHistory_NOT_FOUND));
+        destinationRepository.deleteById(deleteOrderHistory.getDestination().getId());
+
+        /*
+        받아온 주문내역의 ID를 가진 주문내역 객체의 배송 ID를 통해서 주문내역의 배송지 삭제
+        주문내역객체의 배송지를 null 처리하고 해당 배송지정보가 없는 주문내역을 save 시켜서 영속성 처리
+        OrderHistory 객체에 Destination 을 caseCadeType.Remove 로 삭제되게 했지만 확실히 처리하기 위함.
+         */
+        if (deleteOrderHistory.getDestination() != null) {
+            destinationRepository.deleteById(deleteOrderHistory.getDestination().getId());
+            deleteOrderHistory.removeDestination(); // FK null 처리
+            orderHistoryRepository.save(deleteOrderHistory);
+        }
+
+        //2. 배송지 정보를 삭제했으므로 주문내역 삭제
         orderHistoryRepository.deleteById(historyId);
     }
 
@@ -96,13 +113,16 @@ public class OrderHistoryService {
             OrderProduct orderProduct = OrderProduct.builder()
                     .productCount(orderProductRequest.productCount())
                     .productTotalPrice(orderProductRequest.productTotalPrice())
-                    .deliveryStatus(DeliveryStatus.BEFORE_PAY) // 결제전으로 저장 ==> 결제 완료되면 재고감소
-                    .createdAt(LocalDateTime.now())
+                    .currentDeliveryStatus(DeliveryStatus.BEFORE_PAY) // 결제전으로 저장 ==> 결제 완료되면 재고감소
                     .orderHistory(savedOrderHistory)
                     .product(product)
                     .build();
 
+            OrderProductDeliveryInfo deliveryInfo = OrderProductDeliveryInfo.createDefaultOrderProductDeliveryEntity(DeliveryStatus.BEFORE_PAY);
+
+            orderProduct.getDeliveryStatusHistory().add(deliveryInfo);
             orderProducts.add(orderProduct);
+
         }
 
         // List<Entity>를 한번에 저장함

@@ -8,15 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import shop.shopBE.domain.destination.entity.Destination;
 import shop.shopBE.domain.orderhistory.request.OrderHistoryInfo;
 import shop.shopBE.domain.orderhistory.request.OrderRequest;
-import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryResponse;
 import shop.shopBE.domain.orderhistory.service.OrderHistoryFadeService;
 import shop.shopBE.domain.orderhistory.service.OrderHistoryService;
-import shop.shopBE.domain.orderproduct.entity.OrderProduct;
-import shop.shopBE.domain.orderproduct.request.OrderProductRequest;
 import shop.shopBE.global.config.security.mapper.token.AuthToken;
 import shop.shopBE.global.response.ResponseFormat;
 
@@ -41,8 +37,7 @@ public class OrderHistoryController {
 
     @PostMapping("/order/history")
     @Operation(summary = "상품 주문", description = "상품주문시 주문내역으로 추가")
-    public ResponseEntity<ResponseFormat<Void>> addOrderHistory(@AuthenticationPrincipal AuthToken authToken,
-                                                                @RequestBody @Valid OrderRequest orderRequest) {
+    public ResponseEntity<ResponseFormat<Void>> addOrderHistory(@AuthenticationPrincipal AuthToken authToken, @RequestBody @Valid OrderRequest orderRequest) {
         orderHistoryService.orderItems(authToken.getId(), orderRequest);
         return ResponseEntity.ok().body(ResponseFormat.of("상품 주문에 성공했습니다."));
     }
