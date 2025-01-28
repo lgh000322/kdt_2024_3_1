@@ -16,6 +16,7 @@ import shop.shopBE.global.config.security.handler.JwtAccessDeniedHandler;
 import shop.shopBE.global.config.security.entry.JwtAuthenticationEntryPoint;
 import shop.shopBE.global.config.security.service.CustomOauth2Service;
 import shop.shopBE.global.filter.JwtAuthenticationFilter;
+import shop.shopBE.global.filter.JwtResponseFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,6 +28,7 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final CustomOauth2Service customOauth2Service;
     private final CustomSuccessHandler customSuccessHandler;
+    private final JwtResponseFilter jwtResponseFilter;
 
 
     private final String[] WHITE_LIST = {
@@ -45,6 +47,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // CORS 활성화 - corsConfigurationSource 이름의 빈 사용
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 기능 비활성화
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // JWT 필터를 UsernamePasswordAuthenticationFilter 전에 추가
+                .addFilterBefore(jwtResponseFilter, JwtAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling -> {
                     exceptionHandling
                             .authenticationEntryPoint(jwtAuthenticationEntryPoint) //인증되지 않은 사용자가 보호된 리소스에 액세스 할 때 호출

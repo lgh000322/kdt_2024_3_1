@@ -11,7 +11,9 @@ import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.domain.member.exception.MemberExceptionCode;
 import shop.shopBE.domain.member.repository.MemberRepository;
 import shop.shopBE.global.exception.custom.CustomException;
+import shop.shopBE.global.filter.exception.JWTExceptionCode;
 import shop.shopBE.global.utils.jwt.property.JwtProperties;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
@@ -64,7 +66,7 @@ public class JwtUtils {
         Date refreshValidity = new Date(now + jwtProperties.refreshTokenExpiration());
 
         // Refresh token 생성
-        return  Jwts.builder()
+        return Jwts.builder()
                 .setIssuedAt(new Date(now))
                 .setExpiration(refreshValidity)
                 .setIssuer(jwtProperties.issuer())
@@ -75,20 +77,52 @@ public class JwtUtils {
                 .compact();
     }
 
-    public boolean validateToken(final String token) {
+//    public boolean validateToken(final String token) {
+//        try {
+//            log.info("now date: {}", new Date());
+//            Jws<Claims> claims = Jwts.parserBuilder()
+//                    .setSigningKey(key)
+//                    .build()
+//                    .parseClaimsJws(token);
+//            return claims.getBody().getExpiration().after(new Date());
+//        } catch (MalformedJwtException e) {
+//            log.error("Invalid JWT token: {}", e.getMessage());
+//            return false;
+//        } catch (ExpiredJwtException e) {
+//            log.error("JWT token is expired: {}", e.getMessage());
+//            return false;
+//        } catch (UnsupportedJwtException e) {
+//            log.error("JWT token is unsupported: {}", e.getMessage());
+//            return false;
+//        } catch (IllegalArgumentException e) {
+//            log.error("JWT claims string is empty: {}", e.getMessage());
+//            return false;
+//        } catch (Exception e) {
+//            log.error("JWT validation error: {}", e.getMessage());
+//            return false;
+//        }
+//    }
+
+    public void validateToken(final String token) {
         try {
             log.info("now date: {}", new Date());
             Jws<Claims> claims = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
-            return claims.getBody().getExpiration().after(new Date());
+            claims.getBody().getExpiration();
+        } catch (MalformedJwtException e) {
+            throw new CustomException(JWTExceptionCode.JWT_INVALID_MALFORMED);
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(JWTExceptionCode.JWT_EXPIRED);
+        } catch (UnsupportedJwtException e) {
+            throw new CustomException(JWTExceptionCode.JWT_UNSUPPORTED);
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(JWTExceptionCode.JWT_CLAIM_EMPTY);
         } catch (Exception e) {
-            log.error("Token validation error: ", e);
-            return false;
+            throw new CustomException(JWTExceptionCode.JWT_INVALID);
         }
     }
-
 
     public Member getMember(String token) {
         String sub = Jwts.parserBuilder().setSigningKey(key).build()
