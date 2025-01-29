@@ -6,12 +6,15 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import shop.shopBE.domain.product.entity.QProduct;
 import shop.shopBE.domain.product.entity.enums.PersonCategory;
 import shop.shopBE.domain.product.entity.enums.ProductCategory;
 import shop.shopBE.domain.product.entity.enums.SeasonCategory;
 import shop.shopBE.domain.product.request.SortingOption;
 import shop.shopBE.domain.product.response.ProductCardViewModel;
+import shop.shopBE.domain.product.response.ProductInformsModelView;
 import shop.shopBE.domain.product.response.ProductListViewModel;
+import shop.shopBE.domain.productimage.entity.QProductImage;
 import shop.shopBE.domain.productimage.entity.enums.ProductImageCategory;
 
 import java.util.List;
@@ -247,6 +250,32 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .fetch();
 
         return Optional.ofNullable(productCardViewModels);
+    }
+
+    @Override
+    public Optional<ProductInformsModelView> findProductInformsByProductId(Long productId) {
+
+        ProductInformsModelView productInform = queryFactory
+                .select(Projections.constructor(ProductInformsModelView.class,
+                        product.id,
+                        product.productName,
+                        productImage.savedName,
+                        null,
+                        product.price,
+                        product.personCategory,
+                        product.likeCount,
+                        product.createdAt,
+                        product.description,
+                        product.totalStock,
+                        null
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product), productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .where(product.id.eq(productId))
+                .fetchOne();
+
+        return Optional.ofNullable(productInform);
     }
 
 

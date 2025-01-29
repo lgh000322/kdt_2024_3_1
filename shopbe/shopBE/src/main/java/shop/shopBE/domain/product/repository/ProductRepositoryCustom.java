@@ -6,6 +6,7 @@ import shop.shopBE.domain.product.entity.enums.ProductCategory;
 import shop.shopBE.domain.product.entity.enums.SeasonCategory;
 import shop.shopBE.domain.product.request.SortingOption;
 import shop.shopBE.domain.product.response.ProductCardViewModel;
+import shop.shopBE.domain.product.response.ProductInformsModelView;
 import shop.shopBE.domain.product.response.ProductListViewModel;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public interface ProductRepositoryCustom {
     // 사람(남자, 여자) + 전체 상품 카테고리별 조회 , 아동일경우 아동만 - 낮은 가격순
     Optional<List<ProductCardViewModel>> findPersonProductsOrderByPriceAsc(Pageable pageable, PersonCategory personCategory, ProductCategory productCategory);
 
-
+    // 상품 상세조회의 필드를 찾기위한 메서드
+    Optional<ProductInformsModelView> findProductInformsByProductId(Long productId);
     
 }

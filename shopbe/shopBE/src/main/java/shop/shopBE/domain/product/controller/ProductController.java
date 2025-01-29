@@ -5,13 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-import shop.shopBE.domain.product.entity.Product;
 import shop.shopBE.domain.product.entity.enums.PersonCategory;
 import shop.shopBE.domain.product.entity.enums.SeasonCategory;
 import shop.shopBE.domain.product.request.ProductPaging;
 import shop.shopBE.domain.product.response.ProductCardViewModel;
+import shop.shopBE.domain.product.response.ProductInformsModelView;
 import shop.shopBE.domain.product.service.ProductService;
 import shop.shopBE.global.response.ResponseFormat;
 
@@ -38,7 +37,7 @@ public class ProductController {
     @Operation(summary = "모든시즌 상품 조회", description = "모든시즌의 상품을 보여준다.")
     public ResponseEntity<ResponseFormat<List<ProductCardViewModel>>> getAllSeasonProductsView(@RequestBody @Valid ProductPaging productPaging) {
         List<ProductCardViewModel> summerProductCardViewModels = productService.findSeasonProductInforms(productPaging, null);
-        return ResponseEntity.ok().body(ResponseFormat.of("여름 상품 조회 성공 (인기순)", summerProductCardViewModels));
+        return ResponseEntity.ok().body(ResponseFormat.of("모든시즌 상품 조회 성공 (인기순)", summerProductCardViewModels));
     }
 
     // 모든 상품 조회 - 옵션 선택(인기순, 판매순, 낮은 가격순, 신상품(입고)순)
@@ -47,7 +46,7 @@ public class ProductController {
     public ResponseEntity<ResponseFormat<List<ProductCardViewModel>>> getAllSeasonProductViewsByOption(@RequestBody @Valid ProductPaging productPaging,
                                                                                                     @PathVariable("option") String option) {
         List<ProductCardViewModel> summerProductCardViewModelsByOption = productService.findSeasonProductInformsByOption(productPaging, null, option);
-        return ResponseEntity.ok().body(ResponseFormat.of("여름시즌 상품 옵션별 조회 성공", summerProductCardViewModelsByOption));
+        return ResponseEntity.ok().body(ResponseFormat.of("모든시즌 상품 옵션별 조회 성공", summerProductCardViewModelsByOption));
     }
 
 
@@ -149,6 +148,16 @@ public class ProductController {
 
         return ResponseEntity.ok().body(ResponseFormat.of("아동상품 옵션별 조회 성공", menProductInformsByOption));
     }
+
+    // 상품 상세 조회 - 상품아이디를 통해 상품의 세부사항를 보여줌
+    @GetMapping("/details/{productId}")
+    @Operation(summary = "상품의 세부사항 조회", description = "상품의 번호를 통해 상품에 상세 설명을 보여준다")
+    public ResponseEntity<ResponseFormat<ProductInformsModelView>> findProductDetailsByProductId(@PathVariable("productId") Long productId){
+
+        ProductInformsModelView productInformsModelView = productService.findProductDetailsByProductId(productId);
+        return ResponseEntity.ok().body(ResponseFormat.of("상품 상세정보 조회 성공", productInformsModelView));
+    }
+
 
     // 상품 등록
 

@@ -3,10 +3,8 @@ package shop.shopBE.domain.product.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.shopBE.domain.product.entity.Product;
@@ -18,13 +16,17 @@ import shop.shopBE.domain.product.repository.ProductRepository;
 import shop.shopBE.domain.product.request.ProductPaging;
 import shop.shopBE.domain.product.request.SortingOption;
 import shop.shopBE.domain.product.response.ProductCardViewModel;
+import shop.shopBE.domain.product.response.ProductInformsModelView;
 import shop.shopBE.domain.product.response.ProductListViewModel;
+import shop.shopBE.domain.productdetail.response.ProductDetails;
+import shop.shopBE.domain.productdetail.service.ProductDetailService;
+import shop.shopBE.domain.productimage.entity.ProductImage;
+import shop.shopBE.domain.productimage.entity.enums.ProductImageCategory;
+import shop.shopBE.domain.productimage.service.ProductImageService;
 import shop.shopBE.global.exception.custom.CustomException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductDetailService productDetailService;
+    private final ProductImageService productImageService;
 
     public Product findById(Long productId) {
         return productRepository.findById(productId)
@@ -98,6 +102,23 @@ public class ProductService {
         ProductCategory checkedProductCategory = validProductCategory(productCategory);
 
         return getFilteredPersonProductsByOption(personCategory, option, pageable, checkedProductCategory);
+    }
+
+
+    // 상품의 상세페이지 정보들을 조회하는 메서드
+    // 리스트로 받아야하는 sideImageUrl과 productDetail의 사이즈별 id, 사이즈, 사이즈별 재고는 외부에서 입력받음
+    public ProductInformsModelView findProductDetailsByProductId(Long productId) {
+
+        ProductInformsModelView productInforms = productRepository
+                .findProductInformsByProductId(productId)
+                .orElseThrow(() -> new CustomException(ProductExceptionCode.NOT_FOUND));
+        List<String> sideImgs = productImageService.findSideImgsByProductId(productId);
+        List<ProductDetails> productDetailsList = productDetailService.findProductDetailsByProductId(productId);
+
+        productInforms.setSideImgUrl(sideImgs);
+        productInforms.setProductDetailsList(productDetailsList);
+
+        return productInforms;
     }
 
 
@@ -191,6 +212,7 @@ public class ProductService {
         //위 조건에 걸리지 않으면 예외처리
         throw new CustomException(ProductExceptionCode.INVALID_OPTION);
     }
+
 
 /*
 
