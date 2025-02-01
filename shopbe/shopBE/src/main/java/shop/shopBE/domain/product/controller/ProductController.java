@@ -5,13 +5,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import shop.shopBE.domain.product.entity.enums.PersonCategory;
 import shop.shopBE.domain.product.entity.enums.SeasonCategory;
+import shop.shopBE.domain.product.request.AddProductInforms;
+import shop.shopBE.domain.product.request.DeleteProductsReq;
 import shop.shopBE.domain.product.request.ProductPaging;
 import shop.shopBE.domain.product.response.ProductCardViewModel;
 import shop.shopBE.domain.product.response.ProductInformsModelView;
 import shop.shopBE.domain.product.service.ProductService;
+import shop.shopBE.global.config.security.mapper.token.AuthToken;
 import shop.shopBE.global.response.ResponseFormat;
 
 import java.util.List;
@@ -23,6 +28,7 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
+
     // 메인페이지 상품조회 likeCount로 조회
     @GetMapping("/main")
     @Operation(summary = "메인페이지 상품 조회", description = "메인페이지에 인기(좋아요)순으로 상품을 보여준다.")
@@ -30,6 +36,8 @@ public class ProductController {
         List<ProductCardViewModel> mainPageCardViews = productService.findMainPageCardViews(productPaging);
         return ResponseEntity.ok().body(ResponseFormat.of("메인 페이지 상품 조회 성공", mainPageCardViews));
     }
+
+
 
 
     // 모든 시즌 상품 조회
@@ -159,11 +167,57 @@ public class ProductController {
     }
 
 
+    // 판매자의 등록 상품 조회.
+    @GetMapping("/seller/sales-list")
+    @Operation(summary = "판매자의 등록 상품 조회", description = "판매자가 등록한 상품들을 보여준다. (판매자만 조회 가능)")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ResponseFormat<List<ProductCardViewModel>>> findSalesList(@RequestBody @Valid ProductPaging productPaging,
+                                                                                    @AuthenticationPrincipal AuthToken authToken){
+        List<ProductCardViewModel> salesListCardViews = productService.findSalesListCardView(productPaging, authToken.getId());
+        return ResponseEntity.ok().body(ResponseFormat.of("판매자 등록 상품 조회 성공", salesListCardViews));
+    }
+
+
     // 상품 등록
+    @PostMapping(value = "/add", consumes = {"multipart/form-data"})
+    @Operation(summary = "상품 세부사항 등록", description = "상품의 세부사항을 받아 상품을 등록한다. (판매자만 등록 가능)")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ResponseFormat<Void>> addProduct(@ModelAttribute @Valid AddProductInforms addProductInforms,
+                                                           @AuthenticationPrincipal AuthToken authToken) {
+        productService.addProduct(addProductInforms, authToken.getId());
+        return ResponseEntity.ok().body(ResponseFormat.of("상품 세부사항 등록 성공"));
+    }
 
 
-    // 상품 제거
+    // 상품 제거 - 논리적 삭제 isdeleted를 true로만 바꿔줌.
+    @DeleteMapping(value = "/delete/{productId}")
+    @Operation(summary = "등록 상품 제거", description = "판매자가 등록한 상품을 제거한다. (판매자만 제거 가능)")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ResponseFormat<Void>> deleteOneProduct(@PathVariable("productId") Long productId,
+                                                                 @AuthenticationPrincipal AuthToken authToken) {
 
+        productService.deleteOneProduct(productId, authToken.getId());
 
+        return ResponseEntity.ok().body(ResponseFormat.of("판매자가 등록한 상품 제거 성공"));
+    }
+
+    // 상품제거 - 여러개의 상품을 제거
+    @DeleteMapping(value = "/delete")
+    @Operation(summary = "복수의 등록상품 제거", description = "판매자가 등록한 상품들을 제거한다. (판매자만 제거 가능)")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ResponseFormat<Void>> deleteMultipleProducts(@RequestBody @Valid DeleteProductsReq deleteProductsReq,
+                                                                       @AuthenticationPrincipal AuthToken authToken) {
+
+        productService.deleteMultipleProducts(deleteProductsReq.productIds(), authToken.getId());
+        return ResponseEntity.ok().body(ResponseFormat.of("판매자가 등록한 복수의 상품 제거 성공"));
+    }
+
+    // 상품 정보 수정.
+
+    // 판매자 재고 변경시.
+
+    // 판매자 메인 사진 변경시.
+
+    // 판매자 사이드 이미지들 변경시.
 
 }

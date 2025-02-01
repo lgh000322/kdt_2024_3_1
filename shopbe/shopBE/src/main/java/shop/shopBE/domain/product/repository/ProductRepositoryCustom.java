@@ -1,6 +1,7 @@
 package shop.shopBE.domain.product.repository;
 
 import org.springframework.data.domain.Pageable;
+import shop.shopBE.domain.product.entity.Product;
 import shop.shopBE.domain.product.entity.enums.PersonCategory;
 import shop.shopBE.domain.product.entity.enums.ProductCategory;
 import shop.shopBE.domain.product.entity.enums.SeasonCategory;
@@ -44,6 +45,15 @@ public interface ProductRepositoryCustom {
 
     // 사람(남자, 여자) + 전체 상품 카테고리별 조회 , 아동일경우 아동만 - 낮은 가격순
     Optional<List<ProductCardViewModel>> findPersonProductsOrderByPriceAsc(Pageable pageable, PersonCategory personCategory, ProductCategory productCategory);
+
+    // 판매자가 등록한 상품 조회
+    Optional<List<Long>> findRegisteredProductsBySellerId(Long sellerId);
+
+    // 판매자등록상품중 입력받은 상품과 일치하는 상품 조회하는 메서드
+    Optional<Product> findProductIdByProductIdAndSellerId(Long productId, Long sellerId);
+
+    // 판매자의 등록 상품 조회
+    Optional<List<ProductCardViewModel>> findSalesListBySellerId(Pageable pageable, Long sellerId);
 
     // 상품 상세조회의 필드를 찾기위한 메서드
     Optional<ProductInformsModelView> findProductInformsByProductId(Long productId);

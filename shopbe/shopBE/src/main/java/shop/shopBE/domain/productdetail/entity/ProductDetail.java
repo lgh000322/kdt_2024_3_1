@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.shopBE.domain.product.entity.Product;
+import shop.shopBE.domain.productdetail.exception.ProductDetailExceptionCustom;
+import shop.shopBE.global.exception.custom.CustomException;
 
 @Entity
 @Getter
@@ -32,5 +34,13 @@ public class ProductDetail {
                 .shoesSize(shoesSize)
                 .sizeStock(sizeStock)
                 .build();
+    }
+
+    public void minusSizeStock(int stock) {
+        if(this.sizeStock - stock < 0) {
+            throw new CustomException(ProductDetailExceptionCustom.OUT_OF_STOCK);
+        }
+
+        this.sizeStock -= stock;
     }
 }

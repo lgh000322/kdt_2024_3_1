@@ -2,31 +2,38 @@ package shop.shopBE.domain.product.service;
 
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.shopBE.domain.member.entity.Member;
+import shop.shopBE.domain.member.repository.MemberRepository;
+import shop.shopBE.domain.member.service.MemberService;
 import shop.shopBE.domain.product.entity.Product;
 import shop.shopBE.domain.product.entity.enums.PersonCategory;
 import shop.shopBE.domain.product.entity.enums.ProductCategory;
 import shop.shopBE.domain.product.entity.enums.SeasonCategory;
 import shop.shopBE.domain.product.exception.ProductExceptionCode;
 import shop.shopBE.domain.product.repository.ProductRepository;
+import shop.shopBE.domain.product.request.AddProductInforms;
 import shop.shopBE.domain.product.request.ProductPaging;
 import shop.shopBE.domain.product.request.SortingOption;
 import shop.shopBE.domain.product.response.ProductCardViewModel;
 import shop.shopBE.domain.product.response.ProductInformsModelView;
 import shop.shopBE.domain.product.response.ProductListViewModel;
+import shop.shopBE.domain.productdetail.entity.ProductDetail;
 import shop.shopBE.domain.productdetail.response.ProductDetails;
 import shop.shopBE.domain.productdetail.service.ProductDetailService;
 import shop.shopBE.domain.productimage.entity.ProductImage;
 import shop.shopBE.domain.productimage.entity.enums.ProductImageCategory;
 import shop.shopBE.domain.productimage.service.ProductImageService;
+import shop.shopBE.global.config.security.mapper.token.AuthToken;
 import shop.shopBE.global.exception.custom.CustomException;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,6 +43,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductDetailService productDetailService;
     private final ProductImageService productImageService;
+    private final MemberService memberService;
 
     public Product findById(Long productId) {
         return productRepository.findById(productId)
@@ -121,6 +129,32 @@ public class ProductService {
         return productInforms;
     }
 
+    // 판매자의 상품등록리스트를 가져온다.
+    public List<ProductCardViewModel> findSalesListCardView(ProductPaging productPaging, Long sellerId) {
+        Pageable pageable = PageRequest.of(productPaging.page() - 1, productPaging.size());
+
+        List<ProductCardViewModel> productCardViewModels = productRepository
+                .findSalesListBySellerId(pageable, sellerId)
+                .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
+
+        return productCardViewModels;
+    }
+
+    // 판매자의 등록 상품id 조회 메서드
+    public List<Long> findRegisteredProductsBySellerId(Long sellerId) {
+        List<Long> registeredProductIds = productRepository.findRegisteredProductsBySellerId(sellerId)
+                .orElseThrow(() -> new CustomException(ProductExceptionCode.NOT_FOUND_PRODUCT_BY_SELLER));
+        return registeredProductIds;
+    }
+
+    // 판매자가 등록한 상품Id와 판매자 id가 일치하는 상품을 조회하는 메서드
+    public Product findProductByProductIdAndSellerId(Long productId, Long sellerId) {
+        Product findProduct = productRepository.findProductIdByProductIdAndSellerId(productId, sellerId)
+                .orElseThrow(() -> new CustomException(ProductExceptionCode.NOT_FOUND_PRODUCT_BY_SELLER));
+        return findProduct;
+    }
+
+
 
     public List<ProductListViewModel> getProductListViewModels(List<Long> productIds) {
         return productIds.stream()
@@ -129,7 +163,81 @@ public class ProductService {
     }
 
 
+    // 상품 추가 메서드
+    @Transactional
+    public void addProduct(AddProductInforms addProductInforms, Long sellerId) {
+        //seller를 찾음
+        Member seller = memberService.findById(sellerId);
+
+        //product저장.
+        Product product = Product
+                .createDefaultProduct(seller,
+                        addProductInforms.productCategory(),
+                        addProductInforms.personCategory(),
+                        addProductInforms.seasonCategory(),
+                        addProductInforms.productName(),
+                        checkTotalStock(addProductInforms),
+                        addProductInforms.price(),
+                        addProductInforms.description(),
+                        LocalDateTime.now());
+
+        Product savedProduct = productRepository.save(product);
+
+        //product이미지 저장
+        productImageService.saveMainImg(addProductInforms.mainImgFile(), savedProduct);
+        productImageService.saveSideImgs(addProductInforms.sideImgFile(), savedProduct);
+
+        //product details 저장.
+        productDetailService.saveProductDetails(savedProduct, addProductInforms.sizeAndQuantity());
+
+    }
+
+    //상품 하나 제거 메서드. - 논리적 삭제.
+    @Transactional
+    public void deleteOneProduct(Long productId, Long sellerId) {
+        //상품의 판매자 정보와 일치하는 상품을 찾음 , 없으면 400 에러반환
+        Product product = findProductByProductIdAndSellerId(productId, sellerId);
+        // product의 isDeleted를 true로  바꿔준다.
+        product.deleteProduct(true);
+    }
+
+    //여러개의 상품 제거 - 논리적 삭제.
+    @Transactional
+    public void deleteMultipleProducts(List<Long> productIds, Long sellerId) {
+        // 리스트를 순회하면서 product삭제 isDeleted 필드 true로 변환.
+        for (Long productId : productIds) {
+            Product product  = findProductByProductIdAndSellerId(productId, sellerId);
+            product.deleteProduct(true);
+        }
+    }
+
+
+    //  상품 구매시 상품의 총수량과, 사이즈별 수량 감소, 판매량 증가.  -> 상품 주문시 사용
+    public void minusTotalStockAndSizeStock (Long productDetailId, int sizeStock) {
+
+        // 상품 상세와 상품을 가져옴.
+        ProductDetail productDetail = productDetailService.findProductDetailById(productDetailId);
+        Product product = productDetail.getProduct();
+
+        productDetail.minusSizeStock(sizeStock);
+        product.minusTotalStock(sizeStock);
+
+        // 위에서 오류를 안터트리고 정상적으로 수량 감소할경우 판매량을 증가시킴.
+        product.plusSalesVolume(sizeStock);
+    }
+
+
     // =======================================검증 로직 ========================================================//
+
+    // totalstock확인.
+    private int checkTotalStock(AddProductInforms addProductInforms) {
+        int totalStock = 0;
+        Collection<Integer> quantitys = addProductInforms.sizeAndQuantity().values();
+        for (Integer quantity : quantitys) {
+            totalStock += quantity;
+        }
+        return totalStock;
+    }
 
     // 상품 카테고리 확인 메서드
     private ProductCategory validProductCategory(String productCategory) {
@@ -212,6 +320,8 @@ public class ProductService {
         //위 조건에 걸리지 않으면 예외처리
         throw new CustomException(ProductExceptionCode.INVALID_OPTION);
     }
+
+
 
 
 /*

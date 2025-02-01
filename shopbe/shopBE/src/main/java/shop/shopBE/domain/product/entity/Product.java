@@ -53,14 +53,24 @@ public class Product {
     // 상품 등록 날짜
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    Member member;   // seller
 
-    public static Product createDefaultProduct(ProductCategory productCategory,
+    @Builder.Default
+    // 논리적 삭제를 위한 필드 추가.
+    private boolean isDeleted = false;
+
+
+    public static Product createDefaultProduct(Member member,
+                                               ProductCategory productCategory,
                                                PersonCategory personCategory,
                                                SeasonCategory seasonCategory,
                                                String productName,
                                                int totalStock,
                                                int price,
-                                               String description) {
+                                               String description,
+                                               LocalDateTime createdAt) {
         return Product.builder()
                 .productCategory(productCategory)
                 .personCategory(personCategory)
@@ -69,21 +79,31 @@ public class Product {
                 .totalStock(totalStock)
                 .price(price)
                 .description(description)
+                .createdAt(createdAt)
                 .build();
+    }
+
+
+    // 상품 논리적 제거 메서드
+    public void deleteProduct(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
     // 상품 재고감소 (업데이트) 메서드 - 상품재고가 0인 상태에서 minusTotalStock을 한다면 에러를 보내줌
     public void minusTotalStock(int stock) {
-        if(this.totalStock == 0){
+
+
+        // 현재 stock이 0일경우 재고를 줄일수 없음
+        if(this.totalStock < 0){
             // 400에러를 날려준다. 재고 감소할수없다는 에러 메세지를 보내줌.
-            throw new CustomException(ProductExceptionCode.INVALID_MINUS_STOCK_REQUEST);
+            throw new CustomException(ProductExceptionCode.OUT_OF_STOCK);
         }
         this.totalStock -= stock;
     }
 
     // 찜숫자 감소(업데이트) 메서드 - 찜숫자가 0인 상태에서 minusLikeCOunt를 한다면 에러를 보내줌.
     public void minusLikeCount() {
-        if(this.likeCount == 0) {
+        if(this.likeCount < 0) {
             // 400에러를 날려준다. 좋아요 감소할수없다는 에러 메세지를 보내줌.
             throw new CustomException(ProductExceptionCode.INVALID_MINUS_LIKE_REQUEST);
         }

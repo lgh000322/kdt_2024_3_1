@@ -5,7 +5,9 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import shop.shopBE.domain.product.entity.Product;
 import shop.shopBE.domain.product.entity.QProduct;
 import shop.shopBE.domain.product.entity.enums.PersonCategory;
 import shop.shopBE.domain.product.entity.enums.ProductCategory;
@@ -24,6 +26,7 @@ import static shop.shopBE.domain.likesitem.entity.QLikesItem.likesItem;
 import static shop.shopBE.domain.product.entity.QProduct.product;
 import static shop.shopBE.domain.productimage.entity.QProductImage.productImage;
 
+@Slf4j
 @RequiredArgsConstructor
 public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
@@ -57,7 +60,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .from(product)
                 .join(productImage)
                 .on(productImage.product.eq(product))
-                .where(productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .where(productImage.productImageCategory.eq(ProductImageCategory.MAIN), product.isDeleted.eq(false))
                 .orderBy(product.likeCount.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -81,7 +84,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .join(productImage)
                 .on(productImage.product.eq(product))
                 .where(seasonCategoryCondition(seasonCategory),
-                        (productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        product.isDeleted.eq(false))
                 .orderBy(product.likeCount.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -103,7 +107,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .join(productImage)
                 .on(productImage.product.eq(product))
                 .where(seasonCategoryCondition(seasonCategory),
-                        (productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        product.isDeleted.eq(false))
                 .orderBy(product.salesVolume.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -125,7 +130,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .join(productImage)
                 .on(productImage.product.eq(product))
                 .where(seasonCategoryCondition(seasonCategory),
-                        (productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        product.isDeleted.eq(false))
                 .orderBy(product.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -146,7 +152,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .join(productImage)
                 .on(productImage.product.eq(product))
                 .where(seasonCategoryCondition(seasonCategory),
-                        (productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        product.isDeleted.eq(false))
                 .orderBy(product.price.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -172,7 +179,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .on(productImage.product.eq(product))
                 .where(personCategoryCondition(personCategory)
                         ,(product.productCategory.eq(productCategory))
-                        ,(productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
+                        ,(productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                        ,product.isDeleted.eq(false))
                 .orderBy(product.likeCount.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -197,7 +205,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .on(productImage.product.eq(product))
                 .where(personCategoryCondition(personCategory),
                         (product.productCategory.eq(productCategory)),
-                        (productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
+                        (productImage.productImageCategory.eq(ProductImageCategory.MAIN)),
+                        product.isDeleted.eq(false))
                 .orderBy(product.likeCount.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -220,7 +229,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .on(productImage.product.eq(product))
                 .where(personCategoryCondition(personCategory),
                         (product.productCategory.eq(productCategory)),
-                        (productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
+                        (productImage.productImageCategory.eq(ProductImageCategory.MAIN)),
+                        product.isDeleted.eq(false))
                 .orderBy(product.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -243,13 +253,61 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .on(productImage.product.eq(product))
                 .where(personCategoryCondition(personCategory),
                         (product.productCategory.eq(productCategory)),
-                        (productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
+                        (productImage.productImageCategory.eq(ProductImageCategory.MAIN)),
+                        product.isDeleted.eq(false))
                 .orderBy(product.price.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         return Optional.ofNullable(productCardViewModels);
+    }
+
+    // 판매자 아이디로 등록된 상품 리스트를 찾아옴.
+    @Override
+    public Optional<List<Long>> findRegisteredProductsBySellerId(Long sellerId) {
+
+        List<Long> productIds = queryFactory.select(Projections.constructor(Long.class,
+                        product.id))
+                .from(product)
+                .where(product.member.id.eq(sellerId),
+                        product.isDeleted.eq(false))
+                .fetch();
+
+        return Optional.ofNullable(productIds);
+    }
+
+
+    // 등록된 상품의 판매자id와 입력받은 판매자 아이디가 일치하는 상품을 가져옴.
+    @Override
+    public Optional<Product> findProductIdByProductIdAndSellerId(Long productId, Long sellerId) {
+        Product findProduct = queryFactory.select(product)
+                .from(product)
+                .where(product.id.eq(productId), product.member.id.eq(sellerId), product.isDeleted.eq(false))
+                .fetchOne();
+
+        return Optional.ofNullable(findProduct);
+    }
+
+    @Override
+    public Optional<List<ProductCardViewModel>> findSalesListBySellerId(Pageable pageable, Long sellerId) {
+
+        List<ProductCardViewModel> salesList = queryFactory.select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(product.member.id.eq(sellerId), product.isDeleted.eq(false))
+                .orderBy(product.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+
+        return Optional.ofNullable(salesList);
     }
 
     @Override
@@ -271,8 +329,9 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 ))
                 .from(product)
                 .join(productImage)
-                .on(productImage.product.eq(product), productImage.productImageCategory.eq(ProductImageCategory.MAIN))
-                .where(product.id.eq(productId))
+                .on(productImage.product.eq(product),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .where(product.id.eq(productId), product.isDeleted.eq(false))
                 .fetchOne();
 
         return Optional.ofNullable(productInform);

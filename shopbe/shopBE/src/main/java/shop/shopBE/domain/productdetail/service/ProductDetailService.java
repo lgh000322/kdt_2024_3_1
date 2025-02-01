@@ -3,6 +3,7 @@ package shop.shopBE.domain.productdetail.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.shopBE.domain.product.entity.Product;
 import shop.shopBE.domain.productdetail.entity.ProductDetail;
 import shop.shopBE.domain.productdetail.exception.ProductDetailExceptionCustom;
 import shop.shopBE.domain.productdetail.repository.ProductDetailRepository;
@@ -10,6 +11,8 @@ import shop.shopBE.domain.productdetail.response.ProductDetails;
 import shop.shopBE.global.exception.custom.CustomException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,7 +22,7 @@ public class ProductDetailService {
 
 
     // 프로덕트 조회메서드
-    public ProductDetail findSizeStockById(Long productDetailId){
+    public ProductDetail findProductDetailById(Long productDetailId){
         return productDetailRepository.findById(productDetailId)
                 .orElseThrow(() -> new CustomException(ProductDetailExceptionCustom.PRODUCT_DETAIL_NOT_FOUND));
     }
@@ -30,5 +33,24 @@ public class ProductDetailService {
                 .findProductDetailsByProductId(productId)
                 .orElseThrow(() -> new CustomException(ProductDetailExceptionCustom.PRODUCT_DETAIL_NOT_FOUND));
     }
+
+
+
+    // 상품상세정보 저장 메서드
+    public void saveProductDetails(Product product, Map<Integer, Integer> sizeAndQuantity) {
+        sizeBySave(product, sizeAndQuantity);
+    }
+
+
+    // 사이즈별로 저장하는 메서드
+    private void sizeBySave(Product product, Map<Integer, Integer> sizeAndQuantity) {
+        Set<Integer> sizes = sizeAndQuantity.keySet();
+        for (Integer size : sizes) {
+            Integer quantity = sizeAndQuantity.get(size);
+            ProductDetail productDetail = ProductDetail.createDefaultProductDetail(product, size, quantity);
+            productDetailRepository.save(productDetail);
+        }
+    }
+
 
 }
