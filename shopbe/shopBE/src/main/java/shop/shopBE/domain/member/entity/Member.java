@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import shop.shopBE.domain.member.entity.enums.Gender;
 import shop.shopBE.domain.member.entity.enums.Role;
 import shop.shopBE.domain.member.request.MemberUpdateInfo;
+import shop.shopBE.global.converter.UUIDBinaryConverter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -38,8 +39,8 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // jwt 토큰에 넣어줄 값
-    @Column(name = "sub", unique = true)
+    @Column(name = "sub", unique = true, columnDefinition = "BINARY(16)")
+    @Convert(converter = UUIDBinaryConverter.class) // 변환기를 적용
     private UUID sub;
 
     private LocalDateTime createdAt;

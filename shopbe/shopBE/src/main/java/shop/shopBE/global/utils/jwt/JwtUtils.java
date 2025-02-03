@@ -77,32 +77,6 @@ public class JwtUtils {
                 .compact();
     }
 
-//    public boolean validateToken(final String token) {
-//        try {
-//            log.info("now date: {}", new Date());
-//            Jws<Claims> claims = Jwts.parserBuilder()
-//                    .setSigningKey(key)
-//                    .build()
-//                    .parseClaimsJws(token);
-//            return claims.getBody().getExpiration().after(new Date());
-//        } catch (MalformedJwtException e) {
-//            log.error("Invalid JWT token: {}", e.getMessage());
-//            return false;
-//        } catch (ExpiredJwtException e) {
-//            log.error("JWT token is expired: {}", e.getMessage());
-//            return false;
-//        } catch (UnsupportedJwtException e) {
-//            log.error("JWT token is unsupported: {}", e.getMessage());
-//            return false;
-//        } catch (IllegalArgumentException e) {
-//            log.error("JWT claims string is empty: {}", e.getMessage());
-//            return false;
-//        } catch (Exception e) {
-//            log.error("JWT validation error: {}", e.getMessage());
-//            return false;
-//        }
-//    }
-
     public void validateToken(final String token) {
         try {
             log.info("now date: {}", new Date());
@@ -130,6 +104,7 @@ public class JwtUtils {
 
         UUID uuid = UUID.fromString(sub);  // String을 UUID로 변환
         log.info("in getMember() sub: {}", uuid);
+
 
         return memberRepository.findBySub(uuid)  // UUID로 회원 조회
                 .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND));

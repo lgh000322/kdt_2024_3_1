@@ -99,7 +99,7 @@ public class ProductService {
 
 
     //사람(남, 여, 아동)아래 상품카테고리(슬리퍼, 부츠, 운동화 등등)아래 정렬조건(낮은가격, 인기순, 판매순 등) 조회
-    public List<ProductCardViewModel> findPersonProductInformsByOption(@Valid ProductPaging productPaging,
+    public List<ProductCardViewModel> findPersonProductInformsByOption(ProductPaging productPaging,
                                                                        PersonCategory personCategory,
                                                                        String productCategory,
                                                                        String option) {
