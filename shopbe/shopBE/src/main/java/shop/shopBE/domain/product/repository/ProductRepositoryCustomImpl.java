@@ -33,6 +33,20 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public Optional<Product> findNonDeletedProductByProductId(Long productId) {
+
+        Product findProduct = queryFactory.select(product)
+                .from(product)
+                .where(
+                        product.id.eq(productId),
+                        product.isDeleted.eq(false)
+                ).
+                fetchOne();
+
+        return Optional.ofNullable(findProduct);
+    }
+
+    @Override
     public ProductListViewModel getProductListViewModels(Long productId) {
         return queryFactory
                 .select(Projections.constructor(ProductListViewModel.class,
@@ -43,7 +57,10 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 ))
                 .from(product)
                 .innerJoin(productImage).on(product.id.eq(productImage.product.id))
-                .where(productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .where(
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        product.isDeleted.eq(false)
+                )
                 .fetchOne();
     }
 
@@ -305,7 +322,9 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .from(product)
                 .join(productImage)
                 .on(productImage.product.eq(product))
-                .where(product.member.id.eq(sellerId), product.isDeleted.eq(false))
+                .where(product.member.id.eq(sellerId),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        product.isDeleted.eq(false))
                 .orderBy(product.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -341,6 +360,137 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         return Optional.ofNullable(productInform);
     }
+
+    // 검색어로 상품을 찾는 메서드
+    @Override
+    public Optional<List<ProductCardViewModel>> findProductCardViewByKeyword(Pageable pageable, String keyword) {
+
+        List<ProductCardViewModel> productCardViewModels = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(
+                        product.isDeleted.eq(false),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN)
+                )
+                .orderBy(product.likeCount.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+
+        return Optional.ofNullable(productCardViewModels);
+    }
+
+
+    @Override
+    public Optional<List<ProductCardViewModel>> findSearchProductsOrderByPriceAsc(Pageable pageable, String keyword) {
+
+        List<ProductCardViewModel> productCardViewModels = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(
+                        product.isDeleted.eq(false),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN)
+                )
+                .orderBy(product.price.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return Optional.ofNullable(productCardViewModels);
+    }
+
+    @Override
+    public Optional<List<ProductCardViewModel>> findSearchProductsOrderByCreateAtDesc(Pageable pageable, String keyword) {
+        List<ProductCardViewModel> productCardViewModels = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(
+                        product.isDeleted.eq(false),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN)
+                )
+                .orderBy(product.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return Optional.ofNullable(productCardViewModels);
+    }
+
+    @Override
+    public Optional<List<ProductCardViewModel>> findSearchProductsOrderBySalesVolumeDesc(Pageable pageable, String keyword) {
+        List<ProductCardViewModel> productCardViewModels = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(
+                        product.isDeleted.eq(false),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN)
+                )
+                .orderBy(product.salesVolume.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return Optional.ofNullable(productCardViewModels);
+    }
+
+    @Override
+    public Optional<List<ProductCardViewModel>> findSearchProductsOrderByLikeCountDesc(Pageable pageable, String keyword) {
+        List<ProductCardViewModel> productCardViewModels = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(
+                        product.isDeleted.eq(false),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN)
+                )
+                .orderBy(product.likeCount.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return Optional.ofNullable(productCardViewModels);
+    }
+
 
 
     // 시즌 카테고리가 null 일경우 모든상품, null이 아닐경우 여름과 겨울중 하나와 모든시즌 조회.
