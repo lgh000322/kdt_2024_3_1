@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import HeaderComponent from "../components/HeaderComponent";
+import { getMemberInfo } from "../api/memberApi";
+import { getCookies } from "../utils/cookieUtils";
+import { useSearchParams } from "react-router-dom";
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -117,95 +120,108 @@ const Button = styled.button`
   }
 `;
 
+const initState = {
+  email: "",
+  name: "",
+  gender: "",
+  phone: "",
+};
+
 function LoginSuccessPage() {
-    const cookies = document.cookie.split(';');
+  const { isAuthenticated } = useSearchParams();
 
-    cookies.forEach((cookie) => {
-  const [name, value] = cookie.trim().split('=');
-  console.log(`${name}=${value}`);
-});
-    const [formData, setFormData] = useState({
-        email: "",
-        name: "",
-        gender: "남자",
-        phone: "",
+  console.log(isAuthenticated);
+  useEffect(() => {
+    let accessToken = getCookies("accessToken");
+    getMemberInfo(accessToken).then((res) => {
+      const data = res.data;
+
+      setFormData({
+        email: data.email || "",
+        name: data.name || "",
+        gender: data.gender || "",
+        phone: data.phone || "",
+      });
     });
+  }, []);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
+  const [formData, setFormData] = useState(initState);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Form Submitted:", formData);
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-    return (
-        <PageWrapper>
-            <HeaderComponent role="consumer" />
-            <Container>
-                <Title>회원 정보 입력</Title>
-                <Form onSubmit={handleSubmit}>
-                    <FormGroup>
-                        <Label>이메일</Label>
-                        <DisplayField>{formData.email}</DisplayField>
-                    </FormGroup>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form Submitted:", formData);
+  };
 
-                    <FormGroup>
-                        <Label>이름</Label>
-                        <DisplayField>{formData.name}</DisplayField>
-                    </FormGroup>
+  return (
+    <PageWrapper>
+      <HeaderComponent role="consumer" />
+      <Container>
+        <Title>회원 정보 입력</Title>
+        <Form onSubmit={handleSubmit}>
+          <FormGroup>
+            <Label>이메일</Label>
+            <DisplayField>{formData.email}</DisplayField>
+          </FormGroup>
 
-                    <FormGroup>
-                        <Label>성별</Label>
-                        <RadioGroup>
-                            <RadioLabel>
-                                <input
-                                    type="radio"
-                                    name="gender"
-                                    value="남자"
-                                    checked={formData.gender === "남자"}
-                                    onChange={handleChange}
-                                />
-                                남자
-                            </RadioLabel>
-                            <RadioLabel>
-                                <input
-                                    type="radio"
-                                    name="gender"
-                                    value="여자"
-                                    checked={formData.gender === "여자"}
-                                    onChange={handleChange}
-                                />
-                                여자
-                            </RadioLabel>
-                        </RadioGroup>
-                    </FormGroup>
+          <FormGroup>
+            <Label>이름</Label>
+            <DisplayField>{formData.name}</DisplayField>
+          </FormGroup>
 
-                    <FormGroup>
-                        <Label htmlFor="phone">전화번호</Label>
-                        <Input
-                            id="phone"
-                            type="tel"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            placeholder="전화번호를 입력해주세요"
-                            required
-                            pattern="[0-9]*"
-                            maxLength={11}
-                        />
-                    </FormGroup>
+          <FormGroup>
+            <Label>성별</Label>
+            <RadioGroup>
+              <RadioLabel>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="남자"
+                  checked={formData.gender === "남자"}
+                  onChange={handleChange}
+                />
+                남자
+              </RadioLabel>
+              <RadioLabel>
+                <input
+                  type="radio"
+                  name="gender"
+                  value="여자"
+                  checked={formData.gender === "여자"}
+                  onChange={handleChange}
+                />
+                여자
+              </RadioLabel>
+            </RadioGroup>
+          </FormGroup>
 
-                    <Button type="submit">회원가입</Button>
-                </Form>
-            </Container>
-        </PageWrapper>
-    );
+          <FormGroup>
+            <Label htmlFor="phone">전화번호</Label>
+            <Input
+              id="phone"
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="전화번호를 입력해주세요"
+              required
+              pattern="[0-9]*"
+              maxLength={11}
+            />
+          </FormGroup>
+
+          <Button type="submit">회원가입</Button>
+        </Form>
+      </Container>
+    </PageWrapper>
+  );
 }
 
 export default LoginSuccessPage;

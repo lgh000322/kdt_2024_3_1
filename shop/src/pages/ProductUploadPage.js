@@ -181,7 +181,7 @@ function ProductUploadPage() {
           {/* 카테고리 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              카테고리
+              시즌
             </label>
             <select
               value={category}
