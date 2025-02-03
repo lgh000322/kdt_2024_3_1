@@ -137,7 +137,7 @@ const Cart = () => {
           </div>
 
           {/* 오른쪽 컬럼 */}
-          <div style={{ backgroundColor: "#f9fafb", padding: "16px", borderRadius: "8px" }}>
+          <div style={{ marginTop: "100px", backgroundColor: "#f9fafb", padding: "16px", borderRadius: "8px" }}>
             <h2 className="text-xl font-bold mb-4">주문 요약</h2>
             <div className="flex justify-between mb-4">
               <span>총 주문 금액</span>
