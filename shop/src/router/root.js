@@ -15,21 +15,11 @@ const Kids = lazy(() => import("../pages/KidsPage"));
 const Mypage = lazy(() => import("../pages/Mypage"));
 const AdminUserPage = lazy(() => import("../pages/AdminUserPage"));
 const AdminSellerPage = lazy(() => import("../pages/AdminSellerPage"));
-<<<<<<< HEAD
-const AdminAcceptPage = lazy(() => import("../pages/AdminAcceptPage"));
-const AdminStatisticPage = lazy(() => import("../pages/AdminStatisticPage"));
-const AdminBannerPage = lazy(() => import("../pages/AdminBannerPage"));
-const AdminCenterPage = lazy(() => import("../pages/AdminCenterPage"));
-const SellerRegistration = lazy(() =>
-  import("../pages/SellerRegistrationPage")
-);
-=======
 const AdminAcceptPage = lazy(()=> import("../pages/AdminAcceptPage"));
 const AdminStatisticPage = lazy(()=> import("../pages/AdminStatisticPage"));
 const AdminBannerPage = lazy(()=> import("../pages/AdminBannerPage"));
 const AdminCenterPage = lazy(() => import("../pages/AdminCenterPage"));
 const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"));
->>>>>>> f7d11d4acd4aaa177b0fd3e4a8421ed0579b536a
 const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
 const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 const OrderListPage = lazy(() => import("../pages/OrderListPage"));
