@@ -10,8 +10,8 @@ const Cart = () => {
       makerName: "메이커홀딩",
       productName: "프리미엄 상품",
       initialQuantity: 1,
-      basePrice: 159000,
-      isSelected: true, // 기본 선택된 상태
+      basePrice: 48000,
+      isSelected: false, // 기본 선택된 상태
     },
     {
       id: 2,
@@ -25,7 +25,8 @@ const Cart = () => {
   ]);
 
   const [totalPrice, setTotalPrice] = useState(0); // 총 주문 금액
-  const deliveryFee = 3000;
+  const deliveryFeeThreshold = 50000; // 무료 배송 기준 금액
+  const baseDeliveryFee = 3000; // 기본 배송비
 
   // 총 주문 금액 계산 함수
   const calculateTotalPrice = () => {
@@ -84,8 +85,11 @@ const Cart = () => {
     );
   };
 
+  // 배송비 계산 (5만원 이상이면 무료)
+  const deliveryFee = totalPrice >= deliveryFeeThreshold ? 0 : baseDeliveryFee;
+
   // 최종 결제 금액 계산
-  const finalPrice = totalPrice > 0 ? totalPrice + deliveryFee : 0;
+  const finalPrice = totalPrice + deliveryFee;
 
   return (
     <div>
@@ -140,7 +144,12 @@ const Cart = () => {
               <span>{totalPrice.toLocaleString()}원</span>
             </div>
             <div className="flex justify-between mb-4">
-              <span>배송비</span>
+              <span>
+                배송비{" "}
+                <span style={{ fontSize: "12px", color: "#6b7280" }}>
+                  (5만원 이상 구매 시, 배송비 무료)
+                </span>
+              </span>
               <span>{deliveryFee.toLocaleString()}원</span>
             </div>
             <hr className="my-4" />
