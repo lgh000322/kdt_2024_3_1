@@ -39,7 +39,7 @@ public class JwtUtils {
     /**
      * AccessToken 생성 메소드
      */
-    public String createAccessToken(UUID memberSub, List<String> roles) {
+    public String createAccessToken(String memberSub, List<String> roles) {
         long now = (new Date()).getTime();
 
         // Access token 유효 기간 설정
@@ -49,7 +49,7 @@ public class JwtUtils {
                 .setIssuedAt(new Date(now)) // jwt 발급 시간
                 .setExpiration(accessValidity) // jwt 만료 시간
                 .setIssuer(jwtProperties.issuer()) // jwt 발급한 주체 (서버의 이름)
-                .setSubject(memberSub.toString()) // 토큰의 주체.
+                .setSubject(memberSub) // 토큰의 주체.
                 .addClaims(Map.of(MEMBER_ROLE, roles)) // jwt 의 추가적인 정보
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE) // JWT 헤더
                 .signWith(key, SignatureAlgorithm.HS512) // Signature 방법
@@ -59,7 +59,7 @@ public class JwtUtils {
     /**
      * RefreshToken 생성
      */
-    public String createRefreshToken(UUID memberSub, List<String> roles) {
+    public String createRefreshToken(String memberSub, List<String> roles) {
         long now = (new Date()).getTime();
 
         // Refresh token 유효 기간 설정
@@ -70,7 +70,7 @@ public class JwtUtils {
                 .setIssuedAt(new Date(now))
                 .setExpiration(refreshValidity)
                 .setIssuer(jwtProperties.issuer())
-                .setSubject(memberSub.toString())
+                .setSubject(memberSub)
                 .addClaims(Map.of(MEMBER_ROLE, roles))
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -102,11 +102,7 @@ public class JwtUtils {
         String sub = Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody().getSubject();
 
-        UUID uuid = UUID.fromString(sub);  // String을 UUID로 변환
-        log.info("in getMember() sub: {}", uuid);
-
-
-        return memberRepository.findBySub(uuid)  // UUID로 회원 조회
+        return memberRepository.findBySub(sub)  // UUID로 회원 조회
                 .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND));
     }
 

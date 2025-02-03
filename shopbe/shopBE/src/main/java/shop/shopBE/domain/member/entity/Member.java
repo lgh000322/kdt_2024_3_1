@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import shop.shopBE.domain.member.entity.enums.Gender;
 import shop.shopBE.domain.member.entity.enums.Role;
 import shop.shopBE.domain.member.request.MemberUpdateInfo;
-import shop.shopBE.global.converter.UUIDBinaryConverter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -39,9 +38,8 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(name = "sub", unique = true, columnDefinition = "BINARY(16)")
-    @Convert(converter = UUIDBinaryConverter.class) // 변환기를 적용
-    private UUID sub;
+    @Column(name = "sub", unique = true)
+    private String sub;
 
     private LocalDateTime createdAt;
 
@@ -53,7 +51,7 @@ public class Member {
                 .name(name)
                 .role(role)
                 .email(email)
-                .sub(UUID.randomUUID())
+                .sub(UUID.randomUUID().toString())
                 .authenticated(authenticated)
                 .createdAt(LocalDateTime.now())
                 .build();
