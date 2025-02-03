@@ -39,10 +39,7 @@ public class LikesItemFacadeService {
         likesItemService.setLikesItems(likes, likesItemInfo.productId());
     }
 
-    public List<ProductListViewModel> findLikesItems(LikesPaging likesPaging, Long memberId) {
-        // 페이징 정보
-        Pageable pageable = PageRequest.of(likesPaging.page() - 1, likesPaging.size());
-
+    public List<ProductListViewModel> findLikesItems(Pageable pageable, Long memberId) {
         // 찜 보관함 조회 or 추가
         Likes likes = likesService.findLikesByMemberId(memberId)
                 .orElseGet(() -> createLikes(memberId));

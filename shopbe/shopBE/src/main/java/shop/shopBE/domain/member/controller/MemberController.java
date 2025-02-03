@@ -2,8 +2,12 @@ package shop.shopBE.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +21,7 @@ import shop.shopBE.domain.member.response.MemberListResponseView;
 import shop.shopBE.domain.member.service.MemberFacadeService;
 import shop.shopBE.global.config.security.mapper.token.AuthToken;
 import shop.shopBE.global.response.ResponseFormat;
+import shop.shopBE.global.utils.cookie.CookieUtils;
 
 import java.util.List;
 
@@ -26,6 +31,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberFacadeService memberFacadeService;
+    private final CookieUtils cookieUtils;
 
     @PutMapping("/member")
     @Operation(summary = "회원 수정", description = "현재 로그인 한 회원의 정보를 수정한다.")
@@ -56,9 +62,15 @@ public class MemberController {
     @GetMapping("members")
     @Operation(summary = "회원 정보 전체 조회", description = "관리자는 모든 회원의 정보를 조회할 수 있다")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseFormat<List<MemberListResponseView>>> getMembers(@RequestBody @Valid MemberListRequest memberListRequest) {
-        List<MemberListResponseView> memberList = memberFacadeService.getMemberList(memberListRequest);
+    public ResponseEntity<ResponseFormat<List<MemberListResponseView>>> getMembers(@PageableDefault Pageable pageable) {
+        List<MemberListResponseView> memberList = memberFacadeService.getMemberList(pageable);
         return ResponseEntity.ok().body(ResponseFormat.of("회원 리스트 조회에 성공했습니다.", memberList));
     }
 
+    @PostMapping("/member/logout")
+    @Operation(summary = "회원 로그아웃", description = "회원의 refreshToken을 지움으로써 로그아웃한다.")
+    public ResponseEntity<ResponseFormat<Void>> logout(HttpServletResponse response) {
+        response.addCookie(cookieUtils.deleteRefreshCookie());
+        return ResponseEntity.ok().body(ResponseFormat.of("회원의 refreshToken을 지우는데 성공했습니다."));
+    }
 }

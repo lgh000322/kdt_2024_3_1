@@ -32,8 +32,7 @@ public class MemberFacadeService {
         memberService.updateMemberRole(role, memberId);
     }
 
-    public List<MemberListResponseView> getMemberList(MemberListRequest memberListRequest) {
-        Pageable pageable = PageRequest.of(memberListRequest.page() - 1, memberListRequest.size());
+    public List<MemberListResponseView> getMemberList(Pageable pageable) {
         List<MemberListResponse> memberList = memberService.getMemberList(pageable);
         return getViewResponse(memberList);
     }

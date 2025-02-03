@@ -3,6 +3,7 @@ package shop.shopBE.domain.authorityrequest.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import shop.shopBE.domain.authorityrequest.entity.AuthorityRequest;
 import shop.shopBE.domain.authorityrequest.response.AuthorityResponseListViewModel;
 import shop.shopBE.domain.member.entity.QMember;
@@ -18,7 +19,7 @@ public class AuthorityRequestRepositoryCustomImpl implements AuthorityRequestRep
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<List<AuthorityResponseListViewModel>> findAuthorityRequests(int page, int size) {
+    public Optional<List<AuthorityResponseListViewModel>> findAuthorityRequests(Pageable pageable) {
         List<AuthorityResponseListViewModel> result = queryFactory
                 .select(Projections.constructor(AuthorityResponseListViewModel.class,
                         authorityRequest.id,
@@ -28,8 +29,8 @@ public class AuthorityRequestRepositoryCustomImpl implements AuthorityRequestRep
                 ))
                 .from(authorityRequest).innerJoin(member).on(authorityRequest.member.id.eq(member.id))
                 .where(authorityRequest.isAccepted.eq(false))
-                .offset(page)
-                .limit(size)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         return Optional.ofNullable(result);
