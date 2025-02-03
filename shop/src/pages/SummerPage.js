@@ -11,7 +11,7 @@ function SummerPage() {
   ];
 
   return (
-    <BasicLayout role="consumer">
+    <BasicLayout>
       {/* 상품 그리드 섹션 */}
       <div className="max-w-7xl mx-auto px-4 pt-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

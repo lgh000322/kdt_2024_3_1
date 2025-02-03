@@ -5,6 +5,7 @@ import { getMemberInfo, updateMember } from "../api/memberApi";
 import { getCookies } from "../utils/cookieUtils";
 import { data, useSearchParams } from "react-router-dom";
 import useCustomMove from "../hook/useCustomMove";
+import { useSelector } from "react-redux";
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -130,8 +131,11 @@ const initState = {
 
 function LoginSuccessPage() {
   const { moveToProductAbs } = useCustomMove();
+  const loginSlice = useSelector((state) => state.loginSlice);
+
   useEffect(() => {
-    let accessToken = getCookies("accessToken");
+    let accessToken = loginSlice.accessToken;
+
     getMemberInfo(accessToken).then((res) => {
       const data = res.data;
 
@@ -152,12 +156,13 @@ function LoginSuccessPage() {
       ...prev,
       [name]: value,
     }));
+    console.log(formData.phone);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form Submitted:", formData);
-    let accessToken = getCookies("accessToken");
+    let accessToken = loginSlice.accessToken;
 
     updateMember(formData, accessToken).then((res) => {
       if (res.code === 200) {

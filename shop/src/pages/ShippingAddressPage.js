@@ -47,7 +47,9 @@ function ShippingAddressPage() {
   const handleEditToggle = (id) => {
     setShippingAddresses((prev) =>
       prev.map((address) =>
-        address.id === id ? { ...address, isEditable: !address.isEditable } : address
+        address.id === id
+          ? { ...address, isEditable: !address.isEditable }
+          : address
       )
     );
   };
@@ -175,14 +177,14 @@ function ShippingAddressPage() {
   };
 
   return (
-    <BasicLayout role={userRole}>
+    <BasicLayout>
       <div style={styles.container}>
         <h1 style={styles.header}>배송지 관리</h1>
         <button
           onClick={handleAddAddress}
           style={styles.addButton}
-          onMouseOver={(e) => e.target.style.backgroundColor = "#45a049"}
-          onMouseOut={(e) => e.target.style.backgroundColor = "#4CAF50"}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
         >
           + 새 배송지 추가
         </button>
@@ -205,7 +207,9 @@ function ShippingAddressPage() {
               <input
                 type="text"
                 value={address.title}
-                onChange={(e) => handleInputChange(address.id, "title", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange(address.id, "title", e.target.value)
+                }
                 placeholder="배송지 제목(예: 집, 회사)"
                 style={styles.input}
                 readOnly={!address.isEditable}
@@ -217,7 +221,9 @@ function ShippingAddressPage() {
               <input
                 type="text"
                 value={address.name}
-                onChange={(e) => handleInputChange(address.id, "name", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange(address.id, "name", e.target.value)
+                }
                 placeholder="받는 사람 이름"
                 style={styles.input}
                 readOnly={!address.isEditable}
@@ -229,7 +235,9 @@ function ShippingAddressPage() {
               <input
                 type="text"
                 value={address.address}
-                onChange={(e) => handleInputChange(address.id, "address", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange(address.id, "address", e.target.value)
+                }
                 placeholder="상세 주소"
                 style={styles.input}
                 readOnly={!address.isEditable}
@@ -241,7 +249,9 @@ function ShippingAddressPage() {
               <input
                 type="text"
                 value={address.phone}
-                onChange={(e) => handleInputChange(address.id, "phone", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange(address.id, "phone", e.target.value)
+                }
                 placeholder="휴대폰 번호"
                 style={styles.input}
                 readOnly={!address.isEditable}

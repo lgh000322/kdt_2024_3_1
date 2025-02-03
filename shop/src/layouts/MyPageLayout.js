@@ -21,7 +21,7 @@ function MyPageLayout({ children, role }) {
         {/* 사이드바 (헤더 아래 고정) */}
         <div className="w-64 min-h-screen bg-gray-50 pt-16 fixed left-0 top-16.1">
           {/* fixed로 사이드바를 헤더 아래로 배치 (top-16은 헤더의 높이를 고려한 여백) */}
-          <Sidebar role="consumer" onMenuClick={handleMenuClick} />
+          <Sidebar role={role} onMenuClick={handleMenuClick} />
         </div>
 
         {/* 본문 내용 */}
@@ -31,7 +31,8 @@ function MyPageLayout({ children, role }) {
             {selectedMenu ? (
               <div>
                 <h2 className="text-lg font-semibold">{selectedMenu.title}</h2>
-                <p>{selectedMenu.content}</p> {/* 클릭된 메뉴 항목에 맞는 콘텐츠 */}
+                <p>{selectedMenu.content}</p>{" "}
+                {/* 클릭된 메뉴 항목에 맞는 콘텐츠 */}
               </div>
             ) : (
               <p>사이드바 메뉴를 선택하세요.</p>
