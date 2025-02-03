@@ -76,6 +76,11 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                         product.price))
                 .from(product)
                 .join(productImage)
+
+
+
+
+
                 .on(productImage.product.eq(product))
                 .where(seasonCategoryCondition(seasonCategory),
                         (productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
