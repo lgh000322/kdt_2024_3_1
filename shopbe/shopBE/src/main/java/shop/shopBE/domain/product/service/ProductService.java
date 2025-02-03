@@ -100,7 +100,7 @@ public class ProductService {
 
 
     //사람(남, 여, 아동)아래 상품카테고리(슬리퍼, 부츠, 운동화 등등)아래 정렬조건(낮은가격, 인기순, 판매순 등) 조회
-    public List<ProductCardViewModel> findPersonProductInformsByOption(@Valid ProductPaging productPaging,
+    public List<ProductCardViewModel> findPersonProductInformsByOption(ProductPaging productPaging,
                                                                        PersonCategory personCategory,
                                                                        String productCategory,
                                                                        String option) {
@@ -320,130 +320,5 @@ public class ProductService {
         //위 조건에 걸리지 않으면 예외처리
         throw new CustomException(ProductExceptionCode.INVALID_OPTION);
     }
-
-
-
-
-/*
-
-    // 남자상품 - 상품카테고리별 조회(인기순)
-    public List<ProductCardViewModel> findMenProductInformsByProductCategory(ProductPaging productPaging, String productCategory) {
-
-        Pageable pageable =  PageRequest.of(productPaging.page() - 1, productPaging.size());
-
-        ProductCategory checkedProductCategory = validProductCategory(productCategory);
-
-        List<ProductCardViewModel> productCardViewModels = productRepository
-                .findPersonProductsOrderByLikeCountDesc(pageable, PersonCategory.MEN, checkedProductCategory)
-                .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-
-        return productCardViewModels;
-    }
-
-    // 여성 상품 - 상품 카테고리별 조회 (인기순0
-    public List<ProductCardViewModel> findWomenProductInformsByProductCategory(ProductPaging productPaging, String productCategory) {
-
-        Pageable pageable =  PageRequest.of(productPaging.page() - 1, productPaging.size());
-
-        ProductCategory checkedProductCategory = validProductCategory(productCategory);
-
-        List<ProductCardViewModel> productCardViewModels = productRepository
-                .findPersonProductsOrderByLikeCountDesc(pageable, PersonCategory.WOMEN, checkedProductCategory)
-                .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-
-        return productCardViewModels;
-    }
-
-
-    // 여름상품 옵션별 조회
-    public List<ProductCardViewModel> findSummerProductInformsByOption(ProductPaging productPaging, String option) {
-
-        Pageable pageable = PageRequest.of(productPaging.page() - 1, productPaging.size());
-
-        // 낮은가격순 조회일경우
-        if(option.equals(SortingOption.LOW_PRICE.toString())){
-            return productRepository
-                    .findSeasonProductsOrderByPriceAsc(pageable, SeasonCategory.SUMMER)
-                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-        }
-        // 신상품순 조회일 경우
-        if(option.equals(SortingOption.NEW_PRODUCT.toString())){
-            return productRepository
-                    .findSeasonProductsOrderByCreateAtDesc(pageable, SeasonCategory.SUMMER)
-                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-        }
-        // 판매량순 조회일경우
-        if(option.equals(SortingOption.BEST_SELLERS.toString())){
-            return productRepository
-                    .findSeasonProductsOrderBySalesVolumeDesc(pageable, SeasonCategory.SUMMER)
-                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-        }
-        // 인기순 조회일경우
-        if(option.equals(SortingOption.POPULAR.toString())){
-            return productRepository.findSeasonProductsOrderByLikeCountDesc(pageable, SeasonCategory.SUMMER)
-                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-        }
-
-        //위 조건에 걸리지 않으면 예외처리
-        throw new CustomException(ProductExceptionCode.INVALID_OPTION);
-    }
-
-
-    public List<ProductCardViewModel> findWinterProductInformsByOption(ProductPaging productPaging, String option) {
-
-        Pageable pageable = PageRequest.of(productPaging.page() - 1, productPaging.size());
-
-        // 낮은가격순 조회일경우
-        if(option.equals(SortingOption.LOW_PRICE.toString())){
-            return productRepository
-                    .findSeasonProductsOrderByPriceAsc(pageable, SeasonCategory.WINTER)
-                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-        }
-        // 신상품순 조회일 경우
-        if(option.equals(SortingOption.NEW_PRODUCT.toString())){
-            return productRepository
-                    .findSeasonProductsOrderByCreateAtDesc(pageable, SeasonCategory.WINTER)
-                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-        }
-        // 판매량순 조회일경우
-        if(option.equals(SortingOption.BEST_SELLERS.toString())){
-            return productRepository
-                    .findSeasonProductsOrderBySalesVolumeDesc(pageable, SeasonCategory.WINTER)
-                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-        }
-        // 인기순 조회일경우
-        if(option.equals(SortingOption.POPULAR.toString())){
-            return productRepository.findSeasonProductsOrderByLikeCountDesc(pageable, SeasonCategory.WINTER)
-                    .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-        }
-
-        //위 조건에 걸리지 않으면 예외처리
-        throw new CustomException(ProductExceptionCode.INVALID_OPTION);
-    }
-
-
-    // 여름 카테고리 클릭시 조회 메서드 (인기순 조회)
-    public List<ProductCardViewModel> findSummerProductInforms(ProductPaging productPaging) {
-        Pageable pageable = PageRequest.of(productPaging.page() - 1, productPaging.size());
-
-        List<ProductCardViewModel> summerProductsOrderByLikeCountDesc = productRepository
-                .findSeasonProductsOrderByLikeCountDesc(pageable, SeasonCategory.SUMMER)
-                .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-
-        return summerProductsOrderByLikeCountDesc;
-    }
-
-    // 겨울 카테고리 클릭시 조회 메서드 (인기순 조회)
-    public List<ProductCardViewModel> findWinterProductInforms(ProductPaging productPaging) {
-        Pageable pageable = PageRequest.of(productPaging.page() - 1, productPaging.size());
-
-        List<ProductCardViewModel> productCardViewModels = productRepository
-                .findSeasonProductsOrderByLikeCountDesc(pageable, SeasonCategory.WINTER)
-                .orElseThrow(() -> new CustomException(ProductExceptionCode.PRODUCT_EMPTY));
-
-        return productCardViewModels;
-    }
-*/
-
 
 }

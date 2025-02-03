@@ -23,7 +23,6 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     public Optional<MemberInformation> findMemberInformById(Long memberId) {
         MemberInformation memberInformation = queryFactory
                 .select(Projections.constructor(MemberInformation.class,
-                        member.username,
                         member.name,
                         member.email,
                         member.tel,

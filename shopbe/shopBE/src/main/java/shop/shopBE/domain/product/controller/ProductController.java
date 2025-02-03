@@ -38,8 +38,6 @@ public class ProductController {
     }
 
 
-
-
     // 모든 시즌 상품 조회
     @GetMapping("/season/all")
     @Operation(summary = "모든시즌 상품 조회", description = "모든시즌의 상품을 보여준다.")
@@ -197,7 +195,6 @@ public class ProductController {
                                                                  @AuthenticationPrincipal AuthToken authToken) {
 
         productService.deleteOneProduct(productId, authToken.getId());
-
         return ResponseEntity.ok().body(ResponseFormat.of("판매자가 등록한 상품 제거 성공"));
     }
 
@@ -207,7 +204,6 @@ public class ProductController {
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<Void>> deleteMultipleProducts(@RequestBody @Valid DeleteProductsReq deleteProductsReq,
                                                                        @AuthenticationPrincipal AuthToken authToken) {
-
         productService.deleteMultipleProducts(deleteProductsReq.productIds(), authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("판매자가 등록한 복수의 상품 제거 성공"));
     }

@@ -55,7 +55,7 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    Member member;   // seller
+    private Member member;   // seller
 
     @Builder.Default
     // 논리적 삭제를 위한 필드 추가.

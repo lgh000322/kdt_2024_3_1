@@ -60,7 +60,10 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .from(product)
                 .join(productImage)
                 .on(productImage.product.eq(product))
-                .where(productImage.productImageCategory.eq(ProductImageCategory.MAIN), product.isDeleted.eq(false))
+                .where(
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        product.isDeleted.eq(false)
+                )
                 .orderBy(product.likeCount.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -82,11 +85,6 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                         product.price))
                 .from(product)
                 .join(productImage)
-
-
-
-
-
                 .on(productImage.product.eq(product))
                 .where(seasonCategoryCondition(seasonCategory),
                         productImage.productImageCategory.eq(ProductImageCategory.MAIN),
@@ -232,10 +230,12 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .from(product)
                 .join(productImage)
                 .on(productImage.product.eq(product))
-                .where(personCategoryCondition(personCategory),
+                .where(
+                        personCategoryCondition(personCategory),
                         (product.productCategory.eq(productCategory)),
                         (productImage.productImageCategory.eq(ProductImageCategory.MAIN)),
-                        product.isDeleted.eq(false))
+                        product.isDeleted.eq(false)
+                )
                 .orderBy(product.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
