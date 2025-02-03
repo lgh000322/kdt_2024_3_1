@@ -125,8 +125,8 @@ function LoginSuccessPage() {
   console.log(`${name}=${value}`);
 });
     const [formData, setFormData] = useState({
-        email: "asdsad@asdasd",
-        name: "홍길동",
+        email: "",
+        name: "",
         gender: "남자",
         phone: "",
     });

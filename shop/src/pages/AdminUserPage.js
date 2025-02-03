@@ -1,47 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminPageLayout from "../layouts/AdminPageLayout";
 
 const userRole = "manager";  // 'seller', 'consumer', 'manager' 등 사용자가 가진 역할
 
-// 더미 데이터
-const dummyData = [
-  { id: 1, name: "김철수", userId: "user1", level: "일반 회원", joinDate: "2025-01-20" },
-  { id: 2, name: "이영희", userId: "seller1", level: "판매자", joinDate: "2025-01-19" },
-  { id: 3, name: "박지성", userId: "user2", level: "일반 회원", joinDate: "2025-01-18" },
-  { id: 4, name: "최동욱", userId: "user3", level: "일반 회원", joinDate: "2025-01-17" },
-  { id: 5, name: "정수민", userId: "seller2", level: "판매자", joinDate: "2025-01-16" },
-  { id: 6, name: "강민호", userId: "user4", level: "일반 회원", joinDate: "2025-01-15" },
-  { id: 7, name: "윤서연", userId: "seller3", level: "판매자", joinDate: "2025-01-14" },
-  { id: 8, name: "임재현", userId: "user5", level: "일반 회원", joinDate: "2025-01-13" },
-  { id: 9, name: "한지원", userId: "user6", level: "일반 회원", joinDate: "2025-01-12" },
-  { id: 10, name: "오승훈", userId: "seller4", level: "판매자", joinDate: "2025-01-11" },
-  { id: 11, name: "서민재", userId: "user7", level: "일반 회원", joinDate: "2025-01-10" },
-  { id: 12, name: "노유진", userId: "seller5", level: "판매자", joinDate: "2025-01-09" },
-  { id: 13, name: "류현진", userId: "user8", level: "일반 회원", joinDate: "2025-01-08" },
-  { id: 14, name: "백승호", userId: "user9", level: "일반 회원", joinDate: "2025-01-07" },
-  { id: 15, name: "조아라", userId: "seller6", level: "판매자", joinDate: "2025-01-06" },
-  { id: 16, name: "장미란", userId: "user10", level: "일반 회원", joinDate: "2025-01-05" },
-  { id: 17, name: "김연아", userId: "seller7", level: "판매자", joinDate: "2025-01-04" },
-  { id: 18, name: "손흥민", userId: "user11", level: "일반 회원", joinDate: "2025-01-03" },
-  { id: 19, name: "박태환", userId: "user12", level: "일반 회원", joinDate: "2025-01-02" },
-  { id: 20, name: "이상화", userId: "seller8", level: "판매자", joinDate: "2025-01-01" },
-];
 
 function AdminUserPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchLevel, setSearchLevel] = useState("전체");
-  const [filteredData, setFilteredData] = useState(dummyData);
+  const [filteredData, setFilteredData] = useState([]);
+  const [userData, setUserData] = useState([]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/members"); // Replace with your API endpoint
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        const data = await response.json();
+        setUserData(data);
+        setFilteredData(data); // Initialize filtered data with all users
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleSearch = () => {
-    const filtered = dummyData.filter((user) => {
-      const searchMatch = user.userId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          user.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const filtered = userData.filter((user) => {
+      const searchMatch =
+        user.userId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.name.toLowerCase().includes(searchTerm.toLowerCase());
       const levelMatch = searchLevel === "전체" || user.level === searchLevel;
       return searchMatch && levelMatch;
     });
     setFilteredData(filtered);
   };
-
   return (
     <AdminPageLayout role={userRole}>
        <div>
@@ -142,7 +138,7 @@ function AdminUserPage() {
                 zIndex: 1,
               }}>
                 <tr>
-                  {["번호", "이름", "아이디", "회원등급", "가입일"].map((header, index) => (
+                  {["번호", "이름", "이메일","성별", "전화번호", "회원등급", "가입일"].map((header, index) => (
                     <th key={header} style={{
                       borderBottom: "2px solid #ddd",
                       padding: "10px",

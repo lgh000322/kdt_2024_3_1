@@ -21,7 +21,9 @@ const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"))
 const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
 const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 const OrderListPage = lazy(() => import("../pages/OrderListPage"));
+const OrderDetailPage = lazy(()=> import("../pages/OrderDetailPage"));
 const WishListPage = lazy(() => import("../pages/WishListPage"));
+const ShippingAddressPage = lazy(() => import("../pages/ShippingAddressPage"));
 
 
 const root = createBrowserRouter([
@@ -102,6 +104,14 @@ const root = createBrowserRouter([
     ),
   },
   {
+    path: "mypage/order-detail",
+    element: (
+      <Suspense fallback={Loading}>
+        <OrderDetailPage />
+      </Suspense>
+    ),
+  },
+  {
     path: "admin_user",
     element: (
       <Suspense fallback={Loading}>
@@ -146,6 +156,22 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <SellerRegistration/>
+      </Suspense>
+    ),
+  },
+  {
+    path: "mypage",
+    element: (
+      <Suspense fallback={Loading}>
+        <Mypage/>
+      </Suspense>
+    ),
+  },
+  {
+    path: "mypage/shipping-address",
+    element: (
+      <Suspense fallback={Loading}>
+        <ShippingAddressPage/>
       </Suspense>
     ),
   },
