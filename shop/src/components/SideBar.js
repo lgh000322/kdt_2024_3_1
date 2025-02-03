@@ -5,12 +5,12 @@ const Sidebar = ({ onMenuClick, role }) => {
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   const sellerMenuItems = [
-    { id: 1, title: '주문목록 / 배송조회', path: '/mypage/order-list', content: '주문목록 및 배송조회 관련 콘텐츠' },
-    { id: 2, title: '배송지 관리', path: '/mypage/address-management', content: '배송지 관리 관련 콘텐츠' },
+    { id: 1, title: '배송관리(판매자)', path: '/mypage/shipping-management', content: '배송관리 관련 콘텐츠' },
+    { id: 2, title: '주문관리(판매자)', path: '/mypage/order-management', content: '주문관리 관련 콘텐츠' },
     { id: 3, title: '문의내역', path: '/mypage/inquiry', content: '문의내역 관련 콘텐츠' },
     { id: 4, title: '찜리스트', path: '/mypage/wishlist', content: '찜리스트 관련 콘텐츠' },
-    { id: 5, title: '배송관리(판매자)', path: '/mypage/shipping-management', content: '배송관리 관련 콘텐츠' },
-    { id: 6, title: '주문관리(판매자)', path: '/mypage/order-management', content: '주문관리 관련 콘텐츠' },
+    { id: 5, title: '주문목록 / 배송조회', path: '/mypage/order-list', content: '주문목록 및 배송조회 관련 콘텐츠' },
+    { id: 6, title: '배송지 관리', path: '/mypage/address-management', content: '배송지 관리 관련 콘텐츠' },
   ];
 
   const consumerMenuItems = [

@@ -16,31 +16,31 @@ const WishlistPage = () => {
       price: 20000,
     },
     {
-      id: "ORD004",
+      id: "ORD005",
       image: "/img/logo.png",
       title: "상품 C",
       price: 15000,
     },
     {
-      id: "ORD004",
+      id: "ORD006",
       image: "/img/naver.jpg",
       title: "상품 D",
       price: 56000,
     },
     {
-      id: "ORD004",
+      id: "ORD007",
       image: "/img/logo.png",
       title: "상품 E",
       price: 13000,
     },
     {
-      id: "ORD004",
+      id: "ORD008",
       image: "/img/naver.jpg",
       title: "상품 F",
       price: 4500,
     },
     {
-      id: "ORD004",
+      id: "ORD009",
       image: "/img/logo.png",
       title: "상품 G",
       price: 23000,
@@ -51,15 +51,15 @@ const WishlistPage = () => {
   const removeFromWishlist = (id) => {
     const updatedWishlist = wishlist.filter((item) => item.id !== id);
     setWishlist(updatedWishlist);
-    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // Update localStorage
   };
 
   return (
     <WishLayout>
       <div style={{ padding: "40px" }}>
         <h1 style={{ textAlign: "left", fontSize: "27px", fontWeight: "bold" }}>찜한 상품</h1>
-        <hr/>
-        <br/>
+        <hr />
+        <br />
         {wishlist.length > 0 ? (
           <div
             style={{
@@ -95,11 +95,11 @@ const WishlistPage = () => {
                     borderRadius: "5px",
                   }}
                 />
-                <hr/>
+                <hr />
                 <h3 style={{ fontSize: "16px", margin: "5px" }}>{item.title}</h3>
-                <p style={{ color: "#888"}}>{item.price.toLocaleString()}원</p>
+                <p style={{ color: "#888" }}>{item.price.toLocaleString()}원</p>
                 <button
-                  // onClick={() => removeFromWishlist(item.id)}
+                  onClick={() => removeFromWishlist(item.id)} // Connect the delete function here
                   style={{
                     backgroundColor: "#ff4d4f",
                     color: "#fff",
