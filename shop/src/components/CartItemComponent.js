@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 const CartItemComponent = ({
   imageUrl,
@@ -9,20 +9,10 @@ const CartItemComponent = ({
   onRemove,
   onSelect,
   isSelected,
+  onIncrease, // 부모로부터 전달받은 수량 증가 핸들러
+  onDecrease, // 부모로부터 전달받은 수량 감소 핸들러
 }) => {
-  const [quantity, setQuantity] = useState(initialQuantity);
-
-  const incrementQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  const decrementQuantity = () => {
-    if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
-    }
-  };
-
-  const totalPrice = basePrice * quantity;
+  const totalPrice = basePrice * initialQuantity; // 부모로부터 받은 수량을 기반으로 총 가격 계산
 
   return (
     <div className="bg-gray-100 rounded-lg p-4 mb-4 shadow-sm flex items-start space-x-4">
@@ -51,15 +41,15 @@ const CartItemComponent = ({
         {/* 수량 조절 및 가격 */}
         <div className="flex items-center space-x-4 mt-2">
           <button
-            onClick={decrementQuantity}
-            disabled={quantity <= 1}
+            onClick={onDecrease} // 부모로부터 전달받은 핸들러 호출
+            disabled={initialQuantity <= 1}
             className="w-8 h-8 flex items-center justify-center text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
           >
             -
           </button>
-          <span className="w-8 text-center text-gray-900">{quantity}</span>
+          <span className="w-8 text-center text-gray-900">{initialQuantity}</span>
           <button
-            onClick={incrementQuantity}
+            onClick={onIncrease} // 부모로부터 전달받은 핸들러 호출
             className="w-8 h-8 flex items-center justify-center text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
           >
             +

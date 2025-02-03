@@ -11,7 +11,7 @@ const Cart = () => {
       productName: "프리미엄 상품",
       initialQuantity: 1,
       basePrice: 159000,
-      isSelected: false,
+      isSelected: true, // 기본 선택된 상태
     },
     {
       id: 2,
@@ -30,7 +30,7 @@ const Cart = () => {
   // 총 주문 금액 계산 함수
   const calculateTotalPrice = () => {
     const total = cartItems
-      .filter((item) => item.isSelected)
+      .filter((item) => item.isSelected) // 선택된 아이템만 포함
       .reduce((sum, item) => sum + item.basePrice * item.initialQuantity, 0);
     setTotalPrice(total); // 총 주문 금액 업데이트
   };
@@ -62,55 +62,30 @@ const Cart = () => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
+  // 수량 증가
+  const handleIncreaseQuantity = (id) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id
+          ? { ...item, initialQuantity: item.initialQuantity + 1 }
+          : item
+      )
+    );
+  };
+
+  // 수량 감소
+  const handleDecreaseQuantity = (id) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id && item.initialQuantity > 1
+          ? { ...item, initialQuantity: item.initialQuantity - 1 }
+          : item
+      )
+    );
+  };
+
   // 최종 결제 금액 계산
   const finalPrice = totalPrice > 0 ? totalPrice + deliveryFee : 0;
-
-  // 인라인 스타일 정의
-  const styles = {
-    headerSpacing: {
-      marginTop: "180px", // HeaderComponent 높이에 맞게 조정
-    },
-    container: {
-      display: "grid",
-      gridTemplateColumns: "2fr 1fr",
-      gap: "24px",
-      maxWidth: "1200px",
-      margin: "auto",
-    },
-    leftColumn: {
-      backgroundColor: "#f9fafb",
-      padding: "16px",
-      borderRadius: "8px",
-    },
-    rightColumn: {
-      backgroundColor: "#f9fafb",
-      padding: "16px",
-      borderRadius: "8px",
-    },
-    summaryRow: {
-      display: "flex",
-      justifyContent: "space-between",
-      marginBottom: "12px",
-    },
-    totalRow: {
-      display: "flex",
-      justifyContent: "space-between",
-      fontWeight: "bold",
-      fontSize: "18px",
-    },
-    purchaseButton: {
-      width: "100%",
-      backgroundColor: "#dc2626",
-      color: "#fff",
-      padding: "12px",
-      borderRadius: "8px",
-      textAlign: "center",
-      cursor: "pointer",
-    },
-    purchaseButtonHover: {
-      backgroundColor: "#b91c1c", // 호버 시 색상 변경
-    },
-  };
 
   return (
     <div>
@@ -118,10 +93,10 @@ const Cart = () => {
       <HeaderComponent />
 
       {/* 메인 콘텐츠 */}
-      <div style={styles.headerSpacing}>
-        <div style={styles.container}>
+      <div style={{ marginTop: "180px", maxWidth: "1200px", margin: "auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "24px" }}>
           {/* 왼쪽 컬럼 */}
-          <div style={styles.leftColumn}>
+          <div style={{ backgroundColor: "#f9fafb", padding: "16px", borderRadius: "8px" }}>
             <h1 className="text-2xl font-bold mb-6">장바구니</h1>
 
             {/* 전체 선택 */}
@@ -140,9 +115,16 @@ const Cart = () => {
               cartItems.map((item) => (
                 <CartItemComponent
                   key={item.id}
-                  {...item}
+                  imageUrl={item.imageUrl}
+                  makerName={item.makerName}
+                  productName={item.productName}
+                  initialQuantity={item.initialQuantity}
+                  basePrice={item.basePrice}
+                  isSelected={item.isSelected}
                   onRemove={() => handleRemoveItem(item.id)}
                   onSelect={() => handleSelectItem(item.id)}
+                  onIncrease={() => handleIncreaseQuantity(item.id)} // 수량 증가 핸들러 전달
+                  onDecrease={() => handleDecreaseQuantity(item.id)} // 수량 감소 핸들러 전달
                 />
               ))
             ) : (
@@ -151,35 +133,22 @@ const Cart = () => {
           </div>
 
           {/* 오른쪽 컬럼 */}
-          <div style={styles.rightColumn}>
+          <div style={{ backgroundColor: "#f9fafb", padding: "16px", borderRadius: "8px" }}>
             <h2 className="text-xl font-bold mb-4">주문 요약</h2>
-            <div style={styles.summaryRow}>
+            <div className="flex justify-between mb-4">
               <span>총 주문 금액</span>
               <span>{totalPrice.toLocaleString()}원</span>
             </div>
-            <div style={styles.summaryRow}>
+            <div className="flex justify-between mb-4">
               <span>배송비</span>
               <span>{deliveryFee.toLocaleString()}원</span>
             </div>
             <hr className="my-4" />
-            <div style={styles.totalRow}>
+            <div className="flex justify-between font-bold text-lg">
               <span>최종 결제 금액</span>
               <span>{finalPrice.toLocaleString()}원</span>
             </div>
-            <button
-              style={{
-                ...styles.purchaseButton,
-                marginTop: "16px", // 버튼 상단 여백 추가
-              }}
-              onMouseOver={(e) =>
-                (e.target.style.backgroundColor =
-                  styles.purchaseButtonHover.backgroundColor)
-              }
-              onMouseOut={(e) =>
-                (e.target.style.backgroundColor =
-                  styles.purchaseButton.backgroundColor)
-              }
-            >
+            <button style={{ width: "100%", backgroundColor: "#dc2626", color: "#fff", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
               구매하기
             </button>
           </div>
