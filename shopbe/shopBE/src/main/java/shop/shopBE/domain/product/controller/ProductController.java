@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +14,7 @@ import shop.shopBE.domain.product.entity.enums.SeasonCategory;
 import shop.shopBE.domain.product.request.AddProductInforms;
 import shop.shopBE.domain.product.request.DeleteProductsReq;
 import shop.shopBE.domain.product.request.ProductPaging;
+import shop.shopBE.domain.product.request.SearchProductReq;
 import shop.shopBE.domain.product.response.ProductCardViewModel;
 import shop.shopBE.domain.product.response.ProductInformsModelView;
 import shop.shopBE.domain.product.service.ProductService;
@@ -178,6 +180,27 @@ public class ProductController {
     }
 
 
+    // 상품 이름으로 조회
+    @GetMapping("/search")
+    @Operation(summary = "검색 상품 조회", description = "검색한 상품들을 보여준다. ")
+    public ResponseEntity<ResponseFormat<List<ProductCardViewModel>>> findProductByKeyword(@RequestBody @Valid SearchProductReq searchProductReq) {
+        List<ProductCardViewModel> productCardViewModels = productService.findProductBySearch(searchProductReq);
+
+        return ResponseEntity.ok().body(ResponseFormat.of("검색어 상품 조회 성공", productCardViewModels));
+    }
+
+    // 상품 이름으로 조회에 옵션으로 분류
+    @GetMapping("/search/{option}")
+    @Operation(summary = "검색 상품 조회", description = "검색한 상품들을 보여준다. ")
+    public ResponseEntity<ResponseFormat<List<ProductCardViewModel>>> findProductByKeyword(@RequestBody @Valid SearchProductReq searchProductReq,
+                                                                                           @PathVariable("option") String option) {
+        List<ProductCardViewModel> productCardViewModels = productService.findProductBySearchAndOption(searchProductReq, option);
+
+        return ResponseEntity.ok().body(ResponseFormat.of("검색어 상품 조회 성공", productCardViewModels));
+    }
+
+
+
     // 상품 등록
     @PostMapping(value = "/add", consumes = {"multipart/form-data"})
     @Operation(summary = "상품 세부사항 등록", description = "상품의 세부사항을 받아 상품을 등록한다. (판매자만 등록 가능)")
@@ -211,6 +234,8 @@ public class ProductController {
         productService.deleteMultipleProducts(deleteProductsReq.productIds(), authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("판매자가 등록한 복수의 상품 제거 성공"));
     }
+
+
 
     // 상품 정보 수정.
 

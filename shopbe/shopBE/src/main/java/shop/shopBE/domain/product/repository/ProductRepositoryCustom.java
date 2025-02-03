@@ -15,6 +15,9 @@ import java.util.Optional;
 
 public interface ProductRepositoryCustom {
 
+
+    Optional<Product> findNonDeletedProductByProductId(Long productId);
+
     // 상품 카드 데이터를 리턴해주는 메소드
     ProductListViewModel getProductListViewModels(Long productId);
 
@@ -57,5 +60,15 @@ public interface ProductRepositoryCustom {
 
     // 상품 상세조회의 필드를 찾기위한 메서드
     Optional<ProductInformsModelView> findProductInformsByProductId(Long productId);
-    
+
+    // 검색어(이름)로 상품을 찾는 메서드
+    Optional<List<ProductCardViewModel>> findProductCardViewByKeyword(Pageable pageable, String keyword);
+
+    Optional<List<ProductCardViewModel>> findSearchProductsOrderByPriceAsc(Pageable pageable, String keyword);
+
+    Optional<List<ProductCardViewModel>> findSearchProductsOrderByCreateAtDesc(Pageable pageable, String keyword);
+
+    Optional<List<ProductCardViewModel>> findSearchProductsOrderBySalesVolumeDesc(Pageable pageable, String keyword);
+
+    Optional<List<ProductCardViewModel>> findSearchProductsOrderByLikeCountDesc(Pageable pageable, String keyword);
 }
