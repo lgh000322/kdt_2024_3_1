@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import HeaderComponent from "../components/HeaderComponent";
-import { getMemberInfo } from "../api/memberApi";
+import { getMemberInfo, updateMember } from "../api/memberApi";
 import { getCookies } from "../utils/cookieUtils";
-import { useSearchParams } from "react-router-dom";
+import { data, useSearchParams } from "react-router-dom";
+import useCustomMove from "../hook/useCustomMove";
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -128,9 +129,7 @@ const initState = {
 };
 
 function LoginSuccessPage() {
-  const { isAuthenticated } = useSearchParams();
-
-  console.log(isAuthenticated);
+  const { moveToProductAbs } = useCustomMove();
   useEffect(() => {
     let accessToken = getCookies("accessToken");
     getMemberInfo(accessToken).then((res) => {
@@ -158,6 +157,15 @@ function LoginSuccessPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form Submitted:", formData);
+    let accessToken = getCookies("accessToken");
+
+    updateMember(formData, accessToken).then((res) => {
+      if (res.code === 200) {
+        moveToProductAbs();
+      } else {
+        alert("업데이트에 실패했습니다.");
+      }
+    });
   };
 
   return (
