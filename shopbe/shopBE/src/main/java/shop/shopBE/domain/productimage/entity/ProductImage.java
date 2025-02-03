@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.shopBE.domain.product.entity.Product;
+import shop.shopBE.domain.product.entity.enums.ProductCategory;
 import shop.shopBE.domain.productimage.entity.enums.ProductImageCategory;
 
 import java.time.LocalDateTime;
@@ -31,4 +32,16 @@ public class ProductImage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    public static ProductImage createDefaultProductImage(String originName,
+                                                          String savedName,
+                                                          ProductImageCategory productImageCategory,
+                                                          Product product) {
+        return ProductImage.builder()
+                .originName(originName)
+                .savedName(savedName)
+                .product(product)
+                .productImageCategory(productImageCategory)
+                .build();
+    }
 }
