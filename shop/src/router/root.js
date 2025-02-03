@@ -22,6 +22,7 @@ const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
 const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 const OrderListPage = lazy(() => import("../pages/OrderListPage"));
 const WishListPage = lazy(() => import("../pages/WishListPage"));
+const Cart = lazy(() => import("../pages/Cart"));
 
 
 const root = createBrowserRouter([
@@ -166,7 +167,15 @@ const root = createBrowserRouter([
     )
   },
   {
-    path: "wishlistpage",
+    path: "cart",
+    element: (
+      <Suspense fallback={Loading}>
+        <Cart />
+      </Suspense>
+    )
+  },
+  {
+    path: "mypage/wishlist",
     element: (
       <Suspense fallback={Loading}>
         <WishListPage />
