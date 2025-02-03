@@ -15,6 +15,7 @@ const Kids = lazy(() => import("../pages/KidsPage"));
 const Mypage = lazy(() => import("../pages/Mypage"));
 const AdminUserPage = lazy(() => import("../pages/AdminUserPage"));
 const AdminSellerPage = lazy(() => import("../pages/AdminSellerPage"));
+<<<<<<< HEAD
 const AdminAcceptPage = lazy(() => import("../pages/AdminAcceptPage"));
 const AdminStatisticPage = lazy(() => import("../pages/AdminStatisticPage"));
 const AdminBannerPage = lazy(() => import("../pages/AdminBannerPage"));
@@ -22,10 +23,19 @@ const AdminCenterPage = lazy(() => import("../pages/AdminCenterPage"));
 const SellerRegistration = lazy(() =>
   import("../pages/SellerRegistrationPage")
 );
+=======
+const AdminAcceptPage = lazy(()=> import("../pages/AdminAcceptPage"));
+const AdminStatisticPage = lazy(()=> import("../pages/AdminStatisticPage"));
+const AdminBannerPage = lazy(()=> import("../pages/AdminBannerPage"));
+const AdminCenterPage = lazy(() => import("../pages/AdminCenterPage"));
+const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"));
+>>>>>>> f7d11d4acd4aaa177b0fd3e4a8421ed0579b536a
 const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
 const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 const OrderListPage = lazy(() => import("../pages/OrderListPage"));
+const OrderDetailPage = lazy(()=> import("../pages/OrderDetailPage"));
 const WishListPage = lazy(() => import("../pages/WishListPage"));
+const ShippingAddressPage = lazy(() => import("../pages/ShippingAddressPage"));
 const Cart = lazy(() => import("../pages/Cart"));
 
 const root = createBrowserRouter([
@@ -114,6 +124,14 @@ const root = createBrowserRouter([
     ),
   },
   {
+    path: "mypage/order-detail",
+    element: (
+      <Suspense fallback={Loading}>
+        <OrderDetailPage />
+      </Suspense>
+    ),
+  },
+  {
     path: "admin_user",
     element: (
       <Suspense fallback={Loading}>
@@ -166,6 +184,22 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <SellerRegistration />
+      </Suspense>
+    ),
+  },
+  {
+    path: "mypage",
+    element: (
+      <Suspense fallback={Loading}>
+        <Mypage/>
+      </Suspense>
+    ),
+  },
+  {
+    path: "mypage/shipping-address",
+    element: (
+      <Suspense fallback={Loading}>
+        <ShippingAddressPage/>
       </Suspense>
     ),
   },
