@@ -1,9 +1,9 @@
 package shop.shopBE.domain.member.request;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import shop.shopBE.domain.member.entity.enums.Role;
 
 public record MemberRoleUpdate(
-        @NotEmpty Role role
+        @NotNull Role role
 ) {
 }
