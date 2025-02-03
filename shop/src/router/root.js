@@ -15,16 +15,25 @@ const Kids = lazy(() => import("../pages/KidsPage"));
 const Mypage = lazy(() => import("../pages/Mypage"));
 const AdminUserPage = lazy(() => import("../pages/AdminUserPage"));
 const AdminSellerPage = lazy(() => import("../pages/AdminSellerPage"));
+<<<<<<< HEAD
 const AdminAcceptPage = lazy(() => import("../pages/AdminAcceptPage"));
 const AdminStatisticPage = lazy(() => import("../pages/AdminStatisticPage"));
 const AdminBannerPage = lazy(() => import("../pages/AdminBannerPage"));
 const SellerRegistration = lazy(() =>
   import("../pages/SellerRegistrationPage")
 );
+=======
+const AdminAcceptPage = lazy(()=> import("../pages/AdminAcceptPage"));
+const AdminStatisticPage = lazy(()=> import("../pages/AdminStatisticPage"));
+const AdminBannerPage = lazy(()=> import("../pages/AdminBannerPage"));
+const AdminCenterPage = lazy(() => import("../pages/AdminCenterPage"));
+const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"));
+>>>>>>> abdf1b3f568b091ece31640d60de59b8c745055c
 const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
 const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 const OrderListPage = lazy(() => import("../pages/OrderListPage"));
 const WishListPage = lazy(() => import("../pages/WishListPage"));
+const Cart = lazy(() => import("../pages/Cart"));
 
 const root = createBrowserRouter([
   {
@@ -152,6 +161,14 @@ const root = createBrowserRouter([
     ),
   },
   {
+    path: "admin_center",
+    element: (
+      <Suspense fallback={Loading}>
+        <AdminCenterPage/>
+      </Suspense>
+    )
+  },
+  {
     path: "mypage/seller-registration",
     element: (
       <Suspense fallback={Loading}>
@@ -176,7 +193,15 @@ const root = createBrowserRouter([
     ),
   },
   {
-    path: "wishlistpage",
+    path: "cart",
+    element: (
+      <Suspense fallback={Loading}>
+        <Cart />
+      </Suspense>
+    )
+  },
+  {
+    path: "mypage/wishlist",
     element: (
       <Suspense fallback={Loading}>
         <WishListPage />
