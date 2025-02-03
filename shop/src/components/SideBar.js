@@ -15,7 +15,7 @@ const Sidebar = ({ onMenuClick, role }) => {
 
   const consumerMenuItems = [
     { id: 1, title: '주문목록 / 배송조회', path: '/mypage/order-list', content: '주문목록 및 배송조회 관련 콘텐츠' },
-    { id: 2, title: '배송지 관리', path: '/mypage/address-management', content: '배송지 관리 관련 콘텐츠' },
+    { id: 2, title: '배송지 관리', path: '/mypage/shipping-address', content: '배송지 관리 관련 콘텐츠' },
     { id: 3, title: '문의내역', path: '/mypage/inquiry', content: '문의내역 관련 콘텐츠' },
     { id: 4, title: '찜리스트', path: '/mypage/wishlist', content: '찜리스트 관련 콘텐츠' },
     { id: 5, title: '판매자 등록 신청', path: '/mypage/seller-registration', content: '판매자 등록 신청 관련 콘텐츠' }
