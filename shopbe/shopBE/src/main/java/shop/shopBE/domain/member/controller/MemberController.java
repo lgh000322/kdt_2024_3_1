@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import shop.shopBE.domain.member.request.MemberListRequest;
+import shop.shopBE.domain.member.request.MemberRoleUpdate;
 import shop.shopBE.domain.member.request.MemberUpdateInfo;
 import shop.shopBE.domain.member.response.MemberInformation;
 import shop.shopBE.domain.member.response.MemberListResponse;
@@ -34,10 +35,20 @@ public class MemberController {
         return ResponseEntity.ok().body(ResponseFormat.of("회원 정보 업데이트 성공"));
     }
 
+    //회원의 역할만 수정
+    @PutMapping("/member/{memberId}")
+    @Operation(summary = "회원의 역할 수정", description = "회원의 아이디를 입력받아 회원의 역할을 수정한다.")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponseFormat<Void>> updateMemberRole(@RequestBody @Valid MemberRoleUpdate memberRoleUpdate,
+                                                                 @PathVariable(name = "memberId") Long memberId) {
+        memberFacadeService.updateMemberRole(memberRoleUpdate.role(), memberId);
+        return ResponseEntity.ok().body(ResponseFormat.of("회원의 역할을 수정하는데 성공했습니다."));
+    }
+
+    //회원의 데이터 수정
     @GetMapping("/member")
     @Operation(summary = "회원 조회", description = "현재 로그인 한 회원의 전체 정보를 조회한다.")
     public ResponseEntity<ResponseFormat<MemberInformation>> getMemberInformation(@AuthenticationPrincipal AuthToken authToken) {
-
         MemberInformation memberInformation = memberFacadeService.findMemberInfoById(authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("회원 조회 성공", memberInformation));
     }

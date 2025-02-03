@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.shopBE.domain.member.entity.Member;
+import shop.shopBE.domain.member.entity.enums.Role;
 import shop.shopBE.domain.member.exception.MemberExceptionCode;
 import shop.shopBE.domain.member.repository.MemberRepository;
 import shop.shopBE.domain.member.request.MemberUpdateInfo;
@@ -25,7 +26,15 @@ public class MemberService {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND)); // 변경 감지에 의한 업데이트
 
-        findMember.updateMember(memberUpdateInfo);
+        findMember.updateMember(memberUpdateInfo.email(), memberUpdateInfo.name(), memberUpdateInfo.gender(), memberUpdateInfo.phone(), true);
+    }
+
+    @Transactional
+    public void updateMemberRole(Role role, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND));
+
+        member.changeRole(role);
     }
 
     public MemberInformation findMemberInfoById(Long memberId) {

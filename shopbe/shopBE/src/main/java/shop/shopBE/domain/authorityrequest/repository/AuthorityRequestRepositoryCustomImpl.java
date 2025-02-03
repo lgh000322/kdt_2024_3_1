@@ -27,6 +27,7 @@ public class AuthorityRequestRepositoryCustomImpl implements AuthorityRequestRep
                         authorityRequest.createAt
                 ))
                 .from(authorityRequest).innerJoin(member).on(authorityRequest.member.id.eq(member.id))
+                .where(authorityRequest.isAccepted.eq(false))
                 .offset(page)
                 .limit(size)
                 .fetch();

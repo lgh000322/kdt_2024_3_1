@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.domain.member.entity.enums.Role;
 import shop.shopBE.domain.member.request.MemberListRequest;
 import shop.shopBE.domain.member.request.MemberUpdateInfo;
@@ -25,6 +26,10 @@ public class MemberFacadeService {
 
     public MemberInformation findMemberInfoById(Long memberId) {
         return memberService.findMemberInfoById(memberId);
+    }
+
+    public void updateMemberRole(Role role, Long memberId) {
+        memberService.updateMemberRole(role, memberId);
     }
 
     public List<MemberListResponseView> getMemberList(MemberListRequest memberListRequest) {

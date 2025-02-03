@@ -43,8 +43,7 @@ public class AuthorityRequestService {
                 .orElseThrow(() -> new CustomException(AuthorityExceptionCode.AUTHORITY_NOT_FOUND));
 
         Member member = authorityRequest.getMember();
-        MemberUpdateInfo memberUpdateInfo = MemberUpdateInfo.createDefaultMemberUpdateInfo(member.getGender(), member.getTel(), Role.SELLER);
-        member.updateMember(memberUpdateInfo);
+        member.changeRole(Role.SELLER);
         authorityRequest.update(true);
     }
 
