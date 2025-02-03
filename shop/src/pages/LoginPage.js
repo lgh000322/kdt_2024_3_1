@@ -4,6 +4,14 @@ import useCustomMove from "../hook/useCustomMove";
 function LoginPage() {
   const { moveToProduct } = useCustomMove();
 
+  const googleLogin = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+  };
+
+  const naverLogin = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/naver";
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-screen pt-16 bg-white">
       {/* 로고 이미지 */}
@@ -16,7 +24,10 @@ function LoginPage() {
       </div>
 
       {/* 네이버 로그인 버튼 */}
-      <button className="flex items-center justify-center w-full max-w-lg h-16 mb-4 bg-green-500 text-white font-semibold rounded-xl shadow-lg hover:bg-green-600 transition-colors text-xl">
+      <button
+        className="flex items-center justify-center w-full max-w-lg h-16 mb-4 bg-green-500 text-white font-semibold rounded-xl shadow-lg hover:bg-green-600 transition-colors text-xl"
+        onClick={naverLogin}
+      >
         <img
           src="img/naver.JPG" // 네이버 로고 이미지
           alt="네이버 로고"
@@ -26,7 +37,10 @@ function LoginPage() {
       </button>
 
       {/* 구글 로그인 버튼 */}
-      <button className="flex items-center justify-center w-full max-w-lg h-16 bg-white border border-gray-300 text-gray-600 font-semibold rounded-xl shadow-lg hover:bg-gray-100 transition-colors text-xl">
+      <button
+        className="flex items-center justify-center w-full max-w-lg h-16 bg-white border border-gray-300 text-gray-600 font-semibold rounded-xl shadow-lg hover:bg-gray-100 transition-colors text-xl"
+        onClick={googleLogin}
+      >
         <img src="img/google.JPG" alt="구글 로고" className="w-8 h-8 mr-3" />
         구글로 시작하기
       </button>

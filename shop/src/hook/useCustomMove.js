@@ -7,7 +7,15 @@ const useCustomMove = () => {
     navigate({ pathname: "../product" });
   };
 
-  return { moveToProduct };
+  const moveToProductAbs = () => {
+    navigate({ pathname: "/product" });
+  };
+
+  const moveToAuthenticated = () => {
+    navigate({ pathname: "/login/second" });
+  };
+
+  return { moveToProduct, moveToProductAbs, moveToAuthenticated };
 };
 
 export default useCustomMove;
