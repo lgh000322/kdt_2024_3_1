@@ -1,15 +1,15 @@
 package shop.shopBE.domain.orderhistory.response;
 
-import shop.shopBE.domain.destination.entity.Destination;
-import shop.shopBE.domain.member.entity.Member;
-import shop.shopBE.domain.orderhistory.entity.OrderHistory;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record OrderHistoryResponse(
-        int orderPrice, //총 주문 가격
-        LocalDateTime createdAt, //주문 날짜
-        Destination destination, //배송지 정보
-        Member member //주문자ID
+        Long orderId, // 주문번호
+        LocalDateTime createdAt, //주문 일시
+        String imageUrl, // 주문상품의 대표이미지
+        String content, // ex: 상품 이름 외 n개
+        int price // 총 가격
 ) {
 }

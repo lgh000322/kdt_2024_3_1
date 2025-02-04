@@ -7,9 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
 import shop.shopBE.domain.orderproduct.entity.enums.DeliveryStatus;
+import shop.shopBE.domain.orderproduct.entity.request.OrderProductDeliveryInfo;
 import shop.shopBE.domain.product.entity.Product;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -26,12 +29,14 @@ public class OrderProduct {
 
     private int productTotalPrice;
 
-    @Enumerated(EnumType.STRING)
-    private DeliveryStatus deliveryStatus;
+    private DeliveryStatus currentDeliveryStatus; //배송상태 기록
 
-    // 배송 시작 날짜
-    private LocalDateTime createdAt;
+    private LocalDateTime changedAt; //배송 현재 날짜
 
+    //배송상태 기록
+    @ElementCollection
+    @CollectionTable(name = "orderProductDeliveryInfo", joinColumns = @JoinColumn(name = "orderProductId"))
+    private List<OrderProductDeliveryInfo> deliveryStatusHistory = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_history_id")
@@ -41,16 +46,11 @@ public class OrderProduct {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    /*
-        주문상품 응답 DTO
-         */
-    public static record OrderProductDto(
-            Long id, //주문상품 번호
-            int productCount, //상품 갯수
-            DeliveryStatus deliveryStatus, //배송상태
-            LocalDateTime createdAt, //배송 시작 날짜
-            OrderHistory orderHistory, //주문내역Id
-            Product product //상품
-    ) {
+    public void updateDeliveryStatus(OrderProductDeliveryInfo newDeliveryInfo) {
+        this.currentDeliveryStatus = newDeliveryInfo.getDeliveryStatus(); // 배송 상태 업데이트
+        this.changedAt = newDeliveryInfo.getChangedAt(); // 변경된 시간 저장
+
+        deliveryStatusHistory.add(newDeliveryInfo);
     }
+
 }

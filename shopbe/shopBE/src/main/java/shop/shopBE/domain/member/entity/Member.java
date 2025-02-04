@@ -38,27 +38,35 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // jwt 토큰에 넣어줄 값
     @Column(name = "sub", unique = true)
-    private UUID sub;
+    private String sub;
 
     private LocalDateTime createdAt;
 
-    public static Member createDefaultMember(String username, String name, String email, Role role) {
+    private boolean authenticated;
+
+    public static Member createDefaultMember(String username, String name, String email, Role role, boolean authenticated) {
         return Member.builder()
                 .username(username)
                 .name(name)
                 .role(role)
                 .email(email)
-                .sub(UUID.randomUUID())
+                .sub(UUID.randomUUID().toString())
+                .authenticated(authenticated)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public void updateMember(MemberUpdateInfo memberUpdateInfo) {
-        this.gender=memberUpdateInfo.gender();
-        this.tel=memberUpdateInfo.tel();
-        this.role = memberUpdateInfo.role();
+    public void updateMember(String email, String name, Gender gender, String tel, boolean authenticated) {
+        this.email=email;
+        this.name = name;
+        this.gender = gender;
+        this.tel = tel;
+        this.authenticated = authenticated;
+    }
+
+    public void changeRole(Role role) {
+        this.role = role;
     }
 
 }

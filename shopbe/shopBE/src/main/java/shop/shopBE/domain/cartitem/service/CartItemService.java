@@ -59,7 +59,9 @@ public class CartItemService {
 
     // 장바구니 상품 수정
     @Transactional
-    public void updateCartItem(CartItem cartItem, UpdateCartItemInform updateCartItemInform) {
+    public void updateCartItem(Long cartItemId, UpdateCartItemInform updateCartItemInform) {
+        // 장바구니 상품을 찾고 없으면 예외를 터트림
+        CartItem cartItem = findById(cartItemId);
         // 변경감지를 통한 장바구니 상품 수정.
         cartItem.updateCartItem(updateCartItemInform);
     }

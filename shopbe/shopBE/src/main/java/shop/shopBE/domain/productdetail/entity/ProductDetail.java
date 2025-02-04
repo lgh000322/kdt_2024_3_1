@@ -6,25 +6,27 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.shopBE.domain.product.entity.Product;
+import shop.shopBE.domain.productdetail.exception.ProductDetailExceptionCustom;
+import shop.shopBE.global.exception.custom.CustomException;
 
+@Entity
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Getter
 public class ProductDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
-
     int shoesSize;
 
     int sizeStock;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     public static ProductDetail createDefaultProductDetail(Product product, int shoesSize, int sizeStock) {
         return ProductDetail.builder()
@@ -32,5 +34,13 @@ public class ProductDetail {
                 .shoesSize(shoesSize)
                 .sizeStock(sizeStock)
                 .build();
+    }
+
+    public void minusSizeStock(int stock) {
+        if(this.sizeStock - stock < 0) {
+            throw new CustomException(ProductDetailExceptionCustom.OUT_OF_STOCK);
+        }
+
+        this.sizeStock -= stock;
     }
 }

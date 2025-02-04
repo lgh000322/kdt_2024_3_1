@@ -4,9 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import shop.shopBE.domain.likesitem.request.LikesItemDeleteInfo;
 import shop.shopBE.domain.likesitem.request.LikesItemInfo;
 import shop.shopBE.domain.likesitem.request.LikesPaging;
 import shop.shopBE.domain.likesitem.service.LikesItemFacadeService;
@@ -34,16 +37,17 @@ public class LikesItemController {
 
     @GetMapping("/likes/items")
     @Operation(summary = "찜 아이템 조회", description = "현재 로그인 한 회원의 찜아이템 목록을 조회한다.")
-    public ResponseEntity<ResponseFormat<List<ProductListViewModel>>> getLikesItems(@RequestBody @Valid LikesPaging likesPaging,
+    public ResponseEntity<ResponseFormat<List<ProductListViewModel>>> getLikesItems(@PageableDefault Pageable pageable,
                                                                                     @AuthenticationPrincipal AuthToken authToken) {
-        List<ProductListViewModel> likesItems = likesItemFacadeService.findLikesItems(likesPaging, authToken.getId());
+        List<ProductListViewModel> likesItems = likesItemFacadeService.findLikesItems(pageable, authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("찜 아이템 조회 성공.", likesItems));
     }
 
     @DeleteMapping("/likes/item/{likesItemId}")
     @Operation(summary = "찜 아이템 삭제", description = "현재 로그인 한 회원의 찜 아이템 1개를 삭제한다.")
-    public ResponseEntity<ResponseFormat<Void>> deleteLikesItem(@PathVariable(name = "likesItemId") Long likesItemId) {
-        likesItemFacadeService.deleteById(likesItemId);
+    public ResponseEntity<ResponseFormat<Void>> deleteLikesItem(@PathVariable(name = "likesItemId") Long likesItemId,
+                                                                @RequestBody @Valid LikesItemDeleteInfo likesItemDeleteInfo) {
+        likesItemFacadeService.deleteById(likesItemId, likesItemDeleteInfo.productId());
         return ResponseEntity.ok().body(ResponseFormat.of("찜 아이템 삭제에 성공했습니다."));
     }
 }

@@ -5,8 +5,5 @@ import shop.shopBE.domain.productdetail.entity.ProductDetail;
 
 import java.util.Optional;
 
-public interface ProductDetailRepository extends JpaRepository<ProductDetail, Long> {
-
-    @Override
-    Optional<ProductDetail> findById(Long productDetailId);
+public interface ProductDetailRepository extends JpaRepository<ProductDetail, Long>, ProductDetailRepositoryCustom {
 }

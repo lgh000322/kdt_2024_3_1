@@ -7,15 +7,10 @@ import shop.shopBE.domain.member.entity.enums.Role;
 
 @Builder
 public record MemberUpdateInfo(
+        @NotNull String email,
+        @NotNull String name,
         @NotNull Gender gender,
-        @NotNull String tel,
-        @NotNull Role role
+        @NotNull String phone
 ) {
-    public static MemberUpdateInfo createDefaultMemberUpdateInfo(Gender gender, String tel, Role role) {
-        return MemberUpdateInfo.builder()
-                .gender(gender)
-                .tel(tel)
-                .role(role)
-                .build();
-    }
+
 }

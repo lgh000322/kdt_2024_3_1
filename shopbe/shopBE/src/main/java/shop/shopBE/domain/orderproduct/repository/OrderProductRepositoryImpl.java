@@ -3,6 +3,7 @@ package shop.shopBE.domain.orderproduct.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
 import shop.shopBE.domain.orderproduct.request.OrderProductInfo;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import static shop.shopBE.domain.orderhistory.entity.QOrderHistory.orderHistory;
 import static shop.shopBE.domain.orderproduct.entity.QOrderProduct.orderProduct;
 import static shop.shopBE.domain.product.entity.QProduct.product;
+import static shop.shopBE.domain.productimage.entity.QProductImage.productImage;
 
 @RequiredArgsConstructor
 public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom {
@@ -25,8 +27,8 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
                         orderProduct.id,
                         orderProduct.productCount,
                         orderProduct.productTotalPrice,
-                        orderProduct.deliveryStatus,
-                        orderProduct.createdAt,
+                        orderProduct.currentDeliveryStatus,
+                        orderProduct.changedAt,
                         orderProduct.product
                 ))
                 .from(orderProduct)
@@ -37,4 +39,22 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
 
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public Optional<OrderHistoryInfoResponse> findOrderHistoryInfoById(Long orderHistoryId) {
+        OrderHistoryInfoResponse result = queryFactory
+                .select(Projections.constructor(OrderHistoryInfoResponse.class,
+                        product.productName,
+                        productImage.savedName
+                        ))
+                .from(orderProduct)
+                .innerJoin(product).on(orderProduct.product.id.eq(product.id))
+                .innerJoin(productImage).on(productImage.product.id.eq(product.id))
+                .where(orderProduct.orderHistory.id.eq(orderHistoryId))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
+
 }

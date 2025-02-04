@@ -48,4 +48,16 @@ public class Destination {
         this.zipCode = updateDestinationRequest.zipCode();
         this.deliveryMessage = updateDestinationRequest.deliverMessage();
     }
+
+    public static Destination createDefaultDestination(String destinationName, String receiverName, String tel, String address, Long zipCode, Member member) {
+        return Destination.builder()
+                .destinationName(destinationName)
+                .receiverName(receiverName)
+                .tel(tel)
+                .address(address)
+                .zipCode(zipCode)
+                .isSelectedDestination(true)
+                .member(member)
+                .build();
+    }
 }

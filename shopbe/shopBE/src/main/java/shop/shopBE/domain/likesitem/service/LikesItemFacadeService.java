@@ -19,6 +19,7 @@ import shop.shopBE.domain.product.service.ProductService;
 import shop.shopBE.global.exception.custom.CustomException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,27 +30,17 @@ public class LikesItemFacadeService {
     private final MemberService memberService;
     private final ProductService productService;
 
-    public void setLikesItems(LikesItemInfo likesItems, Long memberId) {
+    public void setLikesItems(LikesItemInfo likesItemInfo, Long memberId) {
         //회원의 찜 보관함이 없으면 만들고 있으면 사용한다.(readonly = true) & (readonly = false)
         Likes likes = likesService.findLikesByMemberId(memberId)
                 .orElseGet(() -> createLikes(memberId));
 
-        // likesItems의 모든 상품의 기본키로 상품엔터티를 조회한다.
-        Product product = productService.findById(likesItems.productId());// (readonly = true)
-
-        // 찜 상품 목록 생성
-        LikesItem likesItem = LikesItem.createLikesItem(likes, product);
-
-        // 찜 상품 목록 저장
-        likesItemService.setLikesItems(likesItem); //(readonly = false)
-
+        //찜 상품 저장 (readonly=false)
+        likesItemService.setLikesItems(likes, likesItemInfo.productId());
     }
 
-    public List<ProductListViewModel> findLikesItems(LikesPaging likesPaging, Long memberId) {
-        // 페이징 정보
-        Pageable pageable = PageRequest.of(likesPaging.page() - 1, likesPaging.size());
-
-        // 찜 보관함 조회
+    public List<ProductListViewModel> findLikesItems(Pageable pageable, Long memberId) {
+        // 찜 보관함 조회 or 추가
         Likes likes = likesService.findLikesByMemberId(memberId)
                 .orElseGet(() -> createLikes(memberId));
 
@@ -69,8 +60,8 @@ public class LikesItemFacadeService {
         return likesService.save(likes);
     }
 
-    public void deleteById(Long likesItemId) {
-        likesItemService.deleteLikesItemById(likesItemId);
+    public void deleteById(Long likesItemId,Long productId) {
+        likesItemService.deleteById(likesItemId, productId);
     }
 
 }

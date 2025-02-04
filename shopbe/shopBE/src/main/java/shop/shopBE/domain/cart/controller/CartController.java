@@ -25,16 +25,14 @@ import java.util.List;
 @Tag(name = "장바구니", description = "장바구니 관련 API")
 public class CartController {
 
-    private CartService cartService;
+    private final CartService cartService;
 
     // 장바구니 조회 메서드
     @GetMapping("/list")
     @Operation(summary = "장바구니 조회", description = "현재 로그인 한 회원의 장바구니 목록을 조회한다.")
     public ResponseEntity<ResponseFormat<List<CartItemInform>>> findAllCartItems(@RequestBody @Valid CartsPaging cartsPaging,
                                                                                 @AuthenticationPrincipal AuthToken authToken) {
-
         List<CartItemInform> cartItemList = cartService.findCartItemList(cartsPaging, authToken.getId());
-
         return ResponseEntity.ok().body(ResponseFormat.of("장바구니 아이템 조회 성공.", cartItemList));
     }
 
@@ -43,10 +41,7 @@ public class CartController {
     @Operation(summary = "장바구니 아이템 추가", description = "현재 로그인 한 회원의 장바구니 상품을 추가한다.")
     public ResponseEntity<ResponseFormat<Void>> addCartItem(@RequestBody @Valid AddCartItemInform addCartItemInform,
                                                             @AuthenticationPrincipal AuthToken authToken) {
-
-
         cartService.addCartItem(addCartItemInform, authToken.getId());
-
         return ResponseEntity.ok().body(ResponseFormat.of("장바구니 상품 추가 성공."));
     }
 
@@ -55,7 +50,6 @@ public class CartController {
     @Operation(summary = "장바구니 상품 정보 수정", description = "현재 로그인 한 회원의 장바구니 상품 정보를 변경한다.")
     public ResponseEntity<ResponseFormat<Void>> updateCartItem(@PathVariable("cartItemId") Long cartItemId,
                                                                @RequestBody @Valid UpdateCartItemInform updateCartItemInform) {
-
         cartService.updateCartItem(cartItemId, updateCartItemInform);
         return ResponseEntity.ok().body(ResponseFormat.of("장바구니 상품 정보 수정 성공."));
     }

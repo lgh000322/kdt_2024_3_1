@@ -29,4 +29,17 @@ public class LikesItemRepositoryCustomImpl implements LikesItemRepositoryCustom 
         return Optional.ofNullable(productIds);
     }
 
+    @Override
+    public Optional<Long> findOneProductIdByLikesId(Long likesId) {
+
+        Long productId = queryFactory
+                .select(likesItem.product.id)
+                .from(likesItem)
+                .where(likesItem.likes.id.eq(likesId))
+                .fetchOne();
+
+        return Optional.ofNullable(productId);
+    }
+
+
 }

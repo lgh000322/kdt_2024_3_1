@@ -10,7 +10,7 @@ import shop.shopBE.global.exception.code.ExceptionCode;
 @Getter
 public enum DestinationException implements ExceptionCode {
 
-    Destination_NOT_FOUND(HttpStatus.NOT_FOUND, "회원의 배송지를 찾을 수 없습니다."),;
+    DESTINATION_NOT_FOUND(HttpStatus.NOT_FOUND, "회원의 배송지를 찾을 수 없습니다."),;
 
     private final HttpStatus httpStatus;
     private final String message;
