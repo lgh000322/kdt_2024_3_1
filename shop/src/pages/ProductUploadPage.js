@@ -1,5 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import UploadLayout from "../layouts/UploadLayout";
+import { Editor } from "@toast-ui/react-editor";
+import "@toast-ui/editor/dist/toastui-editor.css"; // Editor styles
+import "@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css"; // Plugin styles
+import colorSyntax from "@toast-ui/editor-plugin-color-syntax";
 
 function ProductUploadPage() {
   const [productName, setProductName] = useState("");
@@ -10,8 +14,9 @@ function ProductUploadPage() {
   const [images, setImages] = useState([]);
   const [hoveredImage, setHoveredImage] = useState(null); // 팝업 이미지 상태
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
-  const fileInputRef = React.useRef(null);
-  const multiFileInputRef = React.useRef(null);
+  const fileInputRef = useRef(null);
+  const multiFileInputRef = useRef(null);
+  const editorRef = useRef(null); // TOAST UI Editor reference
 
   {/* 상품 대표 이미지(단일) */}
   const handleRepresentImageUpload = (e) => {
@@ -40,13 +45,12 @@ function ProductUploadPage() {
     }
     setRepresentImage(null);
   };
-  
+
   {/* 상품 이미지 삭제 */}
   const handleRemoveImage = (index) => {
     setImages((prevImages) => {
       const updatedImages = prevImages.filter((_, i) => i !== index); // 이미지 삭제
-      // 업로드된 파일 URL 해제
-      URL.revokeObjectURL(prevImages[index].preview);
+      URL.revokeObjectURL(prevImages[index].preview); // 업로드된 파일 URL 해제
       return updatedImages;
     });
   };
@@ -66,7 +70,7 @@ function ProductUploadPage() {
     const imageRect = event.currentTarget.getBoundingClientRect();
     setHoveredImage(image.preview);
     setPopupPosition({
-      x: imageRect.left + 250, // 마우스 포인터 기준 위치 조정
+      x: imageRect.left + 250,
       y: imageRect.top,
     });
   };
@@ -79,13 +83,20 @@ function ProductUploadPage() {
   {/* 상품 등록 버튼 */}
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // TOAST UI Editor에서 Markdown 데이터 가져오기
+    const editorInstance = editorRef.current.getInstance();
+    const markdownContent = editorInstance.getMarkdown();
+
     console.log({
       productName,
       category,
-      description,
+      description: markdownContent,
       representImage,
       images,
+      productPrice,
     });
+
     alert("상품이 등록되었습니다!");
   };
 
@@ -126,44 +137,6 @@ function ProductUploadPage() {
             )}
           </div>
 
-          {/* 상품 이미지 업로드 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              상품 이미지 업로드
-            </label>
-            <input
-              ref={multiFileInputRef}
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
-            />
-            <div className="mt-4 grid grid-cols-3 gap-4">
-              {images.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative"
-                  onMouseMove={(e) => handleHoverImage(image, e)}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <img
-                    src={image.preview}
-                    alt={`uploaded-${index}`}
-                    className="w-60 h-auto object-cover rounded-lg"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-sm rounded-full"
-                  >
-                    삭제
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* 상품명 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -198,17 +171,22 @@ function ProductUploadPage() {
           </div>
 
           {/* 상품 설명란 */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2" htmlFor="description"> 
+          <div>
+            <label className="block text-sm font-medium mb-2" htmlFor="description">
               상품 설명
             </label>
-            <textarea
-              id="description"
-              rows="5"
-              placeholder="상품에 대한 설명을 입력하세요"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full border px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+            <Editor
+              ref={editorRef}
+              initialValue={description}
+              previewStyle="vertical"
+              height="400px"
+              initialEditType="wysiwyg"
+              useCommandShortcut={true}
+              plugins={[colorSyntax]}
+              onChange={() => {
+                const editorInstance = editorRef.current.getInstance();
+                setDescription(editorInstance.getMarkdown());
+              }}
             />
           </div>
 
@@ -219,7 +197,7 @@ function ProductUploadPage() {
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                ￦
+                ₩
               </span>
               <input
                 type="text"
@@ -247,32 +225,33 @@ function ProductUploadPage() {
             </button>
           </div>
         </form>
-      </div>
-      {/* 이미지 팝업 */}
-      {hoveredImage && (
-        <div
-          style={{
-            position: "absolute",
-            top: `${popupPosition.y}px`,
-            left: `${popupPosition.x}px`,
-            border: "1px solid #ddd",
-            backgroundColor: "white",
-            padding: "5px",
-            zIndex: 1000,
-          }}
-          className="shadow-lg rounded"
-        >
-          <img
-            src={hoveredImage}
-            alt="미리보기"
+
+        {/* 이미지 팝업 */}
+        {hoveredImage && (
+          <div
             style={{
-              width: "300px", // 팝업 이미지 크기
-              height: "auto",
-              objectFit: "cover",
+              position: "absolute",
+              top: `${popupPosition.y}px`,
+              left: `${popupPosition.x}px`,
+              border: "1px solid #ddd",
+              backgroundColor: "white",
+              padding: "5px",
+              zIndex: 1000,
             }}
-          />
-        </div>
-      )}
+            className="shadow-lg rounded"
+          >
+            <img
+              src={hoveredImage}
+              alt="미리보기"
+              style={{
+                width: "300px",
+                height: "auto",
+                objectFit: "cover",
+              }}
+            />
+          </div>
+        )}
+      </div>
     </UploadLayout>
   );
 }

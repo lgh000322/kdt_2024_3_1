@@ -3,11 +3,28 @@ import BasicLayout from '../layouts/BasicLayout';
 
 function SellerRequestPage() {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [reason, setReason] = useState(''); // 판매자 등록 사유 상태
+  const [isSubmitted, setIsSubmitted] = useState(false); // 제출 여부 상태
 
   // 파일 변경 핸들러
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
+  };
+
+  // 판매자 등록 사유 변경 핸들러
+  const handleReasonChange = (event) => {
+    setReason(event.target.value);
+  };
+
+  // 제출 버튼 클릭 핸들러
+  const handleSubmit = () => {
+    if (!reason || !selectedFile) {
+      alert('판매자 등록 사유와 첨부파일을 모두 입력해주세요.');
+      return;
+    }
+    setIsSubmitted(true); // 제출 완료 상태로 변경
+    alert('제출이 완료되었습니다.');
   };
 
   return (
@@ -25,11 +42,13 @@ function SellerRequestPage() {
               type="text"
               id="reason"
               placeholder="사유를 입력하세요"
-              className="w-full border px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-green-300"
+              value={reason}
+              onChange={handleReasonChange}
+              disabled={isSubmitted} // 제출 후 비활성화
+              className={`w-full border px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring ${
+                isSubmitted ? 'bg-gray-200 cursor-not-allowed' : 'focus:ring-green-300'
+              }`}
             />
-          </div>
-          <div>
-
           </div>
           <div className="mb-4 pt-5">
             <label className="block text-sm font-medium mb-1" htmlFor="fileUpload">
@@ -39,8 +58,11 @@ function SellerRequestPage() {
               type="file"
               id="fileUpload"
               accept=".pdf,.hwp,.doc,.docx"
-              className="w-full border px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-green-300"
               onChange={handleFileChange}
+              disabled={isSubmitted} // 제출 후 비활성화
+              className={`w-full border px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:ring ${
+                isSubmitted ? 'bg-gray-200 cursor-not-allowed' : 'focus:ring-green-300'
+              }`}
             />
             {selectedFile && (
               <p className="mt-2 text-sm text-gray-500">
@@ -48,14 +70,20 @@ function SellerRequestPage() {
               </p>
             )}
           </div>
-          <hr></hr>
-          <h3 className="text-gray-500 text-opacity-30">*제출서류에 (사업자 등록증, 신분증 사본, 통장 사본) 이미지 또는 PDF 문서로 업로드 바랍니다.</h3>
+          <hr />
+          <h3 className="text-gray-500 text-opacity-30">
+            *제출서류에 (사업자 등록증, 신분증 사본, 통장 사본) 이미지 또는 PDF 문서로 업로드 바랍니다.
+          </h3>
 
           <button
             type="button"
-            className="w-full bg-green-500 text-white font-semibold py-2 rounded-lg hover:bg-green-600"
+            onClick={handleSubmit}
+            disabled={isSubmitted} // 제출 후 버튼 비활성화
+            className={`w-full font-semibold py-2 rounded-lg ${
+              isSubmitted ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600 text-white'
+            }`}
           >
-            제출하기
+            {isSubmitted ? '제출 완료' : '제출하기'}
           </button>
         </div>
       </div>
