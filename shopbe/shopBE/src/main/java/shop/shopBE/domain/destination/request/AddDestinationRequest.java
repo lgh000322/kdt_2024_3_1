@@ -23,7 +23,6 @@ public record AddDestinationRequest(
         String address, //주소
 
         @NotNull
-        @NotEmpty
         Long zipCode, //우편번호
 
         boolean isSelectedDestination // 기본 배송지 여부

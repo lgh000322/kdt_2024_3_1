@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,8 +49,8 @@ public class AuthorityRequestController {
     @GetMapping("/authority")
     @Operation(summary = "권한 허가 신청 목록", description = "관리자만 권한 허가 신청한 사람들의 목록을 확인할 수 있다.")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseFormat<List<AuthorityResponseListViewModel>>> getAuthorityRequests(@RequestBody @Valid AuthorityRequestListViewModel authorityRequestListViewModel) {
-        List<AuthorityResponseListViewModel> result = authorityRequestFacadeService.findAuthorityRequests(authorityRequestListViewModel);
+    public ResponseEntity<ResponseFormat<List<AuthorityResponseListViewModel>>> getAuthorityRequests(@PageableDefault Pageable pageable) {
+        List<AuthorityResponseListViewModel> result = authorityRequestFacadeService.findAuthorityRequests(pageable);
         return ResponseEntity.ok().body(ResponseFormat.of("성공", result));
     }
 

@@ -1,9 +1,11 @@
 package shop.shopBE.domain.member.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import shop.shopBE.domain.member.entity.enums.Role;
 import shop.shopBE.domain.member.response.MemberInformation;
 import shop.shopBE.domain.member.response.MemberListResponse;
 
@@ -35,19 +37,32 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public Optional<List<MemberListResponse>> findAllByPaging(Pageable pageable) {
+    public Optional<List<MemberListResponse>> findAllByPaging(Pageable pageable, Role role, String email) {
         List<MemberListResponse> result = queryFactory
                 .select(Projections.constructor(MemberListResponse.class,
                         member.name,
                         member.email,
-                        member.createdAt,
+                        member.tel,
+                        member.gender,
                         member.role
                 ))
                 .from(member)
+                .where(
+                        isRoleEq(role),
+                        isEmailEq(email)
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         return Optional.ofNullable(result);
+    }
+
+    private BooleanExpression isRoleEq(Role role) {
+        return role == null ? null : member.role.eq(role);
+    }
+
+    private BooleanExpression isEmailEq(String email) {
+        return email == null ? null : member.email.eq(email);
     }
 }

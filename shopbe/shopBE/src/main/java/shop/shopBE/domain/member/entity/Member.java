@@ -57,14 +57,16 @@ public class Member {
                 .build();
     }
 
-    public void authenticateMember(boolean authenticated) {
+    public void updateMember(String email, String name, Gender gender, String tel, boolean authenticated) {
+        this.email=email;
+        this.name = name;
+        this.gender = gender;
+        this.tel = tel;
         this.authenticated = authenticated;
     }
 
-    public void updateMember(MemberUpdateInfo memberUpdateInfo) {
-        this.gender=memberUpdateInfo.gender();
-        this.tel=memberUpdateInfo.tel();
-        this.role = memberUpdateInfo.role();
+    public void changeRole(Role role) {
+        this.role = role;
     }
 
 }

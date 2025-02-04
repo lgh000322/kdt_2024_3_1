@@ -21,10 +21,7 @@ public class OrderHistoryFadeService {
     private final OrderProductService orderProductService;
 
     //주문내역리스트 조회
-    public List<OrderHistoryResponse> findOrderHistoryList(Long memberId, OrderHistoryInfo orderHistoryInfo) {
-        // 페이지 객체 생성
-        Pageable pageable = PageRequest.of(orderHistoryInfo.page() - 1, orderHistoryInfo.size());
-
+    public List<OrderHistoryResponse> findOrderHistoryList(Long memberId, Pageable pageable) {
         // 회원의 주문기록을 찾는다
         List<OrderHistory> orderHistories = orderHistoryService.findOrderHistoryByMemberId(memberId, pageable);
 
