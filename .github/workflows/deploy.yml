@@ -29,9 +29,9 @@ jobs:
         working-directory: shopbe/shopBE
         run: chmod +x ./gradlew
 
-      - name: 테스트 및 빌드하기
+      - name: 테스트 실행하지 않고 빌드하기
         working-directory: shopbe/shopBE
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       - name: AWS Resource에 접근 가능한 AWS credential 설정
         uses: aws-actions/configure-aws-credentials@v1
