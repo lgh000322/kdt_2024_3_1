@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import shop.shopBE.domain.member.entity.Member;
+import shop.shopBE.domain.member.entity.enums.Gender;
 import shop.shopBE.domain.member.entity.enums.Role;
 import shop.shopBE.domain.member.request.MemberListRequest;
 import shop.shopBE.domain.member.request.MemberUpdateInfo;
@@ -41,11 +42,33 @@ public class MemberFacadeService {
         return memberList.stream()
                 .map(res -> {
                     String role = getRoleName(res.role());
-                    MemberListResponseView result = new MemberListResponseView(res.name(), res.email(), res.createdAt().toLocalDate(), role);
-                    return result;
+                    String gender = getGenderName(res.gender());
+
+                    return MemberListResponseView.builder()
+                            .name(res.name())
+                            .email(res.email())
+                            .gender(gender)
+                            .role(role)
+                            .tel(res.tel())
+                            .build();
+
                 }).toList();
     }
 
+    private String getGenderName(Gender gender) {
+        switch (gender){
+            case MALE -> {
+                return "남성";
+            }
+            case FEMALE -> {
+                return "여성";
+            }
+
+            default -> {
+                return "성이 없음";
+            }
+        }
+    }
     private String getRoleName(Role role) {
         switch (role) {
             case ADMIN -> {

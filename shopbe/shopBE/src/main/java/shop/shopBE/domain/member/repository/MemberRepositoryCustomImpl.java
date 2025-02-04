@@ -40,7 +40,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .select(Projections.constructor(MemberListResponse.class,
                         member.name,
                         member.email,
-                        member.createdAt,
+                        member.tel,
+                        member.gender,
                         member.role
                 ))
                 .from(member)
