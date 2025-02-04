@@ -39,6 +39,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String isAuthenticated = authToken.isAuthenticated() ? "true" : "false";
 
-        response.sendRedirect("http://localhost:3000/login/success?isAuthenticated" + isAuthenticated);
+        response.sendRedirect("http://localhost:3000/login/success?isAuthenticated=" + isAuthenticated);
     }
 }

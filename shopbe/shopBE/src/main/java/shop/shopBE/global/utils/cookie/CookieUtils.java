@@ -1,5 +1,6 @@
 package shop.shopBE.global.utils.cookie;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import shop.shopBE.global.utils.cookie.data.CookieData;
 
@@ -16,12 +17,24 @@ public class CookieUtils {
             // accessToken이 아닌 refreshToken일 경우에 자바스크립트로 가져갈 수 없게 함.
             cookie.setHttpOnly(true);
         }
-
         cookie.setSecure(true);
         cookie.setMaxAge(cookie.getMaxAge());
         cookie.setPath("/");
         cookie.setAttribute("SameSite", "None");
+
         return cookie;
+    }
+
+    public Cookie deleteRefreshCookie() {
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setAttribute("SameSite","None");
+        refreshTokenCookie.setMaxAge(0);
+
+        return refreshTokenCookie;
+
     }
 
 

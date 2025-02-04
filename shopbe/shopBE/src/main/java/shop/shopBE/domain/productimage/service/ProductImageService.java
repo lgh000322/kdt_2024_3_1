@@ -57,8 +57,6 @@ public class ProductImageService {
         }
     }
 
-
-
     //사이드 이미지들을 업로드후 파일데이터리스트를 반환.
     private List<FileData> uploadSideImgs(List<MultipartFile> sideImgFiles) {
         return sideImgFiles.stream().map(file -> {

@@ -17,7 +17,7 @@ import java.util.List;
 public class AuthenticationUtils {
 
     public void makeAuthToken(Member member) {
-        AuthToken token = AuthToken.createToken(member.getId(), member.getName(), member.getUsername(), member.getRole(), member.isAuthenticated());
+        AuthToken token = AuthToken.createToken(member.getId(), member.getName(), member.getUsername(), member.getRole(), member.isAuthenticated(),member.getSub());
         log.info("token의 role={}", token.getRoles());
         Authentication authentication = getAuthentication(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);

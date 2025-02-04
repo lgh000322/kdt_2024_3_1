@@ -1,6 +1,7 @@
 package shop.shopBE.domain.authorityrequest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,13 +44,12 @@ public class AuthorityRequestService {
                 .orElseThrow(() -> new CustomException(AuthorityExceptionCode.AUTHORITY_NOT_FOUND));
 
         Member member = authorityRequest.getMember();
-        MemberUpdateInfo memberUpdateInfo = MemberUpdateInfo.createDefaultMemberUpdateInfo(member.getGender(), member.getTel(), Role.SELLER);
-        member.updateMember(memberUpdateInfo);
+        member.changeRole(Role.SELLER);
         authorityRequest.update(true);
     }
 
-    public List<AuthorityResponseListViewModel> findAuthorityRequests(AuthorityRequestListViewModel authorityRequestListViewModel) {
-        return authorityRequestRepository.findAuthorityRequests(authorityRequestListViewModel.page(), authorityRequestListViewModel.size())
+    public List<AuthorityResponseListViewModel> findAuthorityRequests(Pageable pageable) {
+        return authorityRequestRepository.findAuthorityRequests(pageable)
                 .orElseThrow(() -> new CustomException(AuthorityExceptionCode.AUTHORITY_NOT_EXISTS));
     }
 
