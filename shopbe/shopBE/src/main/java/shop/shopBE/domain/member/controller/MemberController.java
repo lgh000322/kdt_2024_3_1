@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import shop.shopBE.domain.member.entity.enums.Role;
 import shop.shopBE.domain.member.request.MemberListRequest;
 import shop.shopBE.domain.member.request.MemberRoleUpdate;
 import shop.shopBE.domain.member.request.MemberUpdateInfo;
@@ -62,8 +63,10 @@ public class MemberController {
     @GetMapping("/members")
     @Operation(summary = "회원 정보 전체 조회", description = "관리자는 모든 회원의 정보를 조회할 수 있다")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseFormat<List<MemberListResponseView>>> getMembers(@PageableDefault Pageable pageable) {
-        List<MemberListResponseView> memberList = memberFacadeService.getMemberList(pageable);
+    public ResponseEntity<ResponseFormat<List<MemberListResponseView>>> getMembers(@PageableDefault Pageable pageable,
+                                                                                   @RequestParam(name = "grade", required = false) Role role,
+                                                                                   @RequestParam(name = "email", required = false) String email) {
+        List<MemberListResponseView> memberList = memberFacadeService.getMemberList(pageable, role, email);
         return ResponseEntity.ok().body(ResponseFormat.of("회원 리스트 조회에 성공했습니다.", memberList));
     }
 
