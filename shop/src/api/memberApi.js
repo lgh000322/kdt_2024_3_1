@@ -31,7 +31,6 @@ export const updateMember = async (updateMemberInfo, accessToken) => {
 };
 
 export const logoutRefresh = async (accessToken) => {
-  console.log(accessToken);
   const header = {
     headers: { Authorization: `Bearer ${accessToken}` },
     withCredentials: true,
