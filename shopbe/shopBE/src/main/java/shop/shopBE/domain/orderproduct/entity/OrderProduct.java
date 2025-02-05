@@ -36,9 +36,9 @@ public class OrderProduct {
     //배송상태 기록
     @ElementCollection
     @CollectionTable(name = "orderProductDeliveryInfo", joinColumns = @JoinColumn(name = "orderProductId"))
-    private List<OrderProductDeliveryInfo> deliveryStatusHistory = new ArrayList<>();
+    private List<OrderProductDeliveryInfo> deliveryStatusHistory;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "order_history_id")
     private OrderHistory orderHistory;
 

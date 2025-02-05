@@ -1,14 +1,17 @@
 package shop.shopBE.domain.orderproduct.repository;
 
+import shop.shopBE.domain.orderhistory.entity.OrderHistory;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
-import shop.shopBE.domain.orderproduct.request.OrderProductInfo;
+import shop.shopBE.domain.orderproduct.entity.OrderProduct;
+import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface OrderProductRepositoryCustom {
 
-    Optional<List<OrderProductInfo>> findOrderProductByHistoryId(Long historyId);
+    Optional<OrderProductInfo> findDetailOrderProductByHistoryId(OrderHistory orderHistory, OrderProduct orderProduct);
 
     Optional<OrderHistoryInfoResponse> findOrderHistoryInfoById(Long orderHistoryId);
+
 }

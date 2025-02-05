@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
+import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
 
 import java.util.List;
 import java.util.Optional;
