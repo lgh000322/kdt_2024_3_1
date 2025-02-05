@@ -2,6 +2,10 @@ import axios from "axios";
 import { ApiHost } from "./ApiConst";
 
 const preFix = `${ApiHost}/member`;
+const adminlist = `${ApiHost}/members`;
+const selleraccept = `${ApiHost}/authority`;
+
+
 
 export const getMemberInfo = async (accessToken) => {
   const header = {
@@ -38,6 +42,35 @@ export const logoutRefresh = async (accessToken) => {
   };
 
   const res = await axios.post(`${preFix}/logout`, null, header);
+
+  return res.data;
+};
+
+
+export const getMembers = async (accessToken) => {
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
+
+  console.log("Request URL:", adminlist);
+  console.log("Request Headers:", header);
+
+  const res = await axios.get(`${adminlist}`, header);
+
+  return res.data;
+};
+
+export const sellerAccept = async (accessToken) => {
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
+
+  console.log("Request URL:", adminlist);
+  console.log("Request Headers:", header);
+
+  const res = await axios.get(`${selleraccept}`, header);
 
   return res.data;
 };

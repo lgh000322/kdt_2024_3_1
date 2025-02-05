@@ -9,6 +9,7 @@ function BasicLayout({ children }) {
 
   let role;
 
+
   if (loginState.role == "ROLE_ADMIN") {
     role = "manager";
   } else if (loginState.role == "ROLE_SELLER") {

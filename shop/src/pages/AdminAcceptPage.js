@@ -1,69 +1,63 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminPageLayout from '../layouts/AdminPageLayout';
+import { useSelector } from "react-redux";
+import { sellerAccept } from "../api/memberApi";
 
 const userRole = "manager";
 
-// 더미 데이터에 승인 상태 추가
-const initialDummyData = [
-  { id: 1, registrant: "김철수", reason: "신규 판매자 등록", date: "2025-01-20", userId: "seller1", status: "대기중" },
-  { id: 2, registrant: "이영희", reason: "상품 카테고리 확장", date: "2025-01-19", userId: "seller2", status: "승인" },
-  { id: 3, registrant: "박지성", reason: "브랜드 입점", date: "2025-01-18", userId: "seller3", status: "대기중" },
-  { id: 4, registrant: "최동욱", reason: "신규 판매자 등록", date: "2025-01-17", userId: "seller4", status: "거절" },
-  { id: 5, registrant: "정수민", reason: "해외 상품 판매", date: "2025-01-16", userId: "seller5", status: "대기중" },
-  { id: 6, registrant: "강민호", reason: "신규 판매자 등록", date: "2025-01-15", userId: "seller6", status: "승인" },
-  { id: 7, registrant: "윤서연", reason: "상품 라인 확장", date: "2025-01-14", userId: "seller7", status: "대기중" },
-  { id: 8, registrant: "임재현", reason: "온라인 매장 오픈", date: "2025-01-13", userId: "seller8", status: "승인" },
-  { id: 9, registrant: "한지원", reason: "신규 판매자 등록", date: "2025-01-12", userId: "seller9", status: "대기중" },
-  { id: 10, registrant: "오승훈", reason: "브랜드 제품 판매", date: "2025-01-11", userId: "seller10", status: "거절" },
-  { id: 11, registrant: "서민재", reason: "신규 판매자 등록", date: "2025-01-10", userId: "seller11", status: "대기중" },
-  { id: 12, registrant: "노유진", reason: "해외 브랜드 입점", date: "2025-01-09", userId: "seller12", status: "승인" },
-  { id: 13, registrant: "류현진", reason: "스포츠 용품 판매", date: "2025-01-08", userId: "seller13", status: "대기중" },
-  { id: 14, registrant: "백승호", reason: "신규 판매자 등록", date: "2025-01-07", userId: "seller14", status: "승인" },
-  { id: 15, registrant: "조아라", reason: "패션 아이템 판매", date: "2025-01-06", userId: "seller15", status: "대기중" },
-];
-
 function AdminAcceptPage() {
+  const loginSlice = useSelector((state) => state.loginSlice);
+  const [formData, setFormData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]); // 필터링된 데이터
   const [searchTerm, setSearchTerm] = useState("");
-  const [dummyData, setDummyData] = useState(initialDummyData);
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const filteredData = useMemo(() => {
-    return dummyData.filter((item) =>
-      item.registrant.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.userId.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [dummyData, searchTerm]);
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const accessToken = loginSlice.accessToken;
+        console.log("Access Token:", accessToken);
+
+        const response = await sellerAccept(accessToken);
+        console.log("API Response:", response);
+
+        // 이름 기준으로 정렬
+        const sortedData = response.data.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        setFormData(sortedData);
+        setFilteredData(sortedData); // 초기값 설정
+      } catch (error) {
+        console.error("Failed to fetch members:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (loginSlice.accessToken) fetchMembers();
+  }, [loginSlice.accessToken]);
+
+
+useEffect(() => {
+    if (searchTerm === "") {
+      setFilteredData(formData); // 검색어가 없으면 전체 데이터 표시
+    } else {
+      const filtered = formData.filter((member) =>
+        member.memberName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        member.title.toLowerCase().includes(searchTerm.toLowerCase())  
+      );
+      setFilteredData(filtered);
+    }
+  }, [searchTerm, formData]);
+
+  if (loading) return <div>Loading...</div>;
 
   const handleRowClick = (index) => {
     setSelectedRowIndex(index);
   };
 
-  // 승인 상태에 따른 배경색 설정
-  const getStatusColor = (status) => {
-    switch(status) {
-      case "승인": return "#e6ffed";
-      case "거절": return "#ffebe6";
-      default: return "transparent";
-    }
-  };
-
-  const handleApprove = () => {
-    if (selectedRowIndex !== null) {
-      const newData = [...dummyData];
-      const actualIndex = dummyData.findIndex(item => item.id === filteredData[selectedRowIndex].id);
-      newData[actualIndex].status = "승인";
-      setDummyData(newData);
-    }
-  };
-
-  const handleReject = () => {
-    if (selectedRowIndex !== null) {
-      const newData = [...dummyData];
-      const actualIndex = dummyData.findIndex(item => item.id === filteredData[selectedRowIndex].id);
-      newData[actualIndex].status = "거절";
-      setDummyData(newData);
-    }
-  };
+  
 
   return (
     <AdminPageLayout role={userRole}>
@@ -104,7 +98,7 @@ function AdminAcceptPage() {
           <input
             type="text"
             id="searchTerm"
-            placeholder="등록자 또는 등록자ID를 입력하세요"
+            placeholder="등록자 또는 제목을 입력하세요"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -144,7 +138,7 @@ function AdminAcceptPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead style={{ position: "sticky", top: 0, backgroundColor: "#f7faff", zIndex: 1 }}>
               <tr>
-                {["번호", "등록자", "등록 사유", "등록일", "작성자ID", "승인여부"].map((header) => (
+                {["번호", "등록자", "등록 제목", "등록일"].map((header) => (
                   <th
                     key={header}
                     style={{
@@ -160,9 +154,9 @@ function AdminAcceptPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((item, index) => (
+              {filteredData.map((member, index) => (
                 <tr 
-                  key={item.id} 
+                  key={member.id} 
                   style={{ 
                     borderBottom: "1px solid #ddd",
                     backgroundColor: index === selectedRowIndex ? "#e6f7ff" : "transparent",
@@ -170,20 +164,17 @@ function AdminAcceptPage() {
                   }}
                   onClick={() => handleRowClick(index)}
                 >
-                  <td style={{ padding: "10px", textAlign: "center" }}>{item.id}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{item.registrant}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{item.reason}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{item.date}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{item.userId}</td>
-                  <td style={{ 
-                    padding: "10px", 
-                    textAlign: "center", 
-                    backgroundColor: getStatusColor(item.status)
-                  }}>
-                    {item.status}
-                  </td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>{index + 1}</td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>{member.memberName}</td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>{member.title}</td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>{member.createAt}</td>
                 </tr>
               ))}
+                {filteredData.length === 0 && (
+                  <tr>
+                    <td colSpan="6" style={{ textAlign:"center", padding:"20px" }}>검색 결과가 없습니다.</td>
+                  </tr>
+                )}
             </tbody>
           </table>
         </div>
@@ -206,7 +197,6 @@ function AdminAcceptPage() {
               border: 'none',
               cursor: 'pointer',
             }}
-            onClick={handleApprove}
           >
             승인
           </button>
@@ -221,7 +211,6 @@ function AdminAcceptPage() {
               border: 'none',
               cursor: 'pointer',
             }}
-            onClick={handleReject}
           >
             거절
           </button>
