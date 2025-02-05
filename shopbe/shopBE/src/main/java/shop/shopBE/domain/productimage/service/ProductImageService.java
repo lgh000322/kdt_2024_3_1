@@ -11,6 +11,7 @@ import shop.shopBE.domain.productimage.entity.ProductImage;
 import shop.shopBE.domain.productimage.entity.enums.ProductImageCategory;
 import shop.shopBE.domain.productimage.exception.ProductImageExceptionCode;
 import shop.shopBE.domain.productimage.repository.ProductImageRepository;
+import shop.shopBE.domain.productimage.response.ImgInforms;
 import shop.shopBE.global.exception.custom.CustomException;
 import shop.shopBE.global.utils.s3.S3Utils;
 
@@ -24,11 +25,11 @@ public class ProductImageService {
     private final ProductImageRepository productImageRepository;
     private final S3Utils s3Utils;
 
-    public List<String> findSideImgsByProductId(Long productId){
-        List<String> sideImgUrls =
+    public List<ImgInforms> findSideImgInformsByProductId(Long productId){
+        List<ImgInforms> sideImgInforms =
                 productImageRepository.findSideImgUrlsByProductId(productId)
                         .orElseThrow(() -> new CustomException(ProductImageExceptionCode.SIDE_IMAGE_NOT_FOUND));
-        return sideImgUrls;
+        return sideImgInforms;
     }
 
 
@@ -56,6 +57,46 @@ public class ProductImageService {
             productImageRepository.save(productImage);
         }
     }
+
+
+    public void updateMainImg(Product product, MultipartFile updateMainImg, ImgInforms deleteImgInforms) {
+
+        if(deleteImgInforms != null) {
+            // s3에서 파일 제거
+            s3Utils.deleteFile(deleteImgInforms.imgUrl());
+            // db에서 제거
+            productImageRepository.deleteById(deleteImgInforms.imgId());
+        }
+
+        if(updateMainImg != null) {
+            // s3에 저장
+            FileData fileData = uploadMainImg(updateMainImg);
+            //db에 저장
+            ProductImage productImage = ProductImage.createDefaultProductImage(fileData.originalFileName(), fileData.savedFileName(), ProductImageCategory.MAIN, product);
+            productImageRepository.save(productImage);
+        }
+    }
+
+    public void updateSideImgs(Product product, List<MultipartFile> updateSideImgs, List<ImgInforms> deleteImgInforms) {
+
+
+        for (ImgInforms deleteImgInform : deleteImgInforms) {
+            // s3에서 파일 제거
+            s3Utils.deleteFile(deleteImgInform.imgUrl());
+            // db에서 제거
+            productImageRepository.deleteById(deleteImgInform.imgId());
+        }
+
+        if(updateSideImgs == null) return;
+
+        List<FileData> fileDatas = uploadSideImgs(updateSideImgs);
+        for (FileData fileData : fileDatas) {
+            //db에 저장
+            ProductImage productImage = ProductImage.createDefaultProductImage(fileData.originalFileName(), fileData.savedFileName(), ProductImageCategory.SIDE, product);
+            productImageRepository.save(productImage);
+        }
+    }
+
 
     //사이드 이미지들을 업로드후 파일데이터리스트를 반환.
     private List<FileData> uploadSideImgs(List<MultipartFile> sideImgFiles) {
