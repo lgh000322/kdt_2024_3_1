@@ -4,8 +4,7 @@ import { ApiHost } from "./ApiConst";
 const preFix = `${ApiHost}/member`;
 const adminlist = `${ApiHost}/members`;
 const selleraccept = `${ApiHost}/authority`;
-
-
+const destinationlist = `${ApiHost}/destination`;
 
 export const getMemberInfo = async (accessToken) => {
   const header = {
@@ -71,6 +70,17 @@ export const sellerAccept = async (accessToken) => {
   console.log("Request Headers:", header);
 
   const res = await axios.get(`${selleraccept}`, header);
+
+  return res.data;
+};
+
+export const destinationList = async (accessToken) => {
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
+
+  const res = await axios.get(`${destinationlist}`, header);
 
   return res.data;
 };

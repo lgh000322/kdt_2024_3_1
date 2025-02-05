@@ -1,61 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BasicLayout from "../layouts/BasicLayout";
 import { useSelector } from "react-redux";
-import { addShippingAddress } from "../api/shippingAddressApi";
+import { getShippingAddresses, updateShippingAddress } from "../api/shippingAddressApi";
 
 function ShippingAddressPage() {
   const loginState = useSelector((state) => state.loginSlice);
   const accessToken = loginState.accessToken;
 
-  const [shippingAddresses, setShippingAddresses] = useState([]);
-  const [newAddress, setNewAddress] = useState({
-    destinationName: "",
-    receiverName: "",
-    tel: "",
-    address: "",
-    zipCode: "",
-    isSelectedDestination: false,
-  });
-  const [isAdding, setIsAdding] = useState(false);
+  const [shippingAddresses, setShippingAddresses] = useState([]); // 기본값 배열 설정
+  const [editingAddress, setEditingAddress] = useState([]); // 수정 중인 주소 저장
 
-  // 새 주소 입력 핸들러
+  // 배송지 목록 불러오기
+  useEffect(() => {
+    console.log("📢 배송지 목록 불러오기 시작");
+  
+    const fetchAddresses = async () => {
+      try {
+        console.log("🚀 배송지 목록 요청 시작");
+        const response = await getShippingAddresses(accessToken);
+        
+        console.log("📦 API 응답 전체:", response);
+    
+        if (response && response.data && Array.isArray(response.data)) {
+          console.log("📌 최종 배송지 목록:", response.data);
+          setShippingAddresses([]);
+        } else {
+          console.error("❌ API 응답이 예상과 다름:", response);
+          setShippingAddresses([]);
+        }
+      } catch (error) {
+        console.error("🚨 배송지 목록 불러오기 실패:", error);
+        setShippingAddresses([]);
+      }
+    };    
+  
+    fetchAddresses();
+  }, [accessToken]);  
+
+  // 수정 모드 활성화
+  const handleEdit = (address) => {
+    setEditingAddress({ ...address });
+  };
+
+  // 입력값 변경 핸들러
   const handleInputChange = (field, value) => {
-    setNewAddress((prev) => ({ ...prev, [field]: value }));
+    if (!editingAddress) return;
+    setEditingAddress((prev) => ({ ...prev, [field]: value }));
   };
 
-  // 기본 배송지 여부 토글 핸들러
-  const handleCheckboxChange = () => {
-    setNewAddress((prev) => ({ ...prev, isSelectedDestination: !prev.isSelectedDestination }));
-  };
-
-  // 새 주소 저장 핸들러
-  const handleSaveNewAddress = async () => {
-    const { destinationName, receiverName, tel, address, zipCode } = newAddress;
-
-    if (!destinationName || !receiverName || !tel || !address || !zipCode) {
-      alert("모든 필드를 입력해주세요.");
-      return;
-    }
+  // 배송지 수정 요청
+  const handleUpdateAddress = async () => {
+    if (!editingAddress) return;
 
     try {
-      // 서버에 새 주소 추가 요청
-      await addShippingAddress(newAddress, accessToken);
+      await updateShippingAddress(editingAddress.destinationId, editingAddress, accessToken);
 
-      // 성공 시 UI 업데이트
-      setShippingAddresses((prev) => [...prev, { ...newAddress, id: prev.length + 1 }]);
-      alert("새 배송지가 성공적으로 추가되었습니다.");
-      setIsAdding(false); // 입력 폼 닫기
-      setNewAddress({
-        destinationName: "",
-        receiverName: "",
-        tel: "",
-        address: "",
-        zipCode: "",
-        isSelectedDestination: false,
-      }); // 폼 초기화
+      // UI 업데이트
+      setShippingAddresses((prev) =>
+        prev.map((addr) => (addr.destinationId === editingAddress.destinationId ? editingAddress : addr))
+      );
+
+      setEditingAddress(null); // 수정 모드 종료
+      alert("배송지가 성공적으로 수정되었습니다.");
     } catch (error) {
-      console.error("배송지 추가 실패:", error);
-      alert(`배송지 추가 실패: ${error.message}`);
+      console.error("배송지 수정 실패:", error);
+      alert(`배송지 수정 실패: ${error.message}`);
     }
   };
 
@@ -64,106 +73,69 @@ function ShippingAddressPage() {
       <div style={{ padding: "40px", maxWidth: "800px", margin: "0 auto" }}>
         <h1 style={{ fontSize: "28px", fontWeight: "600", marginBottom: "30px" }}>배송지 관리</h1>
 
-        {!isAdding ? (
-          <button
-            onClick={() => setIsAdding(true)}
-            style={{
-              padding: "12px 24px",
-              backgroundColor: "#4CAF50",
-              color: "white",
-              borderRadius: "6px",
-              cursor: "pointer",
-              marginBottom: "20px",
-            }}
-          >
-            + 새 배송지 추가
-          </button>
-        ) : (
-          <div style={{ marginBottom: "20px", borderRadius: "8px", padding: "20px", border: "1px solid #ddd" }}>
-            <h3>새 배송지 추가</h3>
-            <input
-              type="text"
-              placeholder="배송지 이름"
-              value={newAddress.destinationName}
-              onChange={(e) => handleInputChange("destinationName", e.target.value)}
-              style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
-            />
-            <input
-              type="text"
-              placeholder="받는 사람"
-              value={newAddress.receiverName}
-              onChange={(e) => handleInputChange("receiverName", e.target.value)}
-              style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
-            />
-            <input
-              type="text"
-              placeholder="전화번호"
-              value={newAddress.tel}
-              onChange={(e) => handleInputChange("tel", e.target.value)}
-              style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
-            />
-            <input
-              type="text"
-              placeholder="주소"
-              value={newAddress.address}
-              onChange={(e) => handleInputChange("address", e.target.value)}
-              style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
-            />
-            <input
-              type="number"
-              placeholder="우편번호"
-              value={newAddress.zipCode}
-              onChange={(e) => handleInputChange("zipCode", e.target.value)}
-              style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
-            />
-            <div style={{ marginBottom: "10px" }}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={newAddress.isSelectedDestination}
-                  onChange={handleCheckboxChange}
-                  style={{ marginRight: "5px" }}
-                />
-                기본 배송지로 설정
-              </label>
+        {shippingAddresses.length > 0 ? (
+          shippingAddresses.map((address, index) => (
+            <div key={address.destinationId || `temp-${index}`} style={{ borderRadius: "8px", padding: "20px", borderBottom: "1px solid #ddd" }}>
+              {editingAddress?.destinationId === address.destinationId ? (
+                // 수정 모드 UI
+                editingAddress && (
+                  <div>
+                    <input
+                      type="text"
+                      value={editingAddress.destinationName || ""}
+                      onChange={(e) => handleInputChange("destinationName", e.target.value)}
+                      style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
+                    />
+                    <input
+                      type="text"
+                      value={editingAddress.receiverName || ""}
+                      onChange={(e) => handleInputChange("receiverName", e.target.value)}
+                      style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
+                    />
+                    <input
+                      type="text"
+                      value={editingAddress.tel || ""}
+                      onChange={(e) => handleInputChange("tel", e.target.value)}
+                      style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
+                    />
+                    <input
+                      type="text"
+                      value={editingAddress.address || ""}
+                      onChange={(e) => handleInputChange("address", e.target.value)}
+                      style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
+                    />
+                    <input
+                      type="number"
+                      value={editingAddress.zipCode || ""}
+                      onChange={(e) => handleInputChange("zipCode", e.target.value)}
+                      style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
+                    />
+                    <button onClick={handleUpdateAddress} style={{ padding: "10px 20px", backgroundColor: "#4CAF50", color: "white", borderRadius: "6px", cursor: "pointer", marginRight: "10px" }}>
+                      저장
+                    </button>
+                    <button onClick={() => setEditingAddress(null)} style={{ padding: "10px 20px", backgroundColor: "#f44336", color: "white", borderRadius: "6px", cursor: "pointer" }}>
+                      취소
+                    </button>
+                  </div>
+                )
+              ) : (
+                // 기본 보기 UI
+                <div>
+                  <h3>{address.destinationName}</h3>
+                  <p>받는 사람 : {address.receiverName}</p>
+                  <p>전화번호 : {address.tel}</p>
+                  <p>주소 : {address.address}</p>
+                  <p>우편번호 : {address.zipCode}</p>
+                  <button onClick={() => handleEdit(address)} style={{ padding: "8px 16px", backgroundColor: "#008CBA", color: "white", borderRadius: "6px", cursor: "pointer" }}>
+                    수정
+                  </button>
+                </div>
+              )}
             </div>
-            <button
-              onClick={handleSaveNewAddress}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                borderRadius: "6px",
-                cursor: "pointer",
-                marginRight: "10px",
-              }}
-            >
-              저장
-            </button>
-            <button
-              onClick={() => setIsAdding(false)}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#f44336",
-                color: "white",
-                borderRadius: "6px",
-                cursor: "pointer",
-              }}
-            >
-              취소
-            </button>
-          </div>
+          ))
+        ) : (
+          <p>배송지가 없습니다.</p>
         )}
-
-        {shippingAddresses.map((address) => (
-          <div key={address.id} style={{ borderRadius: "8px", padding: "20px", borderBottom: "1px solid #ddd" }}>
-            <h3>{address.destinationName}</h3>
-            <p>받는 사람 : {address.receiverName}</p>
-            <p>전화번호 : {address.tel}</p>
-            <p>주소 : {address.address}</p>
-            <p>우편번호 : {address.zipCode}</p>
-          </div>
-        ))}
       </div>
     </BasicLayout>
   );
