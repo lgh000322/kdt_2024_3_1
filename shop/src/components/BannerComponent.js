@@ -6,7 +6,7 @@ function BannerComponent() {
   useEffect(() => {
     const timer = setInterval(() => {
       nextSlide(); // 일정 시간마다 다음 슬라이드로 이동
-    }, 5000); // 5초 간격
+    }, 4000); // 5초 간격
   
     return () => clearInterval(timer); // 컴포넌트 언마운트 시 타이머 정리
   }, [currentSlide]);
