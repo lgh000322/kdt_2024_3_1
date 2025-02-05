@@ -43,4 +43,10 @@ public class ProductDetail {
 
         this.sizeStock -= stock;
     }
+
+    public void plusSizeStock(int stock) {
+        // 사이즈 0으로 초기화 후 입력받은 재고변경
+        this.sizeStock = 0;
+        this.sizeStock += stock;
+    }
 }

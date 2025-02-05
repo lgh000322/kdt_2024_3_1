@@ -1,20 +1,18 @@
 package shop.shopBE.domain.authorityrequest.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import shop.shopBE.domain.authorityrequest.entity.AuthorityRequest;
 import shop.shopBE.domain.authorityrequest.exception.AuthorityExceptionCode;
 import shop.shopBE.domain.authorityrequest.repository.AuthorityRequestRepository;
-import shop.shopBE.domain.authorityrequest.request.AuthorityRequestListViewModel;
-import shop.shopBE.domain.authorityrequest.response.AuthorityResponseListViewModel;
+import shop.shopBE.domain.authorityrequest.response.AuthorityResponseListModel;
 import shop.shopBE.domain.authorityrequestfile.request.FileData;
 import shop.shopBE.domain.authorityrequestfile.service.AuthorityRequestFileService;
 import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.domain.member.entity.enums.Role;
-import shop.shopBE.domain.member.repository.MemberRepository;
-import shop.shopBE.domain.member.request.MemberUpdateInfo;
 import shop.shopBE.global.exception.custom.CustomException;
 import shop.shopBE.global.utils.s3.S3Utils;
 
@@ -43,13 +41,12 @@ public class AuthorityRequestService {
                 .orElseThrow(() -> new CustomException(AuthorityExceptionCode.AUTHORITY_NOT_FOUND));
 
         Member member = authorityRequest.getMember();
-        MemberUpdateInfo memberUpdateInfo = MemberUpdateInfo.createDefaultMemberUpdateInfo(member.getGender(), member.getTel(), Role.SELLER);
-        member.updateMember(memberUpdateInfo);
+        member.changeRole(Role.SELLER);
         authorityRequest.update(true);
     }
 
-    public List<AuthorityResponseListViewModel> findAuthorityRequests(AuthorityRequestListViewModel authorityRequestListViewModel) {
-        return authorityRequestRepository.findAuthorityRequests(authorityRequestListViewModel.page(), authorityRequestListViewModel.size())
+    public List<AuthorityResponseListModel> findAuthorityRequests(Pageable pageable) {
+        return authorityRequestRepository.findAuthorityRequests(pageable)
                 .orElseThrow(() -> new CustomException(AuthorityExceptionCode.AUTHORITY_NOT_EXISTS));
     }
 

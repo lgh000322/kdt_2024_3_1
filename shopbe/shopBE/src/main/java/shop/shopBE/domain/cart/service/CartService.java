@@ -34,18 +34,16 @@ public class CartService {
     private final ProductService productService;
 
     //카트 아이템 조회 메서드
-    public List<CartItemInform> findCartItemList(CartsPaging cartsPaging, Long memberId) {
+    public List<CartItemInform> findCartItemList(Pageable pageable, Long memberId) {
         Member member = memberService.findById(memberId);
 
         //멤버의 장바구니가 없으면 만들어서반환 있으면있는것 반환
         Cart cart = findCartByMemberId(memberId).orElseGet(() -> createCart(member));
 
-        // 페이징 정보
-        Pageable pageable = PageRequest.of(cartsPaging.page() - 1, cartsPaging.size());
-
         //카트아이템 리스트 반환
         return cartItemService.findCartItemInformsByCartId(cart.getId(), pageable);
     }
+
 
 
     // 장바구니에 상품추가 메서드 - 카트 서비스에서 관련정보를 모두 찾고 카트아이템서비스에서 장바구니에 상품추가.
@@ -56,10 +54,11 @@ public class CartService {
         //멤버의 장바구니가 없으면 만들어서반환 있으면있는것 반환
         Cart cart = findCartByMemberId(memberId).orElseGet(() -> createCart(member));
         // 상품 아이디로 상품을 찾음
-        Product product = productService.findById(addCartItemInform.productId());
+        Product product = productService.findNonDeletedProductByProductId(addCartItemInform.productId());
         //장바구니에 상품 추가.
         cartItemService.addCartItem(addCartItemInform, product, cart);
     }
+
 
     // 장바구니 상품 업데이트 트랜잭션은 cartItem에서 연다.
     public void updateCartItem(Long cartItemId,

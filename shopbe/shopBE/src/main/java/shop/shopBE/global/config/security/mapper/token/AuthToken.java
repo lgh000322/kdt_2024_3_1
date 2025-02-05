@@ -22,7 +22,7 @@ public class AuthToken implements OAuth2User {
     private final String name; // 회원의 이름
     private final String username; // ex) google 1223123123
     private final List<String> roles;// 회원의 역할
-    private final UUID sub; // jwt에 들어가는 UUID 값
+    private final String sub; // jwt에 들어가는 UUID 값
     private final boolean authenticated;
 
     @Override
@@ -37,12 +37,12 @@ public class AuthToken implements OAuth2User {
                 .collect(Collectors.toList());
     }
 
-    public static AuthToken createToken(Long id, String name, String username, Role role, boolean authenticated) {
+    public static AuthToken createToken(Long id, String name, String username, Role role, boolean authenticated, String uuid) {
         return AuthToken.builder()
                 .id(id)
                 .name(name)
                 .username(username)
-                .sub(UUID.randomUUID())
+                .sub(uuid)
                 .roles(List.of(role.getRoleDescription()))
                 .authenticated(authenticated)
                 .build();

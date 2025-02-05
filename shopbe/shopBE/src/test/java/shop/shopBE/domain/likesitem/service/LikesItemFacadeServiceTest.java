@@ -1,6 +1,7 @@
 package shop.shopBE.domain.likesitem.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import shop.shopBE.domain.likes.entity.Likes;
 import shop.shopBE.domain.likes.repository.LikesRepository;
 import shop.shopBE.domain.likesitem.entity.LikesItem;
 import shop.shopBE.domain.likesitem.request.LikesItemInfo;
@@ -21,6 +24,7 @@ import shop.shopBE.domain.product.entity.enums.ProductCategory;
 import shop.shopBE.domain.product.entity.enums.SeasonCategory;
 import shop.shopBE.domain.product.repository.ProductRepository;
 
+import java.awt.*;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;

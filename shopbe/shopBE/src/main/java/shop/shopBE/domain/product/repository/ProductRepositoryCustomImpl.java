@@ -33,6 +33,20 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public Optional<Product> findNonDeletedProductByProductId(Long productId) {
+
+        Product findProduct = queryFactory.select(product)
+                .from(product)
+                .where(
+                        product.id.eq(productId),
+                        product.isDeleted.eq(false)
+                ).
+                fetchOne();
+
+        return Optional.ofNullable(findProduct);
+    }
+
+    @Override
     public ProductListViewModel getProductListViewModels(Long productId) {
         return queryFactory
                 .select(Projections.constructor(ProductListViewModel.class,
@@ -43,16 +57,171 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 ))
                 .from(product)
                 .innerJoin(productImage).on(product.id.eq(productImage.product.id))
-                .where(productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .where(
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        product.isDeleted.eq(false)
+                )
                 .fetchOne();
     }
 
 
-    // 메인페이지 프로덕트뷰 - 인기순으로 desc하여 반환.
+
+    // 카테고리별 상품을 가져오는 메서드.
     @Override
-    public Optional<List<ProductCardViewModel>> findMainProductCardsOderByLikeCountDesc(Pageable pageable) {
-        List<ProductCardViewModel> productCardViewModels = queryFactory
+    public Optional<List<ProductCardViewModel>> findProductCardViewsByCategorysOrderByLikeCountDesc(Pageable pageable,
+                                                                                                    SeasonCategory seasonCategory,
+                                                                                                    PersonCategory personCategory,
+                                                                                                    ProductCategory productCategory,
+                                                                                                    String keyword) {
+
+        List<ProductCardViewModel> cardViews = queryFactory
                 .select(Projections.constructor(ProductCardViewModel.class,
+                                product.id,
+                                productImage.savedName,
+                                product.productName,
+                                product.price
+                                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(andProductCategory(productCategory),
+                        andPersonCategory(personCategory),
+                        andSeasonCategory(seasonCategory),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .orderBy(product.likeCount.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+
+        return Optional.ofNullable(cardViews);
+    }
+
+    @Override
+    public Optional<List<ProductCardViewModel>> findProductCardViewsByCategorysOrderByCreateAtDesc(Pageable pageable,
+                                                                                                   SeasonCategory seasonCategory,
+                                                                                                   PersonCategory personCategory,
+                                                                                                   ProductCategory productCategory,
+                                                                                                   String keyword) {
+
+        List<ProductCardViewModel> cardViews = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(andProductCategory(productCategory),
+                        andPersonCategory(personCategory),
+                        andSeasonCategory(seasonCategory),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .orderBy(product.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+
+        return Optional.ofNullable(cardViews);
+    }
+
+    @Override
+    public Optional<List<ProductCardViewModel>> findProductCardViewsByCategorysOrderBySalesVolumesDesc(Pageable pageable,
+                                                                                                       SeasonCategory seasonCategory,
+                                                                                                       PersonCategory personCategory,
+                                                                                                       ProductCategory productCategory,
+                                                                                                       String keyword) {
+        List<ProductCardViewModel> cardViews = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(andProductCategory(productCategory),
+                        andPersonCategory(personCategory),
+                        andSeasonCategory(seasonCategory),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .orderBy(product.salesVolume.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+
+        return Optional.ofNullable(cardViews);
+    }
+
+    @Override
+    public Optional<List<ProductCardViewModel>> findProductCardViewsByCategorysOrderByPriceAsc(Pageable pageable,
+                                                                                               SeasonCategory seasonCategory,
+                                                                                               PersonCategory personCategory,
+                                                                                               ProductCategory productCategory,
+                                                                                               String keyword) {
+        List<ProductCardViewModel> cardViews = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(andProductCategory(productCategory),
+                        andPersonCategory(personCategory),
+                        andSeasonCategory(seasonCategory),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .orderBy(product.price.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+
+        return Optional.ofNullable(cardViews);
+    }
+
+
+
+
+    // 판매자 아이디로 등록된 상품 리스트를 찾아옴.
+    @Override
+    public Optional<List<Long>> findRegisteredProductsBySellerId(Long sellerId) {
+
+        List<Long> productIds = queryFactory.select(Projections.constructor(Long.class,
+                        product.id))
+                .from(product)
+                .where(product.member.id.eq(sellerId),
+                        product.isDeleted.eq(false))
+                .fetch();
+
+        return Optional.ofNullable(productIds);
+    }
+
+
+    // 등록된 상품의 판매자id와 입력받은 판매자 아이디가 일치하는 상품을 가져옴.
+    @Override
+    public Optional<Product> findProductIdByProductIdAndSellerId(Long productId, Long sellerId) {
+        Product findProduct = queryFactory.select(product)
+                .from(product)
+                .where(product.id.eq(productId), product.member.id.eq(sellerId), product.isDeleted.eq(false))
+                .fetchOne();
+
+        return Optional.ofNullable(findProduct);
+    }
+
+    @Override
+    public Optional<List<ProductCardViewModel>> findSalesListBySellerId(Pageable pageable, Long sellerId) {
+
+        List<ProductCardViewModel> salesList = queryFactory.select(Projections.constructor(ProductCardViewModel.class,
                         product.id,
                         productImage.savedName,
                         product.productName,
@@ -60,16 +229,158 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .from(product)
                 .join(productImage)
                 .on(productImage.product.eq(product))
-                .where(productImage.productImageCategory.eq(ProductImageCategory.MAIN), product.isDeleted.eq(false))
-                .orderBy(product.likeCount.desc())
+                .where(product.member.id.eq(sellerId),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        product.isDeleted.eq(false))
+                .orderBy(product.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return Optional.ofNullable(productCardViewModels);
+
+        return Optional.ofNullable(salesList);
     }
 
-    // 시즌별 상품 조회 메서드 - 인기순 desc
+    @Override
+    public Optional<ProductInformsModelView> findProductInformsByProductId(Long productId) {
+
+        ProductInformsModelView productInform = queryFactory
+                .select(Projections.constructor(ProductInformsModelView.class,
+                        product.id,
+                        product.productName,
+                        productImage.id,
+                        productImage.savedName,
+                        null,
+                        product.price,
+                        product.personCategory,
+                        product.seasonCategory,
+                        product.productCategory,
+                        product.likeCount,
+                        product.createdAt,
+                        product.description,
+                        product.totalStock,
+                        null
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(product.id.eq(productId),
+                        product.isDeleted.eq(false),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .fetchOne();
+
+        return Optional.ofNullable(productInform);
+    }
+
+
+    private BooleanExpression andPersonCategory(PersonCategory personCategory) {
+        return personCategory == null
+                ? product.personCategory.eq(PersonCategory.ALL_PERSON) : product.personCategory.eq(personCategory);
+    }
+
+    private BooleanExpression andSeasonCategory(SeasonCategory seasonCategory) {
+        return seasonCategory == null
+                ? product.seasonCategory.eq(SeasonCategory.ALL_SEASON) : product.seasonCategory.eq(seasonCategory);
+    }
+
+    private BooleanExpression andProductCategory(ProductCategory productCategory) {
+        return productCategory == null
+                ? null : product.productCategory.eq(productCategory);
+    }
+
+}
+
+
+/*
+
+    // 모든 카테고리를 비교해서 조건을 찾음. 8개의 조건이 나옴
+    private BooleanExpression categorysCondition( SeasonCategory seasonCategory,
+                                                  PersonCategory personCategory,
+                                                  ProductCategory productCategory) {
+
+        // 모두 null일경우
+        if (seasonCategory == null && personCategory == null && productCategory == null) {
+            return product.seasonCategory.eq(SeasonCategory.ALL_SEASON)
+                    .and(product.personCategory.eq(PersonCategory.ALL_PERSON));
+        }
+
+        // product만 특정
+        if (seasonCategory == null && personCategory == null && productCategory != null){
+            return product.seasonCategory.eq(SeasonCategory.ALL_SEASON)
+                    .and(product.personCategory.eq(PersonCategory.ALL_PERSON))
+                    .and(product.productCategory.eq(productCategory));
+        }
+
+        // season만 특정
+        if (seasonCategory != null && personCategory == null && productCategory == null){
+            return product.seasonCategory.eq(seasonCategory)
+                    .and(product.personCategory.eq(PersonCategory.ALL_PERSON));
+        }
+
+        // person만 특정
+        if (seasonCategory == null && personCategory != null && productCategory == null){
+            return product.seasonCategory.eq(SeasonCategory.ALL_SEASON)
+                    .and(product.personCategory.eq(personCategory));
+        }
+
+        // season, product 특정
+        if (seasonCategory != null && personCategory == null && productCategory != null) {
+            return product.seasonCategory.eq(seasonCategory)
+                    .and(product.personCategory.eq(PersonCategory.ALL_PERSON))
+                    .and(product.productCategory.eq(productCategory));
+        }
+
+        // season, person 특정
+        if (seasonCategory != null && personCategory != null && productCategory == null) {
+            return product.seasonCategory.eq(seasonCategory)
+                    .and(product.personCategory.eq(personCategory));
+        }
+
+
+        // person , product 특정
+        if (seasonCategory == null && personCategory != null && productCategory != null) {
+            return product.seasonCategory.eq(SeasonCategory.ALL_SEASON)
+                    .and(product.personCategory.eq(personCategory))
+                    .and(product.productCategory.eq(productCategory));
+        }
+
+
+        // 모두 특정
+        return product.seasonCategory.eq(seasonCategory)
+                .and(product.personCategory.eq(personCategory))
+                .and(product.productCategory.eq(productCategory));
+    }
+
+
+    // 시즌 카테고리가 null 일경우 모든상품, null이 아닐경우 여름과 겨울중 하나와 모든시즌 조회.
+    private BooleanExpression seasonCategoryCondition(SeasonCategory seasonCategory) {
+        if (seasonCategory == null) {
+            return product.seasonCategory.eq(SeasonCategory.ALL_SEASON);
+        }
+        return product.seasonCategory.eq(seasonCategory)
+                .or(product.seasonCategory.eq(SeasonCategory.ALL_SEASON));
+    }
+
+    // 사람 카테고리가 null 일경우 남여공용의 상품,
+    // 아동일 경우 아동 카테고리만,
+    // 남성 또는 여성일경우 남성 또는 여성 + 남여공용 카테고리.
+    private BooleanExpression personCategoryCondition(PersonCategory personCategory) {
+        if (personCategory == null) {
+            return product.personCategory.eq(PersonCategory.ALL_PERSON);
+        }
+
+        if (personCategory == PersonCategory.CHILDREN) {
+            return product.personCategory.eq(PersonCategory.CHILDREN);
+        }
+
+        return product.personCategory.eq(personCategory)
+                .or(product.personCategory.eq(PersonCategory.ALL_PERSON));
+    }
+
+*/
+
+
+/* // 시즌별 상품 조회 메서드 - 인기순 desc
     @Override
     public Optional<List<ProductCardViewModel>> findSeasonProductsOrderByLikeCountDesc(Pageable pageable,
                                                                                        SeasonCategory seasonCategory) {
@@ -227,10 +538,12 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .from(product)
                 .join(productImage)
                 .on(productImage.product.eq(product))
-                .where(personCategoryCondition(personCategory),
+                .where(
+                        personCategoryCondition(personCategory),
                         (product.productCategory.eq(productCategory)),
                         (productImage.productImageCategory.eq(ProductImageCategory.MAIN)),
-                        product.isDeleted.eq(false))
+                        product.isDeleted.eq(false)
+                )
                 .orderBy(product.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -262,104 +575,164 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
         return Optional.ofNullable(productCardViewModels);
     }
+*/
 
-    // 판매자 아이디로 등록된 상품 리스트를 찾아옴.
+
+/*
+
+    // 검색어로 상품을 찾는 메서드
     @Override
-    public Optional<List<Long>> findRegisteredProductsBySellerId(Long sellerId) {
+    public Optional<List<ProductCardViewModel>> findProductCardViewByKeyword(Pageable pageable, String keyword) {
 
-        List<Long> productIds = queryFactory.select(Projections.constructor(Long.class,
-                        product.id))
-                .from(product)
-                .where(product.member.id.eq(sellerId),
-                        product.isDeleted.eq(false))
-                .fetch();
-
-        return Optional.ofNullable(productIds);
-    }
-
-
-    // 등록된 상품의 판매자id와 입력받은 판매자 아이디가 일치하는 상품을 가져옴.
-    @Override
-    public Optional<Product> findProductIdByProductIdAndSellerId(Long productId, Long sellerId) {
-        Product findProduct = queryFactory.select(product)
-                .from(product)
-                .where(product.id.eq(productId), product.member.id.eq(sellerId), product.isDeleted.eq(false))
-                .fetchOne();
-
-        return Optional.ofNullable(findProduct);
-    }
-
-    @Override
-    public Optional<List<ProductCardViewModel>> findSalesListBySellerId(Pageable pageable, Long sellerId) {
-
-        List<ProductCardViewModel> salesList = queryFactory.select(Projections.constructor(ProductCardViewModel.class,
+        List<ProductCardViewModel> productCardViewModels = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
                         product.id,
                         productImage.savedName,
                         product.productName,
-                        product.price))
+                        product.price
+                ))
                 .from(product)
                 .join(productImage)
                 .on(productImage.product.eq(product))
-                .where(product.member.id.eq(sellerId), product.isDeleted.eq(false))
-                .orderBy(product.createdAt.desc())
+                .where(
+                        product.isDeleted.eq(false),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN)
+                )
+                .orderBy(product.likeCount.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
 
-        return Optional.ofNullable(salesList);
+        return Optional.ofNullable(productCardViewModels);
     }
 
-    @Override
-    public Optional<ProductInformsModelView> findProductInformsByProductId(Long productId) {
 
-        ProductInformsModelView productInform = queryFactory
-                .select(Projections.constructor(ProductInformsModelView.class,
+    @Override
+    public Optional<List<ProductCardViewModel>> findSearchProductsOrderByPriceAsc(Pageable pageable, String keyword) {
+
+        List<ProductCardViewModel> productCardViewModels = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
                         product.id,
-                        product.productName,
                         productImage.savedName,
-                        null,
-                        product.price,
-                        product.personCategory,
-                        product.likeCount,
-                        product.createdAt,
-                        product.description,
-                        product.totalStock,
-                        null
+                        product.productName,
+                        product.price
                 ))
                 .from(product)
                 .join(productImage)
-                .on(productImage.product.eq(product),
-                        productImage.productImageCategory.eq(ProductImageCategory.MAIN))
-                .where(product.id.eq(productId), product.isDeleted.eq(false))
-                .fetchOne();
+                .on(productImage.product.eq(product))
+                .where(
+                        product.isDeleted.eq(false),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN)
+                )
+                .orderBy(product.price.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
-        return Optional.ofNullable(productInform);
+        return Optional.ofNullable(productCardViewModels);
     }
 
+    @Override
+    public Optional<List<ProductCardViewModel>> findSearchProductsOrderByCreateAtDesc(Pageable pageable, String keyword) {
+        List<ProductCardViewModel> productCardViewModels = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(
+                        product.isDeleted.eq(false),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN)
+                )
+                .orderBy(product.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
-    // 시즌 카테고리가 null 일경우 모든상품, null이 아닐경우 여름과 겨울중 하나와 모든시즌 조회.
-    private BooleanExpression seasonCategoryCondition(SeasonCategory seasonCategory) {
-        if (seasonCategory == null) {
-            return product.seasonCategory.eq(SeasonCategory.ALL_SEASON);
-        }
-        return product.seasonCategory.eq(seasonCategory)
-                .or(product.seasonCategory.eq(SeasonCategory.ALL_SEASON));
+        return Optional.ofNullable(productCardViewModels);
     }
 
-    // 사람 카테고리가 null 일경우 남여공용의 상품,
-    // 아동일 경우 아동 카테고리만,
-    // 남성 또는 여성일경우 남성 또는 여성 + 남여공용 카테고리.
-    private BooleanExpression personCategoryCondition(PersonCategory personCategory) {
-        if (personCategory == null) {
-            return product.personCategory.eq(PersonCategory.ALL_PERSON);
-        }
+    @Override
+    public Optional<List<ProductCardViewModel>> findSearchProductsOrderBySalesVolumeDesc(Pageable pageable, String keyword) {
+        List<ProductCardViewModel> productCardViewModels = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(
+                        product.isDeleted.eq(false),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN)
+                )
+                .orderBy(product.salesVolume.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
-        if (personCategory == PersonCategory.CHILDREN) {
-            return product.personCategory.eq(PersonCategory.CHILDREN);
-        }
-
-        return product.personCategory.eq(personCategory)
-                .or(product.personCategory.eq(PersonCategory.ALL_PERSON));
+        return Optional.ofNullable(productCardViewModels);
     }
-}
+
+    @Override
+    public Optional<List<ProductCardViewModel>> findSearchProductsOrderByLikeCountDesc(Pageable pageable, String keyword) {
+        List<ProductCardViewModel> productCardViewModels = queryFactory
+                .select(Projections.constructor(ProductCardViewModel.class,
+                        product.id,
+                        productImage.savedName,
+                        product.productName,
+                        product.price
+                ))
+                .from(product)
+                .join(productImage)
+                .on(productImage.product.eq(product))
+                .where(
+                        product.isDeleted.eq(false),
+                        product.productName.like("%" + keyword + "%"),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN)
+                )
+                .orderBy(product.likeCount.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return Optional.ofNullable(productCardViewModels);
+    }
+
+*/
+
+
+/*// 메인페이지 프로덕트뷰 - 인기순으로 desc하여 반환.
+@Override
+public Optional<List<ProductCardViewModel>> findMainProductCardsOderByLikeCountDesc(Pageable pageable) {
+    List<ProductCardViewModel> productCardViewModels = queryFactory
+            .select(Projections.constructor(ProductCardViewModel.class,
+                    product.id,
+                    productImage.savedName,
+                    product.productName,
+                    product.price))
+            .from(product)
+            .join(productImage)
+            .on(productImage.product.eq(product))
+            .where(
+                    productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                    product.isDeleted.eq(false)
+            )
+            .orderBy(product.likeCount.desc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+    return Optional.ofNullable(productCardViewModels);
+}*/

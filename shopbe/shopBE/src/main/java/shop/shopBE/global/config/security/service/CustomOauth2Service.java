@@ -34,7 +34,7 @@ public class CustomOauth2Service extends DefaultOAuth2UserService {
 
         Member member = getOrCreateMember(username, userMapper);
 
-        return AuthToken.createToken(member.getId(), member.getName(), member.getUsername(), member.getRole(), member.isAuthenticated());
+        return AuthToken.createToken(member.getId(), member.getName(), member.getUsername(), member.getRole(), member.isAuthenticated(), member.getSub());
     }
 
     private UserMapper chooseUserMapper(String registrationId, Map<String, Object> attributes) {

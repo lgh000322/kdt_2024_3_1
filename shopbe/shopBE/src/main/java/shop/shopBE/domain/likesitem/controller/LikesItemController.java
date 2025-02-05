@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -35,9 +37,9 @@ public class LikesItemController {
 
     @GetMapping("/likes/items")
     @Operation(summary = "찜 아이템 조회", description = "현재 로그인 한 회원의 찜아이템 목록을 조회한다.")
-    public ResponseEntity<ResponseFormat<List<ProductListViewModel>>> getLikesItems(@RequestBody @Valid LikesPaging likesPaging,
+    public ResponseEntity<ResponseFormat<List<ProductListViewModel>>> getLikesItems(@PageableDefault Pageable pageable,
                                                                                     @AuthenticationPrincipal AuthToken authToken) {
-        List<ProductListViewModel> likesItems = likesItemFacadeService.findLikesItems(likesPaging, authToken.getId());
+        List<ProductListViewModel> likesItems = likesItemFacadeService.findLikesItems(pageable, authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("찜 아이템 조회 성공.", likesItems));
     }
 
