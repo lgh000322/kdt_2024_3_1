@@ -37,7 +37,8 @@ public class SecurityConfig {
             "/swagger-resources/**",
             "/banners/**",
             "/JWT/**",
-            "/member/logout"
+            "/member/logout",
+            "banners/**"
     };
 
     @Bean

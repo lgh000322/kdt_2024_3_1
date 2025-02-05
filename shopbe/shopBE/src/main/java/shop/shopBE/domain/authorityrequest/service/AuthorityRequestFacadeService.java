@@ -5,9 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import shop.shopBE.domain.authorityrequest.request.AuthorityRequestListViewModel;
 import shop.shopBE.domain.authorityrequest.request.AuthorityRequestModel;
-import shop.shopBE.domain.authorityrequest.response.AuthorityResponseListViewModel;
+import shop.shopBE.domain.authorityrequest.response.AuthorityResponseListModel;
 import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.domain.member.service.MemberService;
 
@@ -33,9 +32,8 @@ public class AuthorityRequestFacadeService {
         authorityRequestService.updateAuthority(authorityId);
     }
 
-    public List<AuthorityResponseListViewModel> findAuthorityRequests(Pageable pageable) {
+    public List<AuthorityResponseListModel> findAuthorityRequests(Pageable pageable) {
         return authorityRequestService.findAuthorityRequests(pageable);
     }
-
 }
 
