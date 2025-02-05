@@ -1,9 +1,9 @@
-import React from 'react';
-import BasicLayout from '../layouts/BasicLayout';
+import React from "react";
+import BasicLayout from "../layouts/BasicLayout";
 
 function OrderDetailPage() {
   return (
-    <BasicLayout role="consumer">
+    <BasicLayout>
       <div style={styles.container}>
         {/* 헤더 섹션 */}
         <header style={styles.header}>
@@ -53,7 +53,13 @@ function DetailItem({ label, value, status }) {
   return (
     <div style={styles.detailItem}>
       <span style={styles.detailLabel}>{label}</span>
-      <span style={status ? { ...styles.detailValue, ...styles[status] } : styles.detailValue}>
+      <span
+        style={
+          status
+            ? { ...styles.detailValue, ...styles[status] }
+            : styles.detailValue
+        }
+      >
         {value}
       </span>
     </div>
@@ -63,130 +69,130 @@ function DetailItem({ label, value, status }) {
 // 개선된 스타일 정의
 const styles = {
   container: {
-    padding: '40px 24px',
-    backgroundColor: '#f9fafb',
-    minHeight: '100vh',
+    padding: "40px 24px",
+    backgroundColor: "#f9fafb",
+    minHeight: "100vh",
     fontFamily: "'Noto Sans KR', sans-serif",
   },
   header: {
-    marginBottom: '48px',
-    textAlign: 'center',
+    marginBottom: "48px",
+    textAlign: "center",
   },
   title: {
-    fontSize: '32px',
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: '8px',
-    letterSpacing: '-0.5px',
+    fontSize: "32px",
+    fontWeight: "700",
+    color: "#1f2937",
+    marginBottom: "8px",
+    letterSpacing: "-0.5px",
   },
   orderNumber: {
-    color: '#6b7280',
-    fontSize: '14px',
+    color: "#6b7280",
+    fontSize: "14px",
   },
   card: {
-    backgroundColor: 'white',
-    borderRadius: '16px',
-    padding: '32px',
-    marginBottom: '24px',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+    backgroundColor: "white",
+    borderRadius: "16px",
+    padding: "32px",
+    marginBottom: "24px",
+    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
   },
   cardTitle: {
-    fontSize: '22px',
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: '28px',
-    paddingBottom: '16px',
-    borderBottom: '2px solid #f3f4f6',
+    fontSize: "22px",
+    fontWeight: "600",
+    color: "#1f2937",
+    marginBottom: "28px",
+    paddingBottom: "16px",
+    borderBottom: "2px solid #f3f4f6",
   },
   detailGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-    gap: '24px',
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    gap: "24px",
   },
   detailItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '16px 0',
-    borderBottom: '1px solid #f3f4f6',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "16px 0",
+    borderBottom: "1px solid #f3f4f6",
   },
   detailLabel: {
-    color: '#6b7280',
-    fontSize: '15px',
-    fontWeight: '500',
+    color: "#6b7280",
+    fontSize: "15px",
+    fontWeight: "500",
   },
   detailValue: {
-    color: '#1f2937',
-    fontWeight: '600',
-    fontSize: '16px',
+    color: "#1f2937",
+    fontWeight: "600",
+    fontSize: "16px",
   },
   active: {
-    color: '#3b82f6',
-    fontWeight: '700',
+    color: "#3b82f6",
+    fontWeight: "700",
   },
   productCard: {
-    display: 'flex',
-    gap: '32px',
-    alignItems: 'center',
-    padding: '20px',
-    backgroundColor: '#f3f4f6',
-    borderRadius: '12px',
+    display: "flex",
+    gap: "32px",
+    alignItems: "center",
+    padding: "20px",
+    backgroundColor: "#f3f4f6",
+    borderRadius: "12px",
   },
   imageContainer: {
     flexShrink: 0,
-    position: 'relative',
+    position: "relative",
   },
   imagePlaceholder: {
-    width: '160px',
-    height: '160px',
-    backgroundColor: '#e5e7eb',
-    borderRadius: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transition: 'transform 0.2s ease',
-    ':hover': {
-      transform: 'scale(1.02)',
+    width: "160px",
+    height: "160px",
+    backgroundColor: "#e5e7eb",
+    borderRadius: "8px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "transform 0.2s ease",
+    ":hover": {
+      transform: "scale(1.02)",
     },
   },
   imageText: {
-    color: '#6b7280',
-    fontSize: '14px',
-    fontWeight: '500',
+    color: "#6b7280",
+    fontSize: "14px",
+    fontWeight: "500",
   },
   productInfo: {
     flexGrow: 1,
   },
   productName: {
-    fontSize: '20px',
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: '12px',
+    fontSize: "20px",
+    fontWeight: "700",
+    color: "#1f2937",
+    marginBottom: "12px",
   },
   productPrice: {
-    fontSize: '18px',
-    color: '#1f2937',
-    fontWeight: '600',
-    letterSpacing: '-0.5px',
+    fontSize: "18px",
+    color: "#1f2937",
+    fontWeight: "600",
+    letterSpacing: "-0.5px",
   },
   buttonGroup: {
-    display: 'flex',
-    gap: '20px',
-    justifyContent: 'center',
-    marginTop: '40px',
+    display: "flex",
+    gap: "20px",
+    justifyContent: "center",
+    marginTop: "40px",
   },
   secondaryButton: {
-    padding: '16px 40px',
-    backgroundColor: 'transparent',
-    color: '#ef4444',
-    borderRadius: '8px',
-    border: '2px solid #ef4444',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: '700',
-    transition: 'all 0.2s ease',
-    ':hover': {
-      backgroundColor: '#fee2e2',
+    padding: "16px 40px",
+    backgroundColor: "transparent",
+    color: "#ef4444",
+    borderRadius: "8px",
+    border: "2px solid #ef4444",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "700",
+    transition: "all 0.2s ease",
+    ":hover": {
+      backgroundColor: "#fee2e2",
     },
   },
 };

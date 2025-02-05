@@ -29,3 +29,15 @@ export const updateMember = async (updateMemberInfo, accessToken) => {
 
   return res.data;
 };
+
+export const logoutRefresh = async (accessToken) => {
+  console.log(accessToken);
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
+
+  const res = await axios.post(`${preFix}/logout`, null, header);
+
+  return res.data;
+};

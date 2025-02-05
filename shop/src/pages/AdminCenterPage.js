@@ -3,7 +3,7 @@ import BasicLayout from "../layouts/BasicLayout";
 
 function AdminCenterPage() {
   return (
-    <BasicLayout role="seller">
+    <BasicLayout>
       {/* 전체 컨테이너 */}
       <div className="max-w-7xl mx-auto px-4 pt-12">
         {/* 본문 영역 */}

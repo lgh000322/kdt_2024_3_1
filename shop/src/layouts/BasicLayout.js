@@ -1,9 +1,21 @@
 import React, { useState } from "react";
 import HeaderComponent from "../components/HeaderComponent";
 import Sidebar from "../components/SideBar";
+import { useSelector } from "react-redux";
 
-function BasicLayout({ children, role }) {
+function BasicLayout({ children }) {
   const [selectedMenu, setSelectedMenu] = useState(null);
+  const loginState = useSelector((state) => state.loginSlice);
+
+  let role;
+
+  if (loginState.role == "ROLE_ADMIN") {
+    role = "manager";
+  } else if (loginState.role == "ROLE_SELLER") {
+    role = "seller";
+  } else {
+    role = "consumer";
+  }
 
   // 사이드바 메뉴 클릭 핸들러
   const handleMenuClick = (item) => {
@@ -24,7 +36,6 @@ function BasicLayout({ children, role }) {
 
         {/* 메인 콘텐츠 */}
         <main className="flex-1 p-4 ml-64">
-
           {/* 자식 컴포넌트 렌더링 */}
           {children}
         </main>

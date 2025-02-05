@@ -1,15 +1,32 @@
 import React, { useState } from "react";
 import { Search, User, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import useCustomMove from "./../hook/useCustomMove";
+import { logoutRefresh } from "./../api/memberApi";
 
 const HeaderComponent = () => {
   // 검색 쿼리를 관리하는 상태
   const [searchQuery, setSearchQuery] = useState("");
-
+  const loginState = useSelector((state) => state.loginSlice);
+  const { doLogout, moveToLoginPage } = useCustomMove();
+  const accessToken = loginState.accessToken;
   // 검색 처리 함수
   const handleSearch = () => {
     console.log("검색 실행", searchQuery);
     // 여기에 검색 로직 추가
+  };
+
+  const logoutClick = () => {
+    logoutRefresh(accessToken).then((res) => {
+      if (res.code === 200) {
+        doLogout();
+        alert("로그아웃에 성공했습니다.");
+        moveToLoginPage();
+      } else {
+        alert("로그아웃에 실패했습니다.");
+      }
+    });
   };
 
   return (
@@ -89,12 +106,21 @@ const HeaderComponent = () => {
               유아
             </Link>
           </div>
-          <Link
-            to="/login"
-            className="whitespace-nowrap text-xl text-gray-600 hover:text-black transition-colors"
-          >
-            로그인/로그아웃
-          </Link>
+          {loginState.accessToken ? (
+            <div
+              className="whitespace-nowrap text-xl text-gray-600 hover:text-black transition-colors cursor-pointer"
+              onClick={logoutClick}
+            >
+              로그아웃
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="whitespace-nowrap text-xl text-gray-600 hover:text-black transition-colors"
+            >
+              로그인
+            </Link>
+          )}
         </nav>
       </div>
 

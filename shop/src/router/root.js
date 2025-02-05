@@ -6,7 +6,7 @@ const Loading = <div>Loading ...</div>;
 const Main = lazy(() => import("../pages/MainPage"));
 const Login = lazy(() => import("../pages/LoginPage"));
 const LoginSuccess = lazy(() => import("../pages/LoginSuccessPage"));
-const LoginHandler = lazy(() => import("../handler/LoginHandler"));
+const LoginHandlerPage = lazy(() => import("../handler/LoginHandler"));
 const Summer = lazy(() => import("../pages/SummerPage"));
 const Winter = lazy(() => import("../pages/WinterPage"));
 const Men = lazy(() => import("../pages/MenPage"));
@@ -15,15 +15,17 @@ const Kids = lazy(() => import("../pages/KidsPage"));
 const Mypage = lazy(() => import("../pages/Mypage"));
 const AdminUserPage = lazy(() => import("../pages/AdminUserPage"));
 const AdminSellerPage = lazy(() => import("../pages/AdminSellerPage"));
-const AdminAcceptPage = lazy(()=> import("../pages/AdminAcceptPage"));
-const AdminStatisticPage = lazy(()=> import("../pages/AdminStatisticPage"));
-const AdminBannerPage = lazy(()=> import("../pages/AdminBannerPage"));
+const AdminAcceptPage = lazy(() => import("../pages/AdminAcceptPage"));
+const AdminStatisticPage = lazy(() => import("../pages/AdminStatisticPage"));
+const AdminBannerPage = lazy(() => import("../pages/AdminBannerPage"));
 const AdminCenterPage = lazy(() => import("../pages/AdminCenterPage"));
-const SellerRegistration = lazy(() => import("../pages/SellerRegistrationPage"));
+const SellerRegistration = lazy(() =>
+  import("../pages/SellerRegistrationPage")
+);
 const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
 const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 const OrderListPage = lazy(() => import("../pages/OrderListPage"));
-const OrderDetailPage = lazy(()=> import("../pages/OrderDetailPage"));
+const OrderDetailPage = lazy(() => import("../pages/OrderDetailPage"));
 const WishListPage = lazy(() => import("../pages/WishListPage"));
 const ShippingAddressPage = lazy(() => import("../pages/ShippingAddressPage"));
 const Cart = lazy(() => import("../pages/Cart"));
@@ -53,12 +55,12 @@ const root = createBrowserRouter([
     path: "login/success",
     element: (
       <Suspense fallback={Loading}>
-        <LoginHandler />
+        <LoginHandlerPage />
       </Suspense>
     ),
   },
   {
-    path: "login/second",
+    path: "login/authenticate",
     element: (
       <Suspense fallback={Loading}>
         <LoginSuccess></LoginSuccess>
@@ -181,7 +183,7 @@ const root = createBrowserRouter([
     path: "mypage",
     element: (
       <Suspense fallback={Loading}>
-        <Mypage/>
+        <Mypage />
       </Suspense>
     ),
   },
@@ -189,7 +191,7 @@ const root = createBrowserRouter([
     path: "mypage/shipping-address",
     element: (
       <Suspense fallback={Loading}>
-        <ShippingAddressPage/>
+        <ShippingAddressPage />
       </Suspense>
     ),
   },
