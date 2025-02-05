@@ -1,299 +1,167 @@
 import React, { useState } from "react";
 import BasicLayout from "../layouts/BasicLayout";
+import { useSelector } from "react-redux";
+import { addShippingAddress } from "../api/shippingAddressApi";
 
 function ShippingAddressPage() {
-  const userRole = "consumer";
+  const loginState = useSelector((state) => state.loginSlice);
+  const accessToken = loginState.accessToken;
 
-  const [shippingAddresses, setShippingAddresses] = useState([
-    {
-      id: 1,
-      title: "기본 배송지",
-      name: "",
-      address: "",
-      phone: "",
-      isEditable: false,
-      isDefault: true,
-    },
-    {
-      id: 2,
-      title: "배송지 2",
-      name: "",
-      address: "",
-      phone: "",
-      isEditable: false,
-      isDefault: false,
-    },
-  ]);
+  const [shippingAddresses, setShippingAddresses] = useState([]);
+  const [newAddress, setNewAddress] = useState({
+    destinationName: "",
+    receiverName: "",
+    tel: "",
+    address: "",
+    zipCode: "",
+    isSelectedDestination: false,
+  });
+  const [isAdding, setIsAdding] = useState(false);
 
-  const [selectedAddressId, setSelectedAddressId] = useState(null);
-
-  const handleAddAddress = () => {
-    const newAddress = {
-      id: shippingAddresses.length + 1,
-      title: "",
-      name: "",
-      address: "",
-      phone: "",
-      isEditable: false,
-      isDefault: false,
-    };
-    setShippingAddresses([...shippingAddresses, newAddress]);
+  // 새 주소 입력 핸들러
+  const handleInputChange = (field, value) => {
+    setNewAddress((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSelectAddress = (id) => {
-    setSelectedAddressId(id);
+  // 기본 배송지 여부 토글 핸들러
+  const handleCheckboxChange = () => {
+    setNewAddress((prev) => ({ ...prev, isSelectedDestination: !prev.isSelectedDestination }));
   };
 
-  const handleEditToggle = (id) => {
-    setShippingAddresses((prev) =>
-      prev.map((address) =>
-        address.id === id
-          ? { ...address, isEditable: !address.isEditable }
-          : address
-      )
-    );
-  };
+  // 새 주소 저장 핸들러
+  const handleSaveNewAddress = async () => {
+    const { destinationName, receiverName, tel, address, zipCode } = newAddress;
 
-  const handleInputChange = (id, field, value) => {
-    setShippingAddresses((prev) =>
-      prev.map((address) =>
-        address.id === id ? { ...address, [field]: value } : address
-      )
-    );
-  };
+    if (!destinationName || !receiverName || !tel || !address || !zipCode) {
+      alert("모든 필드를 입력해주세요.");
+      return;
+    }
 
-  const handleSetDefaultAddress = (id) => {
-    setShippingAddresses((prev) =>
-      prev.map((address) =>
-        address.id === id
-          ? { ...address, isDefault: true }
-          : { ...address, isDefault: false }
-      )
-    );
-  };
+    try {
+      // 서버에 새 주소 추가 요청
+      await addShippingAddress(newAddress, accessToken);
 
-  const styles = {
-    container: {
-      padding: "40px",
-      maxWidth: "800px",
-      margin: "0 auto",
-    },
-    header: {
-      fontSize: "28px",
-      fontWeight: "600",
-      color: "#333",
-      marginBottom: "30px",
-      borderBottom: "2px solid #eee",
-      paddingBottom: "15px",
-    },
-    addButton: {
-      padding: "12px 24px",
-      backgroundColor: "#4CAF50",
-      color: "white",
-      border: "none",
-      borderRadius: "6px",
-      cursor: "pointer",
-      fontSize: "15px",
-      fontWeight: "500",
-      transition: "background-color 0.3s",
-      marginBottom: "30px",
-      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    },
-    addressCard: {
-      border: "1px solid #e0e0e0",
-      borderRadius: "8px",
-      padding: "20px",
-      marginBottom: "20px",
-      backgroundColor: "white",
-      boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-      transition: "all 0.3s ease",
-    },
-    selectedCard: {
-      border: "2px solid #4CAF50",
-      transform: "translateY(-2px)",
-    },
-    defaultBadge: {
-      backgroundColor: "#4CAF50",
-      color: "white",
-      padding: "4px 8px",
-      borderRadius: "4px",
-      fontSize: "12px",
-      marginBottom: "10px",
-      display: "inline-block",
-    },
-    inputGroup: {
-      marginBottom: "15px",
-    },
-    label: {
-      display: "block",
-      marginBottom: "8px",
-      color: "#666",
-      fontSize: "14px",
-      fontWeight: "500",
-    },
-    input: {
-      width: "100%",
-      padding: "10px",
-      border: "1px solid #ddd",
-      borderRadius: "4px",
-      fontSize: "14px",
-      transition: "border-color 0.3s",
-    },
-    buttonGroup: {
-      marginTop: "15px",
-      display: "flex",
-      gap: "10px",
-    },
-    editButton: {
-      padding: "8px 16px",
-      backgroundColor: "#ff9800",
-      color: "white",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
-      fontSize: "14px",
-      transition: "background-color 0.3s",
-    },
-    defaultButton: {
-      padding: "8px 16px",
-      backgroundColor: "#2196F3",
-      color: "white",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
-      fontSize: "14px",
-      transition: "background-color 0.3s",
-    },
-    confirmButton: {
-      padding: "8px 16px",
-      backgroundColor: "#4CAF50",
-      color: "white",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
-      fontSize: "14px",
-      transition: "background-color 0.3s",
-    },
+      // 성공 시 UI 업데이트
+      setShippingAddresses((prev) => [...prev, { ...newAddress, id: prev.length + 1 }]);
+      alert("새 배송지가 성공적으로 추가되었습니다.");
+      setIsAdding(false); // 입력 폼 닫기
+      setNewAddress({
+        destinationName: "",
+        receiverName: "",
+        tel: "",
+        address: "",
+        zipCode: "",
+        isSelectedDestination: false,
+      }); // 폼 초기화
+    } catch (error) {
+      console.error("배송지 추가 실패:", error);
+      alert(`배송지 추가 실패: ${error.message}`);
+    }
   };
 
   return (
     <BasicLayout>
-      <div style={styles.container}>
-        <h1 style={styles.header}>배송지 관리</h1>
-        <button
-          onClick={handleAddAddress}
-          style={styles.addButton}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
-        >
-          + 새 배송지 추가
-        </button>
+      <div style={{ padding: "40px", maxWidth: "800px", margin: "0 auto" }}>
+        <h1 style={{ fontSize: "28px", fontWeight: "600", marginBottom: "30px" }}>배송지 관리</h1>
 
-        {shippingAddresses.map((address) => (
-          <div
-            key={address.id}
-            onClick={() => handleSelectAddress(address.id)}
+        {!isAdding ? (
+          <button
+            onClick={() => setIsAdding(true)}
             style={{
-              ...styles.addressCard,
-              ...(selectedAddressId === address.id ? styles.selectedCard : {}),
+              padding: "12px 24px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              borderRadius: "6px",
+              cursor: "pointer",
+              marginBottom: "20px",
             }}
           >
-            {address.isDefault && (
-              <div style={styles.defaultBadge}>기본 배송지</div>
-            )}
-
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>배송지 제목</label>
-              <input
-                type="text"
-                value={address.title}
-                onChange={(e) =>
-                  handleInputChange(address.id, "title", e.target.value)
-                }
-                placeholder="배송지 제목(예: 집, 회사)"
-                style={styles.input}
-                readOnly={!address.isEditable}
-              />
+            + 새 배송지 추가
+          </button>
+        ) : (
+          <div style={{ marginBottom: "20px", borderRadius: "8px", padding: "20px", border: "1px solid #ddd" }}>
+            <h3>새 배송지 추가</h3>
+            <input
+              type="text"
+              placeholder="배송지 이름"
+              value={newAddress.destinationName}
+              onChange={(e) => handleInputChange("destinationName", e.target.value)}
+              style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
+            />
+            <input
+              type="text"
+              placeholder="받는 사람"
+              value={newAddress.receiverName}
+              onChange={(e) => handleInputChange("receiverName", e.target.value)}
+              style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
+            />
+            <input
+              type="text"
+              placeholder="전화번호"
+              value={newAddress.tel}
+              onChange={(e) => handleInputChange("tel", e.target.value)}
+              style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
+            />
+            <input
+              type="text"
+              placeholder="주소"
+              value={newAddress.address}
+              onChange={(e) => handleInputChange("address", e.target.value)}
+              style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
+            />
+            <input
+              type="number"
+              placeholder="우편번호"
+              value={newAddress.zipCode}
+              onChange={(e) => handleInputChange("zipCode", e.target.value)}
+              style={{ display: "block", marginBottom: "10px", padding: "8px", width: "100%" }}
+            />
+            <div style={{ marginBottom: "10px" }}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={newAddress.isSelectedDestination}
+                  onChange={handleCheckboxChange}
+                  style={{ marginRight: "5px" }}
+                />
+                기본 배송지로 설정
+              </label>
             </div>
+            <button
+              onClick={handleSaveNewAddress}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                borderRadius: "6px",
+                cursor: "pointer",
+                marginRight: "10px",
+              }}
+            >
+              저장
+            </button>
+            <button
+              onClick={() => setIsAdding(false)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#f44336",
+                color: "white",
+                borderRadius: "6px",
+                cursor: "pointer",
+              }}
+            >
+              취소
+            </button>
+          </div>
+        )}
 
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>받는 사람</label>
-              <input
-                type="text"
-                value={address.name}
-                onChange={(e) =>
-                  handleInputChange(address.id, "name", e.target.value)
-                }
-                placeholder="받는 사람 이름"
-                style={styles.input}
-                readOnly={!address.isEditable}
-              />
-            </div>
-
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>주소</label>
-              <input
-                type="text"
-                value={address.address}
-                onChange={(e) =>
-                  handleInputChange(address.id, "address", e.target.value)
-                }
-                placeholder="상세 주소"
-                style={styles.input}
-                readOnly={!address.isEditable}
-              />
-            </div>
-
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>연락처</label>
-              <input
-                type="text"
-                value={address.phone}
-                onChange={(e) =>
-                  handleInputChange(address.id, "phone", e.target.value)
-                }
-                placeholder="휴대폰 번호"
-                style={styles.input}
-                readOnly={!address.isEditable}
-              />
-            </div>
-
-            <div style={styles.buttonGroup}>
-              {!address.isEditable ? (
-                <>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEditToggle(address.id);
-                    }}
-                    style={styles.editButton}
-                  >
-                    수정
-                  </button>
-                  {!address.isDefault && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSetDefaultAddress(address.id);
-                      }}
-                      style={styles.defaultButton}
-                    >
-                      기본 배송지로 설정
-                    </button>
-                  )}
-                </>
-              ) : (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditToggle(address.id);
-                  }}
-                  style={styles.confirmButton}
-                >
-                  저장
-                </button>
-              )}
-            </div>
+        {shippingAddresses.map((address) => (
+          <div key={address.id} style={{ borderRadius: "8px", padding: "20px", borderBottom: "1px solid #ddd" }}>
+            <h3>{address.destinationName}</h3>
+            <p>받는 사람 : {address.receiverName}</p>
+            <p>전화번호 : {address.tel}</p>
+            <p>주소 : {address.address}</p>
+            <p>우편번호 : {address.zipCode}</p>
           </div>
         ))}
       </div>
