@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import HeaderComponent from "../components/HeaderComponent";
 import Sidebar from "../components/SideBar";
-import { useSelector } from "react-redux";
 
 function BasicLayout({ children }) {
   const [selectedMenu, setSelectedMenu] = useState(null);
@@ -18,6 +17,7 @@ function BasicLayout({ children }) {
     role = "consumer";
   }
 
+
   // 사이드바 메뉴 클릭 핸들러
   const handleMenuClick = (item) => {
     setSelectedMenu(item);
@@ -32,7 +32,7 @@ function BasicLayout({ children }) {
       <div className="flex flex-1">
         {/* 사이드바 */}
         <div className="w-64 bg-gray-50 pt-16 fixed left-0 top-30 h-full shadow-md">
-          <Sidebar role={role} onMenuClick={handleMenuClick} />
+          <Sidebar onMenuClick={handleMenuClick} />
         </div>
 
         {/* 메인 콘텐츠 */}

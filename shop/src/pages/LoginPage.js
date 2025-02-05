@@ -1,15 +1,16 @@
 import React from "react";
 import useCustomMove from "../hook/useCustomMove";
+import { ApiHost } from "./../api/ApiConst";
 
 function LoginPage() {
   const { moveToProduct } = useCustomMove();
 
   const googleLogin = () => {
-    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+    window.location.href = `${ApiHost}/oauth2/authorization/google`;
   };
 
   const naverLogin = () => {
-    window.location.href = "http://localhost:8080/oauth2/authorization/naver";
+    window.location.href = `${ApiHost}/oauth2/authorization/naver`;
   };
 
   return (
