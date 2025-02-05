@@ -5,18 +5,75 @@ import "@toast-ui/editor/dist/toastui-editor.css"; // Editor styles
 import "@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css"; // Plugin styles
 import colorSyntax from "@toast-ui/editor-plugin-color-syntax";
 
+const productEnum = {
+  SLIPPERS: { description: "슬리퍼" },
+  SANDALS: { description: "샌들" },
+  SNEAKERS: { description: "스니커즈" },
+  RUNNING_SHOES: { description: "운동화" },
+  LOAFERS: { description: "로퍼" },
+  HIGH_HEELS: { description: "하이힐" },
+  FLAT_SHOES: { description: "플랫슈즈" },
+  BOOTS: { description: "부츠" },
+  WALKERS: { description: "워커" },
+  SLIP_ON: { description: "슬립온" },
+  CHELSEA_BOOTS: { description: "첼시부츠" },
+  OXFORD_SHOES: { description: "옥스퍼드 슈즈" },
+  WINTER_BOOTS: { description: "방한화" },
+  RAIN_BOOTS: { description: "레인부츠" },
+  AQUA_SHOES: { description: "아쿠아슈즈" },
+  DRESS_SHOES: { description: "드레스 신발" }
+};
+
+
 function ProductUploadPage() {
+
   const [productName, setProductName] = useState("");
-  const [category, setCategory] = useState("");
+  const [productCategory, setProductCategory] = useState("");
+  const [personCategory, setPersonCategory] = useState("");
+  const [seasonCategory, setSeasonCategory] = useState("");
   const [description, setDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
   const [representImage, setRepresentImage] = useState(null);
   const [images, setImages] = useState([]);
-  const [hoveredImage, setHoveredImage] = useState(null); // 팝업 이미지 상태
-  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
+  // const [hoveredImage, setHoveredImage] = useState(null); // 팝업 이미지 상태
+  // const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const fileInputRef = useRef(null);
   const multiFileInputRef = useRef(null);
   const editorRef = useRef(null); // TOAST UI Editor reference
+  const [sizeRange, setSizeRange] = useState({ min: "", max: "" });
+  const [sizeInterval, setSizeInterval] = useState(""); // 간격 (5 또는 10)
+  const [sizeQuantities, setSizeQuantities] = useState({});
+
+
+  
+  const handleSizeRangeChange = (e) => {
+    const { name, value } = e.target;
+    setSizeRange((prevRange) => ({
+      ...prevRange,
+      [name]: value,
+    }));
+  };
+
+  const handleSizeIntervalChange = (e) => {
+    setSizeInterval(Number(e.target.value));
+  };
+
+  const handleQuantityChange = (size, e) => {
+    setSizeQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [size]: e.target.value,
+    }));
+  };
+
+  const renderSizeOptions = () => {
+    const sizes = [];
+    const { min, max } = sizeRange;
+    for (let size = Number(min); size <= Number(max); size += sizeInterval) {
+      sizes.push(size);
+    }
+    return sizes;
+  };
+
 
   {/* 상품 대표 이미지(단일) */}
   const handleRepresentImageUpload = (e) => {
@@ -55,50 +112,77 @@ function ProductUploadPage() {
     });
   };
 
-  {/* 상품 대표 이미지 팝업 위치 조정 */}
-  const handleHoverRepresentImage = (image, event) => {
-    const imageRect = event.currentTarget.getBoundingClientRect();
-    setHoveredImage(image.preview);
-    setPopupPosition({
-      x: imageRect.left + 250,
-      y: imageRect.top + 180,
-    });
-  };
 
-  {/* 상품 추가 이미지 팝업 위치 조정 */}
-  const handleHoverImage = (image, event) => {
-    const imageRect = event.currentTarget.getBoundingClientRect();
-    setHoveredImage(image.preview);
-    setPopupPosition({
-      x: imageRect.left + 250,
-      y: imageRect.top,
-    });
-  };
-
-  {/* 상품 이미지 팝업 상호작용 */}
-  const handleMouseLeave = () => {
-    setHoveredImage(null);
-  };
-
-  {/* 상품 등록 버튼 */}
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+  
     // TOAST UI Editor에서 Markdown 데이터 가져오기
     const editorInstance = editorRef.current.getInstance();
     const markdownContent = editorInstance.getMarkdown();
+  
+    // 유효성 검사
+    if (!productName || !productCategory || !personCategory || !seasonCategory || !productPrice || !representImage) {
+      alert("모든 필드를 올바르게 입력해 주세요.");
+      return;
+    }
+  
+    // 가격이 숫자 형식인지 확인
+    if (isNaN(productPrice) || productPrice <= 0) {
+      alert("상품 가격은 숫자로 입력해 주세요.");
+      return;
+    }
+  
+     // 사이즈가 있을 경우 사이즈 관련 값이 비어 있지 않은지 체크
+  if (sizeRange.min && sizeRange.max && sizeInterval) {
+    // 사이즈별 수량이 하나라도 입력되지 않았다면
+    const missingQuantities = renderSizeOptions().some((size) => !sizeQuantities[size] || sizeQuantities[size] <= 0);
+    if (missingQuantities) {
+      alert("사이즈별 수량을 모두 입력해 주세요.");
+      return;
+    }
+  }
 
-    console.log({
-      productName,
-      category,
-      description: markdownContent,
-      representImage,
-      images,
-      productPrice,
-    });
-
+  
+    // 등록 처리 (여기서는 alert로 예시 처리, 실제로는 API 호출 등 처리 필요)
     alert("상품이 등록되었습니다!");
   };
+
+
+
+  // {/* 상품 대표 이미지 팝업 위치 조정 */}
+  // const handleHoverRepresentImage = (image, event) => {
+  //   const imageRect = event.currentTarget.getBoundingClientRect();
+  //   setHoveredImage(image.preview);
+  //   setPopupPosition({
+  //     x: imageRect.left + 250,
+  //     y: imageRect.top + 180,
+  //   });
+  // };
+
+  // {/* 상품 추가 이미지 팝업 위치 조정 */}
+  // const handleHoverImage = (image, event) => {
+  //   const imageRect = event.currentTarget.getBoundingClientRect();
+  //   setHoveredImage(image.preview);
+  //   setPopupPosition({
+  //     x: imageRect.left + 250,
+  //     y: imageRect.top,
+  //   });
+  // };
+
+  // {/* 상품 이미지 팝업 상호작용 */}
+  // const handleMouseLeave = () => {
+  //   setHoveredImage(null);
+  // };
+
+  {/* 상품 등록 버튼 */}
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+    
+  //   // TOAST UI Editor에서 Markdown 데이터 가져오기
+  //   const editorInstance = editorRef.current.getInstance();
+  //   const markdownContent = editorInstance.getMarkdown();
+  //   alert("상품이 등록되었습니다!");
+  // };
 
   return (
     <UploadLayout role="seller">
@@ -123,8 +207,8 @@ function ProductUploadPage() {
                   src={representImage.preview}
                   alt="대표 이미지"
                   className="w-60 h-auto object-cover rounded-lg"
-                  onMouseMove={(e) => handleHoverRepresentImage(representImage, e)}
-                  onMouseLeave={handleMouseLeave}
+                  // onMouseMove={(e) => handleHoverRepresentImage(representImage, e)}
+                  // onMouseLeave={handleMouseLeave}
                 />
                 <button
                   type="button"
@@ -135,6 +219,45 @@ function ProductUploadPage() {
                 </button>
               </div>
             )}
+          </div>
+
+
+            {/* 상품 이미지 업로드 */}
+            <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              상품 이미지 업로드
+            </label>
+            <input
+              ref={multiFileInputRef}
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
+            />
+            <div className="mt-4 grid grid-cols-3 gap-4">
+              {images.map((image, index) => (
+                <div
+                  key={index}
+                  className="relative"
+                  // onMouseMove={(e) => handleHoverImage(image, e)}
+                  // onMouseLeave={handleMouseLeave}
+                >
+                  <img
+                    src={image.preview}
+                    alt={`uploaded-${index}`}
+                    className="w-60 h-auto object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-sm rounded-full"
+                  >
+                    삭제
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* 상품명 */}
@@ -151,24 +274,172 @@ function ProductUploadPage() {
             />
           </div>
 
-          {/* 카테고리 */}
-          <div>
+           {/* 상품 카테고리 */}
+           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              시즌
+              상품 종류
             </label>
             <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              value={productCategory}
+              onChange={(e) => setProductCategory(e.target.value)}
               className="block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              style={{
+                position: "relative", 
+                zIndex: 10,
+                maxHeight: '50px', // 드롭다운의 최대 높이 설정
+                overflowY: 'auto', // 스크롤 활성화
+              }}
             >
-              <option value="">카테고리를 선택하세요</option>
-              <option value="summer">여름용</option>
-              <option value="winter">겨울용</option>
-              <option value="men">남성용</option>
-              <option value="women">여성용</option>
-              <option value="kids">유아용</option>
+              <option value="" disabled>상품을 선택해주세요.</option>
+              {Object.entries(productEnum).map(([key, { description }]) => (
+                  <option key={key} value={key}>
+                    {description}
+                  </option>
+              ))}
             </select>
           </div>
+
+          {/* 사람 카테고리 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              성별
+            </label>
+            <select
+              value={personCategory}
+              onChange={(e) => setPersonCategory(e.target.value)}
+              className="block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              style={{
+                position: "relative", // select 요소의 상대적 위치 지정
+                zIndex: 10, // 드롭다운 메뉴가 다른 요소들에 가려지지 않도록 설정
+              }}  
+            >
+              <option value="" disabled>성별을 선택해주세요.</option>
+              <option value="ALL_PERSON">남여공용</option>
+              <option value="MEN">남성</option>
+              <option value="WOMEN">여성</option>
+              <option value="CHILDREN">아동</option>
+              
+            </select>
+          </div>
+
+          {/* 계절 카테고리 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              계절
+            </label>
+            <select
+              value={seasonCategory}
+              onChange={(e) => setSeasonCategory(e.target.value)}
+              className="block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              style={{
+                position: "relative", // select 요소의 상대적 위치 지정
+                zIndex: 10, // 드롭다운 메뉴가 다른 요소들에 가려지지 않도록 설정
+              }}
+            >
+              <option value="" disabled>계절을 선택해주세요.</option>
+              <option value="SUMMER">여름</option>
+              <option value="WINTER">겨울</option>
+              <option value="ALL_SEASON">모든계절</option>
+             
+            </select>
+          </div>
+
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              신발 사이즈 및 수량
+            </label>
+            <div className="flex items-center gap-4 mb-4">
+              <div>
+                <label className="block text-sm text-gray-700">최소 사이즈</label>
+                <input
+                  type="number"
+                  name="min"
+                  value={sizeRange.min}
+                  onChange={handleSizeRangeChange}
+                  className="block w-20 text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="최소"
+                  min={0}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700">최대 사이즈</label>
+                <input
+                  type="number"
+                  name="max"
+                  value={sizeRange.max}
+                  onChange={handleSizeRangeChange}
+                  className="block w-20 text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="최대"
+                  min={0}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700">사이즈 간격</label>
+                <select
+                  value={sizeInterval}
+                  onChange={handleSizeIntervalChange}
+                  className="block w-25 text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="" disabled>선택</option>
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                </select>
+              </div>
+            </div>
+
+            {
+              // Show error message when no size range is provided
+              sizeInterval && !sizeRange.min && !sizeRange.max && !sizeRange.errorMessage && (
+                <p className="text-red-500 text-sm">
+                  최소 사이즈와 최대 사이즈를 입력해주세요.
+                </p>
+              )
+            }
+
+            {
+              // Show error message when size range is invalid
+              sizeInterval && 
+              sizeRange.min && 
+              sizeRange.max && 
+              ((sizeRange.min > sizeRange.max) || 
+              (sizeRange.min % sizeInterval !== 0 || sizeRange.max % sizeInterval !== 0)) && 
+              !sizeRange.errorMessage && (
+                <p className="text-red-500 text-sm">
+                  정확한 사이즈 정보를 입력해주세요.
+                </p>
+              )
+            }
+
+            {
+              // Show size input fields only when all validations pass
+              sizeInterval && 
+              sizeRange.min && 
+              sizeRange.max && 
+              sizeRange.min % sizeInterval === 0 && 
+              sizeRange.max % sizeInterval === 0 && 
+              sizeRange.min <= sizeRange.max && (
+                <div className="grid grid-cols-4 gap-4">
+                  {renderSizeOptions().map((size) => (
+                    <div key={size} className="flex items-center">
+                      <label className="text-sm text-gray-700">{size} 사이즈</label>
+                      <input
+                        type="number"
+                        value={sizeQuantities[size] || ""}
+                        onChange={(e) => handleQuantityChange(size, e)}
+                        placeholder="수량"
+                        min={0}
+                        className="ml-2 w-20 text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )
+            }
+          </div>
+
+
+
 
           {/* 상품 설명란 */}
           <div>
@@ -189,6 +460,7 @@ function ProductUploadPage() {
               }}
             />
           </div>
+
 
           {/* 상품 가격 */}
           <div>
@@ -218,6 +490,7 @@ function ProductUploadPage() {
               취소
             </button>
             <button
+              onClick={handleSubmit}
               type="submit"
               className="px-6 py-2 bg-blue-500 text-white rounded-lg shadow-sm hover:bg-blue-600"
             >
@@ -227,7 +500,7 @@ function ProductUploadPage() {
         </form>
 
         {/* 이미지 팝업 */}
-        {hoveredImage && (
+        {/* {hoveredImage && (
           <div
             style={{
               position: "absolute",
@@ -250,7 +523,7 @@ function ProductUploadPage() {
               }}
             />
           </div>
-        )}
+        )} */}
       </div>
     </UploadLayout>
   );
