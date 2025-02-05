@@ -21,6 +21,7 @@ import shop.shopBE.domain.orderproduct.entity.request.OrderProductDeliveryInfo;
 import shop.shopBE.domain.orderproduct.entity.enums.DeliveryStatus;
 import shop.shopBE.domain.orderproduct.repository.OrderProductRepository;
 import shop.shopBE.domain.orderproduct.request.OrderProductRequest;
+import shop.shopBE.domain.orderproduct.service.OrderProductService;
 import shop.shopBE.domain.product.entity.Product;
 import shop.shopBE.domain.product.exception.ProductExceptionCode;
 import shop.shopBE.domain.product.repository.ProductRepository;
@@ -52,11 +53,14 @@ public class OrderHistoryService {
 
     //주문내역 삭제
     @Transactional
-    public void deleteOrderHistoryByHistoryId(Long historyId){
+    public void deleteOrderHistoryByHistoryId(Long orderHistoryId){
         // 1. 주문내역의 배송지 정보를 제거
-        OrderHistory deleteOrderHistory = orderHistoryRepository.findByOrderHistoryId(historyId)
+        OrderHistory deleteOrderHistory = orderHistoryRepository.findByOrderHistoryId(orderHistoryId)
                 .orElseThrow(() -> new CustomException(OrderHistoryException.OrderHistory_NOT_FOUND));
+        
+        //외래키를 갖는 속성들도 삭제
         destinationRepository.deleteById(deleteOrderHistory.getDestination().getId());
+        orderProductRepository.deleteByOrderHistoryId(orderHistoryId);
 
         /*
         받아온 주문내역의 ID를 가진 주문내역 객체의 배송 ID를 통해서 주문내역의 배송지 삭제
@@ -70,7 +74,7 @@ public class OrderHistoryService {
         }
 
         //2. 배송지 정보를 삭제했으므로 주문내역 삭제
-        orderHistoryRepository.deleteById(historyId);
+        orderHistoryRepository.deleteById(orderHistoryId);
     }
 
 
@@ -85,6 +89,8 @@ public class OrderHistoryService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND));
 
+        //배송지를 조회하기전에
+
         // 배송지 기본키로 배송지 조회
         Destination destination = destinationRepository.findById(orderRequest.destinationId())
                 .orElseThrow(() -> new CustomException(DestinationException.DESTINATION_NOT_FOUND));
@@ -92,6 +98,7 @@ public class OrderHistoryService {
         // 주문정보 객체 생성
         OrderHistory orderHistory = OrderHistory.builder()
                 .orderPrice(orderRequest.totalPrice())
+                .orderCount(orderRequest.orderProductRequests().size())
                 .createdAt(LocalDateTime.now())
                 .member(member)
                 .destination(destination)
