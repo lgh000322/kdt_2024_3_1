@@ -41,7 +41,8 @@ public class AuthorityRequestRepositoryCustomImpl implements AuthorityRequestRep
     public Optional<AuthorityRequest> findByIdFetchJoin(Long authorityId) {
         AuthorityRequest result = queryFactory
                 .select(authorityRequest)
-                .from(authorityRequest.member, member).fetchJoin()
+                .from(authorityRequest)
+                .join(authorityRequest.member, member).fetchJoin() // authorityRequest와 member를 fetch join
                 .where(authorityRequest.id.eq(authorityId))
                 .fetchOne();
 
