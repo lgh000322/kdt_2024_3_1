@@ -6,9 +6,6 @@ const preFix = `${ApiHost}/destination`;
 // 배송지 목록 조회 API
 export const getShippingAddresses = async (token) => {
   try {
-    console.log("🚀 배송지 목록 요청: ", preFix);
-    console.log("🛠️ Authorization 헤더: ", token);
-
     const response = await axios.get(preFix, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -16,9 +13,25 @@ export const getShippingAddresses = async (token) => {
     });
 
     console.log("✅ 배송지 응답 데이터: ", response.data);
-    return response.data.data; // 서버 응답에서 data 부분 추출
+    return response.data.data;  // ✅ 여기서 data 안의 data 배열을 반환해야 함
   } catch (error) {
     console.error("❌ 배송지 목록 불러오기 실패:", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
+
+// 배송지 추가 API
+export const addShippingAddress = async (newAddress, token) => {
+  try {
+    const response = await axios.post(preFix, newAddress, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ 배송지 추가 실패:", error.response?.data || error.message);
     throw error.response?.data || error.message;
   }
 };
@@ -34,6 +47,18 @@ export const updateShippingAddress = async (destinationId, updatedData, token) =
     });
     return response.data;
   } catch (error) {
+    console.error("❌ 배송지 수정 실패:", error.response?.data || error.message);
     throw error.response?.data || error.message;
   }
 };
+
+//배송지 삭제 API
+export const deleteShippingAddress = async (destinationId, token) => {
+  const response = await axios.delete(`${preFix}/${destinationId}` ,{
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+}
