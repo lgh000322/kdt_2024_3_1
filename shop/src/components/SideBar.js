@@ -118,19 +118,22 @@ const managerMenuItems = [
 const Sidebar = ({ onMenuClick }) => {
   const { doLogout, moveToLoginPage } = useCustomMove();
   const loginState = useSelector((state) => state.loginSlice);
-  // 각각 필요한 값만 선택적으로 가져오기
-  const accessToken = loginState.accessToken;
-  let testRole = JSON.stringify(loginState.role[0]);
-  console.log(testRole);
+  const [menuItems, setMenuItems] = useState([]);
 
-  const menuItems =
-    testRole === `"ROLE_SELLER"` || `"SELLER`
-      ? sellerMenuItems
-      : testRole === `"ROLE_USER"` || `"USER"`
-      ? consumerMenuItems
-      : testRole === `"ROLE_ADMIN"` || `"ADMIN"`
-      ? managerMenuItems
-      : [];
+  useEffect(() => {
+    let loginStateJson = JSON.stringify(loginState.role);
+    const jsonObject = JSON.parse(loginStateJson);
+    const roleValue = jsonObject.role[0];
+    console.log(roleValue);
+
+    if (roleValue === "ROLE_SELLER" || roleValue === "SELLER") {
+      setMenuItems(sellerMenuItems);
+    } else if (roleValue === "ROLE_USER" || roleValue === "USER") {
+      setMenuItems(consumerMenuItems);
+    } else {
+      setMenuItems(managerMenuItems);
+    }
+  }, []);
 
   const logoutClick = () => {
     logoutRefresh().then((res) => {
