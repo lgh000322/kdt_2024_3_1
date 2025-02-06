@@ -3,6 +3,8 @@ import AdminPageLayout from "../layouts/AdminPageLayout";
 import { useSelector } from "react-redux";
 import { getMembers } from "../api/memberApi";
 
+const userRole = "manager";
+
 function AdminUserPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
   const [formData, setFormData] = useState([]);
@@ -45,7 +47,7 @@ function AdminUserPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <AdminPageLayout>
+    <AdminPageLayout role={userRole}>
       <div>
         {/* 검색 필터 섹션 */}
         <div

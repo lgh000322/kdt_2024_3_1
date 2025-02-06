@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import { sellerAccept } from "../api/memberApi";
 import { sellerAcceptSubmit } from "../api/memberApi";
 
+const userRole = "manager";
+
 function AdminAcceptPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
   const [formData, setFormData] = useState([]);
@@ -13,31 +15,18 @@ function AdminAcceptPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const accessToken = loginSlice.accessToken;
-        console.log("Access Token:", accessToken);
+    const accessToken = loginSlice.accessToken;
+    sellerAccept(accessToken).then((res) => {
+      const data = res.data;
 
-        sellerAccept(accessToken).then((res) => {
-          const response = res.data;
-          const authorityId = response.authorityId;
-        });
-        console.log("API Response:", response);
+      const sortedData = data.sort((a, b) => {
+        a.name.localeCompare(b.name);
+      });
 
-        // 이름 기준으로 정렬
-        const sortedData = response.data.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-
-        setFormData(sortedData);
-        setFilteredData(sortedData); // 초기값 설정
-      } catch (error) {
-        console.error("Failed to fetch members:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (loginSlice.accessToken) fetchMembers();
+      setFormData(sortedData);
+      setFilteredData(sortedData);
+      setLoading(false);
+    });
   }, [loginSlice.accessToken]);
 
   useEffect(() => {
@@ -69,23 +58,25 @@ function AdminAcceptPage() {
       const selectedMember = filteredData[selectedRowIndex];
       const accessToken = loginSlice.accessToken;
 
-      console.log("승인할 데이터:", selectedId);
-
-      sellerAcceptSubmit(accessToken).then((res) => {
-        const response = res.data;
-        const authorityId = response.authorityId;
-        if (res.code === 200) {
-          alert("성공");
-        }
-      });
-
-      // 승인 후 리스트에서 제거
-      const updatedFormData = formData.filter(
-        (member) => member.id !== selectedMember.id
+      // 선택된 데이터의 authorityId를 사용하여 API 호출
+      const response = await sellerAcceptSubmit(
+        accessToken,
+        selectedMember.authorityId
       );
-      setFormData(updatedFormData);
-      setFilteredData(updatedFormData);
-      setSelectedRowIndex(null); // 선택 초기화
+
+      if (response.code === 200) {
+        alert("성공");
+
+        // 승인 후 리스트에서 제거
+        const updatedFormData = formData.filter(
+          (member) => member.id !== selectedMember.id
+        );
+        setFormData(updatedFormData);
+        setFilteredData(updatedFormData);
+        setSelectedRowIndex(null); // 선택 초기화
+      } else {
+        alert(`승인 실패: ${response.message}`);
+      }
     } catch (error) {
       console.error("승인 실패:", error);
       alert("승인 중 오류가 발생했습니다.");
