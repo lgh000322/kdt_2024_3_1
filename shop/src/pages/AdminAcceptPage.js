@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import AdminPageLayout from '../layouts/AdminPageLayout';
 import { useSelector } from "react-redux";
 import { sellerAccept } from "../api/memberApi";
+import { sellerAcceptSubmit } from '../api/memberApi';
 
-const userRole = "manager";
 
 function AdminAcceptPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
   const [formData, setFormData] = useState([]);
   const [filteredData, setFilteredData] = useState([]); // 필터링된 데이터
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRowIndex, setSelectedRowIndex] = useState(null);
+  const [selectedRowIndex, setSelectedRowIndex] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,8 +19,13 @@ function AdminAcceptPage() {
         const accessToken = loginSlice.accessToken;
         console.log("Access Token:", accessToken);
 
-        const response = await sellerAccept(accessToken);
+       sellerAccept(accessToken).then(res=>{
+          const response=res.data
+          const authorityId=response.authorityId;
+
+        });
         console.log("API Response:", response);
+        
 
         // 이름 기준으로 정렬
         const sortedData = response.data.sort((a, b) =>
@@ -34,12 +39,14 @@ function AdminAcceptPage() {
       } finally {
         setLoading(false);
       }
+
+      
+
     };
     if (loginSlice.accessToken) fetchMembers();
   }, [loginSlice.accessToken]);
 
-
-useEffect(() => {
+  useEffect(() => {
     if (searchTerm === "") {
       setFilteredData(formData); // 검색어가 없으면 전체 데이터 표시
     } else {
@@ -57,7 +64,36 @@ useEffect(() => {
     setSelectedRowIndex(index);
   };
 
-  
+  const handleApprove = async () => {
+    if (selectedRowIndex === null) {
+      alert("승인할 항목을 선택하세요.");
+      return;
+    }
+
+    try {
+      const selectedMember = filteredData[selectedRowIndex];
+      const accessToken = loginSlice.accessToken;
+
+      console.log("승인할 데이터:", selectedId);
+
+      sellerAcceptSubmit(accessToken).then(res=>{
+        const response=res.data
+        const authorityId=response.authorityId;
+        if(res.code === 200){
+          alert("성공");
+        }
+      })
+
+      // 승인 후 리스트에서 제거
+      const updatedFormData = formData.filter((member) => member.id !== selectedMember.id);
+      setFormData(updatedFormData);
+      setFilteredData(updatedFormData);
+      setSelectedRowIndex(null); // 선택 초기화
+    } catch (error) {
+      console.error("승인 실패:", error);
+      alert("승인 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <AdminPageLayout role={userRole}>
@@ -109,7 +145,6 @@ useEffect(() => {
               width: "250px",
             }}
           />
-
         </div>
       </div>
 
@@ -138,7 +173,7 @@ useEffect(() => {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead style={{ position: "sticky", top: 0, backgroundColor: "#f7faff", zIndex: 1 }}>
               <tr>
-                {["번호", "등록자", "등록 제목", "등록일"].map((header) => (
+                {["번호", "등록자", "등록 제목", "등록일", "첨부 파일"].map((header) => (
                   <th
                     key={header}
                     style={{
@@ -164,17 +199,27 @@ useEffect(() => {
                   }}
                   onClick={() => handleRowClick(index)}
                 >
-                  <td style={{ padding: "10px", textAlign: "center" }}>{index + 1}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{member.memberName}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{member.title}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{member.createAt}</td>
+                  <td style={{ padding: "10px", textAlign:"center" }}>{index + 1}</td>
+                  <td style={{ padding:"10px", textAlign:"center" }}>{member.memberName}</td>
+                  <td style={{ padding:"10px", textAlign:"center" }}>{member.title}</td>
+                  <td style={{ padding:"10px", textAlign:"center" }}>{member.createAt}</td>
+                  <td style={{ padding:"10px", textAlign:"center" }}>
+                    <button style={{
+                      backgroundColor:'#007bff',
+                      color:'#fff',
+                      borderRadius:'5px',
+                      padding:'10px',
+                      fontSize:'16px',
+                      border:'none',
+                      cursor:'pointer'
+                    }}>Download</button></td>
                 </tr>
               ))}
-                {filteredData.length === 0 && (
-                  <tr>
-                    <td colSpan="6" style={{ textAlign:"center", padding:"20px" }}>검색 결과가 없습니다.</td>
-                  </tr>
-                )}
+              {filteredData.length === 0 && (
+                <tr>
+                  <td colSpan="6" style={{ textAlign:"center", padding:"20px" }}>검색 결과가 없습니다.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -182,34 +227,37 @@ useEffect(() => {
         {/* 승인 및 거절 버튼 */}
         <div 
           style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '10px',
+            display:'flex',
+            justifyContent:'flex-end',
+            gap:'10px'
           }}
         >
           <button 
+            onClick={handleApprove}
             style={{
-              backgroundColor: '#28a745',
-              color: '#fff',
-              borderRadius: '5px',
-              padding: '10px 20px',
-              fontSize: '16px',
-              border: 'none',
-              cursor: 'pointer',
+              backgroundColor:'#28a745',
+              color:'#fff',
+              borderRadius:'5px',
+              padding:'10px',
+              fontSize:'16px',
+              border:'none',
+              cursor:'pointer'
             }}
           >
             승인
           </button>
+
+          {/* 거절 버튼은 추가 구현 필요 */}
           
           <button 
             style={{
-              backgroundColor: '#dc3545',
-              color: '#fff',
-              borderRadius: '5px',
-              padding: '10px 20px',
-              fontSize: '16px',
-              border: 'none',
-              cursor: 'pointer',
+              backgroundColor:'#dc3545',
+              color:'#fff',
+              borderRadius:'5px',
+              padding:'10px',
+              fontSize:'16px',
+              border:'none',
+              cursor:'pointer'
             }}
           >
             거절

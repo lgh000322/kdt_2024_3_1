@@ -4,7 +4,7 @@ import { getRoleFromAccessToken } from "../utils/jwtUtils";
 
 const initState = {
   accessToken: "",
-  role: [],
+  role: "",
 };
 
 const loadState = () => {
@@ -22,10 +22,8 @@ const loadState = () => {
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const decodedPayload = JSON.parse(atob(base64));
 
-    // role 정보가 배열일 가능성 고려
-    const role = Array.isArray(decodedPayload.role)
-      ? decodedPayload.role
-      : [decodedPayload.role]; // 배열로 변환
+     // role 정보 추출
+     const role = decodedPayload.role;
 
     return { accessToken, role };
   } catch (error) {
@@ -40,14 +38,12 @@ const loginSlice = createSlice({
   reducers: {
     login: (state, action) => {
       state.accessToken = action.payload.accessToken;
-      state.role = Array.isArray(action.payload.role)
-        ? action.payload.role
-        : [action.payload.role]; // role이 배열인지 확인 후 배열로 설정
+      state.role = action.payload.role;
     },
     logout: (state) => {
       removeCookie("accessToken");
-      state.accessToken = "";
-      state.role = [];
+      state.accessToken = ""; // initState로 상태 재설정
+      state.role = "";
     },
     refresh: (state, action) => {
       removeCookie("accessToken");

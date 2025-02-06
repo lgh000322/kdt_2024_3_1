@@ -3,7 +3,8 @@ import { ApiHost } from "./ApiConst";
 
 const preFix = `${ApiHost}/member`;
 const adminlist = `${ApiHost}/members`;
-const selleraccept = `${ApiHost}/authority`;
+const selleraccept = `${ApiHost}/authority`;  
+const selleracceptsubmit = `${ApiHost}/authority`  
 
 
 
@@ -71,6 +72,18 @@ export const sellerAccept = async (accessToken) => {
   console.log("Request Headers:", header);
 
   const res = await axios.get(`${selleraccept}`, header);
+
+  return res.data;
+};
+
+
+export const sellerAcceptSubmit = async (accessToken, authorityId) => {
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
+  console.log(`${selleracceptsubmit}/${authorityId}`)
+  const res = await axios.put(`${selleracceptsubmit}/${authorityId}`, header);
 
   return res.data;
 };
