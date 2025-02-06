@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import AdminPageLayout from "../layouts/AdminPageLayout";
-import { getBanners, postBanners } from "../api/bannerApi";
+import { getBanners, postBanners, updateBanners } from "../api/bannerApi";
 import { useSelector } from "react-redux";
+import useCustomMove from "../hook/useCustomMove";
 
 const initState = [
   { bannerId: 1, imageUrl: null, file: "" },
@@ -11,8 +12,10 @@ const initState = [
 
 function AdminBannerPage() {
   const [banners, setBanners] = useState(initState);
+  const [deletedIds, setDeletedIds] = useState([]);
   const loginState = useSelector((state) => state.loginSlice);
   const accessToken = loginState.accessToken;
+  const { moveToProductAbs } = useCustomMove();
   const fileInputRefs = useRef([]);
 
   useEffect(() => {
@@ -25,7 +28,7 @@ function AdminBannerPage() {
           return {
             bannerId: bannerData.bannerId,
             imageUrl: bannerData.imageUrl,
-            file: "", // file은 기본적으로 빈 값으로 설정
+            file: "",
           };
         });
         setBanners(updateBanners);
@@ -35,7 +38,7 @@ function AdminBannerPage() {
           return {
             bannerId: bannerData.bannerId,
             imageUrl: bannerData.imageUrl,
-            file: "", // file은 기본적으로 빈 값으로 설정
+            file: "",
           };
         });
         const additionalBanners = Array.from(
@@ -93,18 +96,26 @@ function AdminBannerPage() {
           : banner
       )
     );
+
+    // 삭제할 ID를 deletedIds에 추가
+    setDeletedIds((prevDeletedIds) => {
+      // 이미 삭제된 ID가 아닐 경우에만 추가
+      if (!prevDeletedIds.includes(id)) {
+        return [...prevDeletedIds, id];
+      }
+      return prevDeletedIds; // 중복 방지
+    });
   };
 
   const handleSubmit = () => {
-    const files = banners.map((banner) => banner.file).filter((file) => file); // 빈 값 제거
+    const files =
+      (banners || []).map((banner) => banner.file).filter((file) => file) || [];
 
-    if (files.length === 0) {
-      alert("업로드할 파일이 없습니다.");
-      return;
-    }
-
-    postBanners(accessToken, files).then((res) => {
-      console.log("서버 응답:", res);
+    updateBanners(accessToken, files, deletedIds).then((res) => {
+      if (res.code === 200) {
+        alert("배너 업데이트에 성공했습니다.");
+        moveToProductAbs();
+      }
     });
   };
 
