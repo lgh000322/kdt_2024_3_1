@@ -1,8 +1,11 @@
 package shop.shopBE.global.utils.cookie;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import shop.shopBE.global.utils.cookie.data.CookieData;
+
+import java.util.Optional;
 
 @Component
 public class CookieUtils {
@@ -25,6 +28,22 @@ public class CookieUtils {
         return cookie;
     }
 
+    public Optional<Cookie> getCookies(HttpServletRequest request, String cookieName) {
+        Cookie[] cookies = request.getCookies();
+        Cookie resultCookie = null;
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(cookieName)) {
+                    resultCookie=cookie;
+                    break;
+                }
+            }
+        }
+
+        return Optional.ofNullable(resultCookie);
+    }
+
     public Cookie deleteRefreshCookie() {
         Cookie refreshTokenCookie = new Cookie("refreshToken", null);
         refreshTokenCookie.setHttpOnly(true);
@@ -34,7 +53,6 @@ public class CookieUtils {
         refreshTokenCookie.setMaxAge(0);
 
         return refreshTokenCookie;
-
     }
 
 

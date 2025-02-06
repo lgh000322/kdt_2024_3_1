@@ -39,7 +39,8 @@ public class SecurityConfig {
             "/banners/**",
             "/JWT/**",
             "/member/logout",
-            "banners/**"
+            "/banners/**",
+            "/refresh/**"
     };
 
     @Bean
