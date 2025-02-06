@@ -22,10 +22,15 @@ public class Banner {
 
     private String savedImageName;
 
-    private String imageUrl;
-
-    // 회원의 역할로 필터링
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public static Banner createDefaultBanner(String originImageName, String savedImageName, Member member) {
+        return Banner.builder()
+                .originImageName(originImageName)
+                .savedImageName(savedImageName)
+                .member(member)
+                .build();
+    }
 }

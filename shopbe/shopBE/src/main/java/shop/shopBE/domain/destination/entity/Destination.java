@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.shopBE.domain.destination.request.UpdateDestinationRequest;
+import shop.shopBE.domain.destination.response.DestinationListInfo;
 import shop.shopBE.domain.member.entity.Member;
 
 @Entity
@@ -37,4 +39,25 @@ public class Destination {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void updateDestination(UpdateDestinationRequest updateDestinationRequest) {
+        this.destinationName= updateDestinationRequest.destinationName();
+        this.receiverName= updateDestinationRequest.receiverName();
+        this.tel= updateDestinationRequest.tel();
+        this.address = updateDestinationRequest.address();
+        this.zipCode = updateDestinationRequest.zipCode();
+        this.deliveryMessage = updateDestinationRequest.deliverMessage();
+    }
+
+    public static Destination createDefaultDestination(String destinationName, String receiverName, String tel, String address, Long zipCode, Member member) {
+        return Destination.builder()
+                .destinationName(destinationName)
+                .receiverName(receiverName)
+                .tel(tel)
+                .address(address)
+                .zipCode(zipCode)
+                .isSelectedDestination(true)
+                .member(member)
+                .build();
+    }
 }
