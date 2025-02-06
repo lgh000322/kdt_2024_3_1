@@ -28,6 +28,7 @@ public class DestinationRepositoryCustomImpl implements DestinationRepositoryCus
     public Optional<List<DestinationListInfo>>findDestinationListByMemberId(Long memberId) {
         List<DestinationListInfo> result = queryFactory
                 .select(Projections.constructor(DestinationListInfo.class,
+                                destination.id,
                                 destination.destinationName,
                                 destination.receiverName,
                                 destination.tel,
