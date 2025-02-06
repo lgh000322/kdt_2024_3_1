@@ -14,7 +14,9 @@ import shop.shopBE.domain.destination.request.UpdateDestinationRequest;
 import shop.shopBE.domain.destination.response.DestinationListInfo;
 import shop.shopBE.domain.destination.service.DestinationFadeService;
 import shop.shopBE.domain.destination.service.DestinationService;
+import shop.shopBE.domain.member.exception.MemberExceptionCode;
 import shop.shopBE.global.config.security.mapper.token.AuthToken;
+import shop.shopBE.global.exception.custom.CustomException;
 import shop.shopBE.global.response.ResponseFormat;
 
 import java.util.List;
@@ -41,8 +43,9 @@ public class DestinationController {
     // 특정 회원의 배송지 추가
     @PostMapping("/destination")
     @Operation(summary = "배송지 추가", description = "현재 로그인한 회원의 배송지 목록에 배송지를 추가")
-    public ResponseEntity<ResponseFormat<Void>> addDestinationList(@RequestBody @Valid AddDestinationRequest addDestinationResponse,
-                                                                   @AuthenticationPrincipal AuthToken authToken) {
+    public ResponseEntity<ResponseFormat<Void>> addDestinationList(@AuthenticationPrincipal AuthToken authToken,
+                                                                   @RequestBody @Valid AddDestinationRequest addDestinationResponse) {
+
         //입력받은 배송지와 사용자 ID를 통해 배송지 추가
         destinationService.addDestinationList(authToken.getId(), addDestinationResponse);
         return ResponseEntity.ok().body(ResponseFormat.of("배송지 추가에 성공했습니다."));
@@ -55,11 +58,9 @@ public class DestinationController {
             @RequestBody @Valid UpdateDestinationRequest updateDestinationRequest,
             @PathVariable(name = "destinationId") Long destinationId
     ) {
-
         destinationFadeService.updateDestination(updateDestinationRequest,destinationId);
         return ResponseEntity.ok().body(ResponseFormat.of("회원의 배송지 수정에 성공했습니다."));
     }
-
 
     @DeleteMapping("/destination/{destinationId}")
     @Operation(summary="배송지 삭제",description = "회원의 배송지 삭제")

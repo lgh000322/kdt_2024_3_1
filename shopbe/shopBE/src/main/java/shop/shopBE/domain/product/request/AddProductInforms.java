@@ -21,13 +21,7 @@ public record AddProductInforms(
         PersonCategory personCategory,    //사람 종류 - 아동, 여성, 남성, 남여공용
         @NotEmpty
         SeasonCategory seasonCategory,    // 시즌 종류 - 여름, 겨울 , 모든 시즌
-        @NotEmpty
-        MultipartFile mainImgFile,                 // 메인 이미지 파일 -> 무조건 받아야함.
-
-        List<MultipartFile> sideImgFile,// 사이드 이미지 파일 -> 무조건은 아님.
-
         String description, // 상품설명 -> 무조건 받지 않아도 됨.
-
         @NotNull
         Map<Integer, Integer> sizeAndQuantity  // 사이즈와 사이즈별 수량 (키 - 사이즈 , 밸류 - 사이즈별 수량)
 ) {

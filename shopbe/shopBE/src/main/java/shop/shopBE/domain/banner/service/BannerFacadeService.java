@@ -9,6 +9,7 @@ import shop.shopBE.domain.banner.response.BannerResponse;
 import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.domain.member.service.MemberService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,16 +43,16 @@ public class BannerFacadeService {
     }
 
     private List<Banner> getBanners(List<BannerUpdateRequestForDelete> bannerUpdateRequestForDeletes) {
-        List<Banner> list = bannerUpdateRequestForDeletes.stream()
-                .map(bannerUpdateRequestForDelete -> {
-                    return bannerService.findById(bannerUpdateRequestForDelete.bannerId());
-                })
-                .toList();
+        List<Banner> list = new ArrayList<>();
+
+        if (bannerUpdateRequestForDeletes != null && !bannerUpdateRequestForDeletes.isEmpty()) {
+            list = bannerUpdateRequestForDeletes.stream()
+                    .map(bannerUpdateRequestForDelete -> bannerService.findById(bannerUpdateRequestForDelete.bannerId()))
+                    .toList();
+        }
 
         return list;
     }
-
-
 
 
 }

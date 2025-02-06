@@ -72,6 +72,7 @@ public class Product {
                                                String description,
                                                LocalDateTime createdAt) {
         return Product.builder()
+                .member(member)
                 .productCategory(productCategory)
                 .personCategory(personCategory)
                 .seasonCategory(seasonCategory)
@@ -122,5 +123,16 @@ public class Product {
     // 상품 재고증가 (업데이트) 메서드
     public void plusTotalStock(int stock) {
         this.totalStock += stock;
+    }
+
+    public void updateProduct(String productName,
+                              String description,
+                              int price,
+                              PersonCategory personCategory,
+                              ProductCategory productCategory,
+                              SeasonCategory seasonCategory,
+                              int totalStock
+                              ) {
+
     }
 }

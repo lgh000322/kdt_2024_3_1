@@ -30,10 +30,18 @@ public class OrderHistory {
     // 주문 날짜
     private LocalDateTime createdAt;
 
-    
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE) //caseCade: orderHistory삭제시 destinaion도 자동삭제
-    @JoinColumn(name = "destination_id")
-    private Destination destination;
+
+    private String address; //주소
+
+    private String destinationName; //배송지 이름
+
+    private String receiverName; //받는 사람
+
+    private String tel; //전화번호
+
+    private Long zipCode; //우편번호
+
+    private String deliveryMessage;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -41,6 +49,11 @@ public class OrderHistory {
 
     //삭제시 배송지 ID 값을 Null 로 설정
     public void removeDestination() {
-        this.destination = null;
+        this.address = null;
+        this.destinationName = null;
+        this.receiverName = null;
+        this.tel = null;
+        this.zipCode = null;
+        this.deliveryMessage = null;
     }
 }

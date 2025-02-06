@@ -11,11 +11,12 @@ import java.time.LocalDateTime;
 
 @Builder
 public record OrderHistoryInfo(
+        @NotNull
         @Min(value = 1)
         int page,
 
+        @NotNull
         @Max(value = 10)
         int size
-) {
+) {}
 
-}
