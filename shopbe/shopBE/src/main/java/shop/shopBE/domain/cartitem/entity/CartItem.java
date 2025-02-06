@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.shopBE.domain.cart.entity.Cart;
+import shop.shopBE.domain.cartitem.request.UpdateCartItemInform;
 import shop.shopBE.domain.product.entity.Product;
 
 @Entity
@@ -23,6 +24,8 @@ public class CartItem {
 
     private int itemPrice;
 
+    private int itemSize;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id")
     private Cart cart;
@@ -30,4 +33,11 @@ public class CartItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    // 변경감지 업데이트를 위한 메서드
+    public void updateCartItem(UpdateCartItemInform updateCartItemInform) {
+        this.itemCount = updateCartItemInform.quantity();
+        this.itemSize = updateCartItemInform.size();
+        this.itemPrice = updateCartItemInform.itemPrice();
+    }
 }

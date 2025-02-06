@@ -37,6 +37,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
 
-        response.sendRedirect("http://localhost:3000/login/success");
+        String isAuthenticated = authToken.isAuthenticated() ? "true" : "false";
+
+        response.sendRedirect("http://localhost:3000/login/success?isAuthenticated=" + isAuthenticated);
     }
 }

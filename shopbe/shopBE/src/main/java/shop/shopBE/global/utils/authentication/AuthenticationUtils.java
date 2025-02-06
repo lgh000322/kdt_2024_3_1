@@ -1,5 +1,6 @@
 package shop.shopBE.global.utils.authentication;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,10 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j
 public class AuthenticationUtils {
 
     public void makeAuthToken(Member member) {
-        AuthToken token = AuthToken.createToken(member.getId(), member.getName(), member.getUsername(), member.getRole());
+        AuthToken token = AuthToken.createToken(member.getId(), member.getName(), member.getUsername(), member.getRole(), member.isAuthenticated(),member.getSub());
+        log.info("token의 role={}", token.getRoles());
         Authentication authentication = getAuthentication(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
