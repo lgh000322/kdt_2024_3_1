@@ -4,10 +4,7 @@ import { ApiHost } from "./ApiConst";
 const preFix = `${ApiHost}/member`;
 const adminlist = `${ApiHost}/members`;
 const selleraccept = `${ApiHost}/authority`;
-<<<<<<< HEAD
-=======
 const destinationlist = `${ApiHost}/destination`;
->>>>>>> 6a61e01f599ff40a0f5a8d89ef2e15e2c96f7faf
 
 export const getMemberInfo = async (accessToken) => {
   const header = {
@@ -73,8 +70,6 @@ export const sellerAccept = async (accessToken) => {
 
   return res.data;
 };
-<<<<<<< HEAD
-=======
 
 export const destinationList = async (accessToken) => {
   const header = {
@@ -86,4 +81,3 @@ export const destinationList = async (accessToken) => {
 
   return res.data;
 };
->>>>>>> 6a61e01f599ff40a0f5a8d89ef2e15e2c96f7faf
