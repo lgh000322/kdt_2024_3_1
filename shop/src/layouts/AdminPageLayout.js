@@ -3,7 +3,7 @@ import HeaderComponent from "../components/HeaderComponent";
 import Sidebar from "../components/SideBar";
 
 // 마이페이지의 기본 레이아웃
-function AdminPageLayout({ children, role }) {
+function AdminPageLayout({ children }) {
   const [selectedMenu, setSelectedMenu] = useState(null);
 
   // 사이드바 메뉴 항목 클릭 시 해당 항목의 내용을 상태로 설정

@@ -3,8 +3,6 @@ import AdminPageLayout from "../layouts/AdminPageLayout";
 import { useSelector } from "react-redux";
 import { getMembers } from "../api/memberApi";
 
-const userRole = "manager"; // 'seller', 'consumer', 'manager' 등 사용자가 가진 역할
-
 function AdminSellerPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
   const [formData, setFormData] = useState([]);
@@ -22,10 +20,14 @@ function AdminSellerPage() {
         console.log("API Response:", response);
 
         // 역할이 seller인 데이터만 필터링
-        const sellersOnly = response.data.filter((member) => member.role === '판매자');
+        const sellersOnly = response.data.filter(
+          (member) => member.role === "판매자"
+        );
 
         // 이름 기준으로 정렬
-        const sortedData = sellersOnly.sort((a, b) => a.name.localeCompare(b.name));
+        const sortedData = sellersOnly.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
 
         setFormData(sortedData);
         setFilteredData(sortedData); // 초기값 설정
@@ -56,7 +58,7 @@ function AdminSellerPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <AdminPageLayout role={userRole}>
+    <AdminPageLayout>
       {/* 검색 필터 섹션 */}
       <div
         style={{
@@ -79,7 +81,13 @@ function AdminSellerPage() {
         >
           판매자 검색
         </h2>
-        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
           <label
             htmlFor="searchTerm"
             style={{
@@ -132,36 +140,60 @@ function AdminSellerPage() {
         </h2>
         <div style={{ maxHeight: "400px", overflowY: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead style={{ position: "sticky", top: 0, backgroundColor: "#f7faff", zIndex: 1 }}>
+            <thead
+              style={{
+                position: "sticky",
+                top: 0,
+                backgroundColor: "#f7faff",
+                zIndex: 1,
+              }}
+            >
               <tr>
-                {["번호", "판매자명", "이메일", "성별", "전화번호"].map((header) => (
-                  <th
-                    key={header}
-                    style={{
-                      borderBottom: "2px solid #ddd",
-                      padding: "10px",
-                      fontWeight: "bold",
-                      color: "#555",
-                    }}
-                  >
-                    {header}
-                  </th>
-                ))}
+                {["번호", "판매자명", "이메일", "성별", "전화번호"].map(
+                  (header) => (
+                    <th
+                      key={header}
+                      style={{
+                        borderBottom: "2px solid #ddd",
+                        padding: "10px",
+                        fontWeight: "bold",
+                        color: "#555",
+                      }}
+                    >
+                      {header}
+                    </th>
+                  )
+                )}
               </tr>
             </thead>
             <tbody>
               {filteredData.map((member, index) => (
                 <tr key={member.id}>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{index + 1}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{member.name}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{member.email}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{member.gender}</td>
-                  <td style={{ padding: "10px", textAlign: "center" }}>{member.tel}</td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>
+                    {index + 1}
+                  </td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>
+                    {member.name}
+                  </td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>
+                    {member.email}
+                  </td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>
+                    {member.gender}
+                  </td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>
+                    {member.tel}
+                  </td>
                 </tr>
               ))}
               {filteredData.length === 0 && (
                 <tr>
-                  <td colSpan="6" style={{ textAlign:"center", padding:"20px" }}>검색 결과가 없습니다.</td>
+                  <td
+                    colSpan="6"
+                    style={{ textAlign: "center", padding: "20px" }}
+                  >
+                    검색 결과가 없습니다.
+                  </td>
                 </tr>
               )}
             </tbody>

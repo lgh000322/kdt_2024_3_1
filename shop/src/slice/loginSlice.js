@@ -46,17 +46,13 @@ const loginSlice = createSlice({
       state.role = "";
     },
     refresh: (state, action) => {
-      removeCookie("accessToken");
-      removeCookie("refreshToken");
-
       state.accessToken = action.payload.accessToken;
-      state.role = getRoleFromAccessToken(state.accessToken);
-
-      setCookie("accessToken", action.payload.refreshToken, 10 / 1440);
-      setCookie("refreshToken", action.payload.accessToken, 1);
+      state.role = Array.isArray(action.payload.role)
+        ? action.payload.role
+        : [action.payload.role]; // role이 배열인지 확인 후 배열로 설정
     },
   },
 });
 
-export const { login, logout } = loginSlice.actions;
+export const { login, logout, refresh } = loginSlice.actions;
 export default loginSlice.reducer;

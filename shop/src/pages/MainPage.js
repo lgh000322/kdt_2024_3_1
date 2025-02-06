@@ -13,9 +13,6 @@ function MainPage() {
   return (
     <div>
       <ProductLayout>
-        {/* 배너 섹션 */}
-        <div className="mb-8">{/* 여기에 배너 컴포넌트가 들어갑니다 */}</div>
-
         {/* 상품 그리드 섹션 */}
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-2xl font-bold mb-6">신상품</h2>

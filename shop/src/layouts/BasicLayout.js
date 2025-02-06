@@ -5,19 +5,6 @@ import { useSelector } from "react-redux";
 
 function BasicLayout({ children }) {
   const [selectedMenu, setSelectedMenu] = useState(null);
-  const loginState = useSelector((state) => state.loginSlice);
-
-  let role;
-
-
-  if (loginState.role == "ROLE_ADMIN") {
-    role = "manager";
-  } else if (loginState.role == "ROLE_SELLER") {
-    role = "seller";
-  } else {
-    role = "consumer";
-  }
-
 
   // 사이드바 메뉴 클릭 핸들러
   const handleMenuClick = (item) => {

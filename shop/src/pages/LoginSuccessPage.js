@@ -156,12 +156,10 @@ function LoginSuccessPage() {
       ...prev,
       [name]: value,
     }));
-    console.log(formData.phone);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
     let accessToken = loginSlice.accessToken;
 
     updateMember(formData, accessToken).then((res) => {
