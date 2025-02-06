@@ -45,6 +45,15 @@ public class AuthorityRequestService {
         authorityRequest.update(true);
     }
 
+    @Transactional
+    public void deleteById(Long authorityId) {
+        AuthorityRequest authorityRequest = authorityRequestRepository.findById(authorityId)
+                .orElseThrow(() -> new CustomException(AuthorityExceptionCode.AUTHORITY_NOT_FOUND));
+
+        // 논리 삭제
+        authorityRequest.deleteAuthority(true);
+    }
+
     public List<AuthorityResponseListModel> findAuthorityRequests(Pageable pageable) {
         return authorityRequestRepository.findAuthorityRequests(pageable)
                 .orElseThrow(() -> new CustomException(AuthorityExceptionCode.AUTHORITY_NOT_EXISTS));

@@ -53,4 +53,11 @@ public class AuthorityRequestController {
         return ResponseEntity.ok().body(ResponseFormat.of("성공", result));
     }
 
+    @DeleteMapping("/authority/{authorityId}")
+    @Operation(summary = "판매자 권한 거절", description = "관리자 권한을 가진 회원이 요청을 보낸 회원의 권한을 판매자로 업데이트 하지 않는다.")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponseFormat<?>> deleteAuthority(@PathVariable(name = "authorityId") Long authorityId) {
+        authorityRequestFacadeService.deleteById(authorityId);
+        return ResponseEntity.ok().body(ResponseFormat.of("권한 거절에 성공했습니다."));
+    }
 }

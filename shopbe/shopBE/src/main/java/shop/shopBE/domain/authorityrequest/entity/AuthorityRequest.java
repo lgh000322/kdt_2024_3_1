@@ -34,13 +34,20 @@ public class AuthorityRequest {
         this.isAccepted = isAccepted;
     }
 
+    private boolean isDeleted;
+
     public static AuthorityRequest createDefaultAuthorityRequest(String reasonToRegister, Member member) {
         return AuthorityRequest.builder()
                 .reasonToRegister(reasonToRegister)
                 .isAccepted(false)
                 .member(member)
+                .isDeleted(false)
                 .createAt(LocalDateTime.now())
                 .build();
+    }
+
+    public void deleteAuthority(boolean isDeleted) {
+        this.isAccepted = isDeleted;
     }
 
 }

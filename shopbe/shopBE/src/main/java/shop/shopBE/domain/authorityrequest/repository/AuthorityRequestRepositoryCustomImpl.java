@@ -29,7 +29,10 @@ public class AuthorityRequestRepositoryCustomImpl implements AuthorityRequestRep
                 ))
                 .from(authorityRequest)
                 .innerJoin(member).on(authorityRequest.member.id.eq(member.id))
-                .where(authorityRequest.isAccepted.eq(false))
+                .where(
+                        authorityRequest.isAccepted.eq(false),
+                        authorityRequest.isDeleted.eq(false)
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
