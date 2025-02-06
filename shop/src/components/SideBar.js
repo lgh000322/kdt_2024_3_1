@@ -132,7 +132,7 @@ const Sidebar = ({ onMenuClick }) => {
       : [];
 
   const logoutClick = () => {
-    logoutRefresh(accessToken).then((res) => {
+    logoutRefresh().then((res) => {
       if (res.code === 200) {
         doLogout();
         alert("로그아웃에 성공했습니다.");

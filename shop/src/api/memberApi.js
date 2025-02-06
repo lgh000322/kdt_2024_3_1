@@ -5,8 +5,6 @@ const preFix = `${ApiHost}/member`;
 const adminlist = `${ApiHost}/members`;
 const selleraccept = `${ApiHost}/authority`;
 
-
-
 export const getMemberInfo = async (accessToken) => {
   const header = {
     headers: { Authorization: `Bearer ${accessToken}` },
@@ -34,9 +32,8 @@ export const updateMember = async (updateMemberInfo, accessToken) => {
   return res.data;
 };
 
-export const logoutRefresh = async (accessToken) => {
+export const logoutRefresh = async () => {
   const header = {
-    headers: { Authorization: `Bearer ${accessToken}` },
     withCredentials: true,
   };
 
@@ -44,7 +41,6 @@ export const logoutRefresh = async (accessToken) => {
 
   return res.data;
 };
-
 
 export const getMembers = async (accessToken) => {
   const header = {

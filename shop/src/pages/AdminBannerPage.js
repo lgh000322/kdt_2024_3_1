@@ -1,20 +1,61 @@
 import React, { useState, useEffect, useRef } from "react";
 import AdminPageLayout from "../layouts/AdminPageLayout";
+import { getBanners, postBanners } from "../api/bannerApi";
+import { useSelector } from "react-redux";
 
 const initState = [
-  { id: 1, image: null },
-  { id: 2, image: null },
-  { id: 3, image: null },
+  { bannerId: 1, imageUrl: null, file: "" },
+  { bannerId: 2, imageUrl: null, file: "" },
+  { bannerId: 3, imageUrl: null, file: "" },
 ];
 
 function AdminBannerPage() {
   const [banners, setBanners] = useState(initState);
-
+  const loginState = useSelector((state) => state.loginSlice);
+  const accessToken = loginState.accessToken;
   const fileInputRefs = useRef([]);
 
   useEffect(() => {
+    getBanners().then((res) => {
+      const data = res.data;
+
+      if (data.length === 3) {
+        // 받은 데이터가 3개일 때 그대로 설정
+        const updateBanners = data.map((bannerData) => {
+          return {
+            bannerId: bannerData.bannerId,
+            imageUrl: bannerData.imageUrl,
+            file: "", // file은 기본적으로 빈 값으로 설정
+          };
+        });
+        setBanners(updateBanners);
+      } else if (data.length === 1 || data.length === 2) {
+        // 받은 데이터가 1개 또는 2개일 때, 나머지 빈 배너로 추가
+        const updatedBanners = data.map((bannerData) => {
+          return {
+            bannerId: bannerData.bannerId,
+            imageUrl: bannerData.imageUrl,
+            file: "", // file은 기본적으로 빈 값으로 설정
+          };
+        });
+        const additionalBanners = Array.from(
+          { length: 3 - data.length },
+          (_, i) => ({
+            bannerId: initState[data.length + i].bannerId,
+            imageUrl: null,
+            file: "",
+          })
+        );
+        setBanners([...updatedBanners, ...additionalBanners]);
+      } else {
+        // 받은 데이터가 없을 때는 빈 배너 3개 설정
+        setBanners(initState);
+      }
+    });
+
+    // 초기 file input 참조 설정
     fileInputRefs.current = fileInputRefs.current.slice(0, banners.length);
-  }, [banners]);
+  }, []);
 
   const handleUploadClick = (index) => {
     fileInputRefs.current[index].click();
@@ -30,11 +71,13 @@ function AdminBannerPage() {
 
       setBanners((prevBanners) =>
         prevBanners.map((banner) =>
-          banner.id === id
-            ? { ...banner, image: URL.createObjectURL(file) }
+          banner.bannerId === id
+            ? { ...banner, imageUrl: URL.createObjectURL(file), file: file }
             : banner
         )
       );
+
+      console.log("파일 객체:", file); // 파일 객체 확인
     }
   };
 
@@ -45,13 +88,24 @@ function AdminBannerPage() {
 
     setBanners((prevBanners) =>
       prevBanners.map((banner) =>
-        banner.id === id ? { ...banner, image: null } : banner
+        banner.bannerId === id
+          ? { ...banner, imageUrl: null, file: null }
+          : banner
       )
     );
   };
 
   const handleSubmit = () => {
-    console.log("Changes submitted:", banners);
+    const files = banners.map((banner) => banner.file).filter((file) => file); // 빈 값 제거
+
+    if (files.length === 0) {
+      alert("업로드할 파일이 없습니다.");
+      return;
+    }
+
+    postBanners(accessToken, files).then((res) => {
+      console.log("서버 응답:", res);
+    });
   };
 
   return (
@@ -83,18 +137,18 @@ function AdminBannerPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {banners.map((banner, index) => (
                   <tr
-                    key={banner.id}
+                    key={banner.bannerId}
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {banner.id}
+                      {banner.bannerId}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {banner.image ? (
+                      {banner.imageUrl ? (
                         <div className="flex items-center">
                           <img
-                            src={banner.image}
-                            alt={`배너 ${banner.id}`}
+                            src={banner.imageUrl}
+                            alt={`배너 ${banner.bannerId}`}
                             className="w-32 h-20 object-cover rounded-md shadow-sm"
                           />
                         </div>
@@ -109,7 +163,7 @@ function AdminBannerPage() {
                         type="file"
                         ref={(el) => (fileInputRefs.current[index] = el)}
                         className="hidden"
-                        onChange={(e) => handleFileUpload(e, banner.id)}
+                        onChange={(e) => handleFileUpload(e, banner.bannerId)}
                         accept="image/*"
                       />
                       <button
@@ -121,7 +175,7 @@ function AdminBannerPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <button
-                        onClick={() => handleFileDelete(banner.id, index)}
+                        onClick={() => handleFileDelete(banner.bannerId, index)}
                         className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all"
                       >
                         삭제
