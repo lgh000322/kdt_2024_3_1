@@ -3,12 +3,14 @@ package shop.shopBE.domain.orderproduct.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
 import shop.shopBE.domain.orderproduct.entity.OrderProduct;
 import shop.shopBE.domain.orderproduct.entity.request.OrderProductDeliveryInfo;
 import shop.shopBE.domain.orderproduct.response.DetailOrderProducts;
 import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
+import shop.shopBE.domain.productimage.entity.enums.ProductImageCategory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import static shop.shopBE.domain.orderproduct.entity.QOrderProduct.orderProduct;
 import static shop.shopBE.domain.product.entity.QProduct.product;
 import static shop.shopBE.domain.productimage.entity.QProductImage.productImage;
 
+@Slf4j
 @RequiredArgsConstructor
 public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom {
 
@@ -43,12 +46,13 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
             OrderHistoryInfoResponse productImageInfo = queryFactory
                     .select(Projections.constructor(OrderHistoryInfoResponse.class,
                             product.productName,
-                            productImage.savedName //해당 상품에 대한 URL 접근방법을 모르겟음.
+                            productImage.savedName
                     ))
                     .from(orderProduct)
                     .innerJoin(product).on(orderProduct.product.id.eq(product.id))
                     .leftJoin(productImage).on(productImage.product.id.eq(product.id))
-                    .where(orderProduct.id.eq(oProduct.getId()))
+                    .where(orderProduct.id.eq(oProduct.getId())
+                            .and(productImage.productImageCategory.eq(ProductImageCategory.MAIN))) //상품의 Main이미지만 가져오도록
                     .fetchOne();
 
             //2-2. 상품 상세 정보들 객체 생성
@@ -79,16 +83,17 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
     //주문내역 번호로 대표 이미지 주소와 이름 반환
     @Override
     public Optional<OrderHistoryInfoResponse> findOrderHistoryInfoById(Long orderHistoryId) {
-        OrderHistoryInfoResponse result = queryFactory
-                .select(Projections.constructor(OrderHistoryInfoResponse.class,
-                        product.productName,
-                        productImage.savedName
-                        ))
-                .from(orderProduct)
-                .innerJoin(product).on(orderProduct.product.id.eq(product.id))
-                .innerJoin(productImage).on(productImage.product.id.eq(product.id))
-                .where(orderProduct.orderHistory.id.eq(orderHistoryId))
-                .fetchOne();
+            OrderHistoryInfoResponse result = queryFactory
+                    .select(Projections.constructor(OrderHistoryInfoResponse.class,
+                            product.productName,
+                            productImage.savedName
+                    ))
+                    .from(orderProduct)
+                    .innerJoin(product).on(orderProduct.product.id.eq(product.id))
+                    .innerJoin(productImage).on(productImage.product.id.eq(product.id))
+                    .where(orderProduct.orderHistory.id.eq(orderHistoryId)
+                        .and(productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
+                    .fetchFirst();
 
         return Optional.ofNullable(result);
     }
