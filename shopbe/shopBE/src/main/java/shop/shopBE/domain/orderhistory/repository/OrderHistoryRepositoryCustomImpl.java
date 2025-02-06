@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
+import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,7 @@ public class OrderHistoryRepositoryCustomImpl implements OrderHistoryRepositoryC
         OrderHistory result = queryFactory
                 .select(orderHistory)
                 .from(orderHistory)
-                .where(orderHistory.destination.id.eq(historyId))
+                .where(orderHistory.id.eq(historyId))
                 .fetchOne();
 
         return Optional.ofNullable(result);

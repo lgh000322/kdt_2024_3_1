@@ -1,11 +1,18 @@
 package shop.shopBE.domain.orderproduct.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 import shop.shopBE.domain.orderproduct.entity.OrderProduct;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Long>, OrderProductRepositoryCustom {
-    // 특정 주문 내역(`OrderHistory`) ID로 주문 상품 목록 조회
-    List<OrderProduct> findByOrderHistoryId(Long orderHistoryId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM OrderProduct op WHERE op.orderHistory.id = :orderHistoryId")
+    Optional<Void> deleteByOrderHistoryId(Long orderHistoryId);
+
 }

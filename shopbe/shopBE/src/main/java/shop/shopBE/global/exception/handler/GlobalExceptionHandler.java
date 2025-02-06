@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import shop.shopBE.global.exception.custom.CustomException;
 import shop.shopBE.global.exception.code.ExceptionCode;
 import shop.shopBE.global.response.ResponseFormat;
@@ -58,5 +59,23 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    //RequestParam의 값과 일치하지 않을경우 badrequest보내줌.
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ResponseFormat<Void>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        // 파라미터 이름, 전달된 값, 예외가 발생한 파라미터 타입을 가져옴
+        String paramName = ex.getName(); // 파라미터 이름
+        String paramValue = String.valueOf(ex.getValue()); // 잘못된 값
+
+        // 에러 메시지 생성
+        String errorMessage = String.format("잘못된 값이 전달되었습니다: 파라미터 '%s'에 대한 값 '%s'은 타입에 맞지 않습니다.",
+                paramName, paramValue);
+
+        ResponseFormat<Void> response = ResponseFormat.fail(
+                400,
+                errorMessage
+        );
+        return ResponseEntity.badRequest().body(response);
     }
 }
