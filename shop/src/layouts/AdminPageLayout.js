@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import HeaderComponent from "../components/HeaderComponent";
 import Sidebar from "../components/SideBar";
 
+const userRole = "manager";
+
 // 마이페이지의 기본 레이아웃
 function AdminPageLayout({ children }) {
   const [selectedMenu, setSelectedMenu] = useState(null);
@@ -21,7 +23,7 @@ function AdminPageLayout({ children }) {
         {/* 사이드바 (헤더 아래 고정) */}
         <div className="w-64 min-h-screen bg-gray-50 pt-16 fixed left-0 top-16.1">
           {/* fixed로 사이드바를 헤더 아래로 배치 (top-16은 헤더의 높이를 고려한 여백) */}
-          <Sidebar onMenuClick={handleMenuClick} />
+          <Sidebar onMenuClick={handleMenuClick} role={userRole}/>
         </div>
         <main className="flex-1 p-4 ml-64">{children}</main>
       </div>

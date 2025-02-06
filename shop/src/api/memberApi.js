@@ -130,12 +130,18 @@ export const sellerAccept = async (accessToken) => {
 
 
 export const sellerAcceptSubmit = async (accessToken, authorityId) => {
-  const header = {
-    headers: { Authorization: `Bearer ${accessToken}` },
-    withCredentials: true,
-  };
-  console.log(`${selleracceptsubmit}/${authorityId}`)
-  const res = await axios.put(`${selleracceptsubmit}/${authorityId}`, header);
-
-  return res.data;
+  try {
+    const res = await axios.put(
+      `${selleracceptsubmit}/${authorityId}`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${accessToken}` }, 
+        withCredentials: true, 
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API 요청 실패:", error);
+    throw error;
+  }
 };

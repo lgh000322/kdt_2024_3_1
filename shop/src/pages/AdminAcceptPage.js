@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { sellerAccept } from "../api/memberApi";
 import { sellerAcceptSubmit } from '../api/memberApi';
 
+const userRole = "manager";
 
 function AdminAcceptPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
@@ -51,33 +52,34 @@ function AdminAcceptPage() {
       alert("승인할 항목을 선택하세요.");
       return;
     }
-
+  
     try {
       const selectedMember = filteredData[selectedRowIndex];
       const accessToken = loginSlice.accessToken;
-
-
-      sellerAcceptSubmit(accessToken).then(res=>{
-        const response=res.data
-        const authorityId=response.authorityId;
-        if(res.code === 200){
-          alert("성공");
-        }
-      })
-
-      // 승인 후 리스트에서 제거
-      const updatedFormData = formData.filter((member) => member.id !== selectedMember.id);
-      setFormData(updatedFormData);
-      setFilteredData(updatedFormData);
-      setSelectedRowIndex(null); // 선택 초기화
+  
+      // 선택된 데이터의 authorityId를 사용하여 API 호출
+      const response = await sellerAcceptSubmit(accessToken, selectedMember.authorityId);
+  
+      if (response.code === 200) {
+        alert("성공");
+  
+        // 승인 후 리스트에서 제거
+        const updatedFormData = formData.filter((member) => member.id !== selectedMember.id);
+        setFormData(updatedFormData);
+        setFilteredData(updatedFormData);
+        setSelectedRowIndex(null); // 선택 초기화
+      } else {
+        alert(`승인 실패: ${response.message}`);
+      }
     } catch (error) {
       console.error("승인 실패:", error);
       alert("승인 중 오류가 발생했습니다.");
     }
   };
+  
 
   return (
-    <AdminPageLayout>
+    <AdminPageLayout role={userRole}>
       {/* 검색 필터 섹션 */}
       <div
         style={{
