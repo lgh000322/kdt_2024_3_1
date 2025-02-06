@@ -9,8 +9,7 @@ import { getRoleFromAccessToken } from "../utils/jwtUtils";
 const preFix = `${ApiHost}/member`;
 const adminlist = `${ApiHost}/members`;
 const selleraccept = `${ApiHost}/authority`;  
-const selleracceptsubmit = `${ApiHost}/authority`  
-const destinationlist = `${ApiHost}/destination`;
+const selleracceptsubmit = `${ApiHost}/authority`;
 
 
 // 처음 로그인 했을 때 로그인 한 회원의 정보 조회
@@ -127,7 +126,6 @@ export const sellerAccept = async (accessToken) => {
 
   return res.data;
 };
-
 
 export const sellerAcceptSubmit = async (accessToken, authorityId) => {
   try {
