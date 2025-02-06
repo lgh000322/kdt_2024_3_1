@@ -5,10 +5,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import shop.shopBE.domain.cart.request.CartsPaging;
 import shop.shopBE.domain.cart.service.CartService;
 import shop.shopBE.domain.cartitem.request.AddCartItemInform;
 import shop.shopBE.domain.cartitem.request.DeleteCartItems;
@@ -28,16 +29,16 @@ public class CartController {
     private final CartService cartService;
 
     // 장바구니 조회 메서드
-    @GetMapping("/list")
+    @GetMapping
     @Operation(summary = "장바구니 조회", description = "현재 로그인 한 회원의 장바구니 목록을 조회한다.")
-    public ResponseEntity<ResponseFormat<List<CartItemInform>>> findAllCartItems(@RequestBody @Valid CartsPaging cartsPaging,
-                                                                                @AuthenticationPrincipal AuthToken authToken) {
-        List<CartItemInform> cartItemList = cartService.findCartItemList(cartsPaging, authToken.getId());
+    public ResponseEntity<ResponseFormat<List<CartItemInform>>> findAllCartItems(@PageableDefault Pageable pageable,
+                                                                                 @AuthenticationPrincipal AuthToken authToken) {
+        List<CartItemInform> cartItemList = cartService.findCartItemList(pageable, authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("장바구니 아이템 조회 성공.", cartItemList));
     }
 
     // 장바구니 추가 메서드
-    @PostMapping("/add/item")
+    @PostMapping
     @Operation(summary = "장바구니 아이템 추가", description = "현재 로그인 한 회원의 장바구니 상품을 추가한다.")
     public ResponseEntity<ResponseFormat<Void>> addCartItem(@RequestBody @Valid AddCartItemInform addCartItemInform,
                                                             @AuthenticationPrincipal AuthToken authToken) {
@@ -46,7 +47,7 @@ public class CartController {
     }
 
     // 장바구니 수정 메서드
-    @PostMapping("/update/item/{cartItemId}")
+    @PutMapping("/{cartItemId}")
     @Operation(summary = "장바구니 상품 정보 수정", description = "현재 로그인 한 회원의 장바구니 상품 정보를 변경한다.")
     public ResponseEntity<ResponseFormat<Void>> updateCartItem(@PathVariable("cartItemId") Long cartItemId,
                                                                @RequestBody @Valid UpdateCartItemInform updateCartItemInform) {
@@ -56,7 +57,7 @@ public class CartController {
 
 
     // 장바구니 상품 제거 (1개) 메서드
-    @DeleteMapping("/delete/item/{cartItemId}")
+    @DeleteMapping("/{cartItemId}")
     @Operation(summary = "단일 장바구니 상품 제거", description = "현재 로그인 한 회원의 단일 장바구니 상품을 제거한다.")
     public ResponseEntity<ResponseFormat<Void>> deleteOneCartItem(@PathVariable("cartItemId") Long cartItemId) {
         cartService.deleteOneCartItem(cartItemId);
@@ -64,7 +65,7 @@ public class CartController {
     }
 
     // 장바구니 상품 제거 (여러개) requestBody에 장바구니ID를 여러개 받아옴.
-    @DeleteMapping("/delete/items")
+    @DeleteMapping("/items")
     @Operation(summary = "복수의 장바구니 상품 제거", description = "현재 로그인 한 회원의 1개 이상의 장바구니 상품을 제거한다.")
     public ResponseEntity<ResponseFormat<Void>> deleteMultipleCartItems(@RequestBody @Valid DeleteCartItems deleteCartItems) {
         cartService.deleteMultipleCartItems(deleteCartItems);

@@ -13,7 +13,6 @@ function MyPageLayout({ children, role }) {
 
   return (
     <>
-      role = seller;
       {/* 헤더 컴포넌트 */}
       <HeaderComponent />
 
@@ -32,7 +31,8 @@ function MyPageLayout({ children, role }) {
             {selectedMenu ? (
               <div>
                 <h2 className="text-lg font-semibold">{selectedMenu.title}</h2>
-                <p>{selectedMenu.content}</p> {/* 클릭된 메뉴 항목에 맞는 콘텐츠 */}
+                <p>{selectedMenu.content}</p>{" "}
+                {/* 클릭된 메뉴 항목에 맞는 콘텐츠 */}
               </div>
             ) : (
               <p>사이드바 메뉴를 선택하세요.</p>

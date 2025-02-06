@@ -13,6 +13,7 @@ import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.global.exception.custom.CustomException;
 import shop.shopBE.global.utils.s3.S3Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -84,14 +85,21 @@ public class BannerService {
                 })
                 .toList();
     }
+
     private List<Banner> saveFiles(List<MultipartFile> files, Member member) {
-        return files.stream()
-                .map(file -> {
-                    String originalName = file.getOriginalFilename();
-                    String savedName = s3Utils.uploadFile(file);
-                    return Banner.createDefaultBanner(originalName, savedName, member);
-                })
-                .toList();
+        List<Banner> result = new ArrayList<>();
+
+        if (files != null && !files.isEmpty()) {
+            result = files.stream()
+                    .map(file -> {
+                        String originalName = file.getOriginalFilename();
+                        String savedName = s3Utils.uploadFile(file);
+                        return Banner.createDefaultBanner(originalName, savedName, member);
+                    })
+                    .toList();
+        }
+
+        return result;
     }
 
 

@@ -7,6 +7,7 @@ import shop.shopBE.domain.product.entity.Product;
 import shop.shopBE.domain.productdetail.entity.ProductDetail;
 import shop.shopBE.domain.productdetail.exception.ProductDetailExceptionCustom;
 import shop.shopBE.domain.productdetail.repository.ProductDetailRepository;
+import shop.shopBE.domain.productdetail.request.UpdateProductDetails;
 import shop.shopBE.domain.productdetail.response.ProductDetails;
 import shop.shopBE.global.exception.custom.CustomException;
 
@@ -42,6 +43,28 @@ public class ProductDetailService {
     }
 
 
+    //사이즈별 수량 변경메서드
+    public void updateSizeAndStock(List<UpdateProductDetails> updateProductDetails) {
+        for (UpdateProductDetails updateProductDetail : updateProductDetails) {
+            ProductDetail productDetail = findProductDetailById(updateProductDetail.productDetailId());
+            productDetail.plusSizeStock(updateProductDetail.quantity());
+        }
+    }
+
+
+    // 아이디별로 productDetail제거.
+    public void deleteProductDetailByIds(List<Long> productDetailIds){
+
+        if(productDetailIds == null) {
+            return;
+        }
+
+        for (Long productDetailId : productDetailIds) {
+            productDetailRepository.deleteById(productDetailId);
+        }
+    }
+
+
     // 사이즈별로 저장하는 메서드
     private void sizeBySave(Product product, Map<Integer, Integer> sizeAndQuantity) {
         Set<Integer> sizes = sizeAndQuantity.keySet();
@@ -51,6 +74,9 @@ public class ProductDetailService {
             productDetailRepository.save(productDetail);
         }
     }
+
+
+
 
 
 }
