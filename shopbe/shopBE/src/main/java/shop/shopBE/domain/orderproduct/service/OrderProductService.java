@@ -33,10 +33,9 @@ public class OrderProductService {
         OrderHistory findOrderHistory = orderHistoryRepository.findById(orderHistoryId)
                 .orElseThrow(()-> new CustomException(OrderHistoryException.OrderHistory_NOT_FOUND));
 
-        OrderProductInfo o= orderProductRepository.findDetailOrderProductByHistoryId(findOrderHistory)
+        return orderProductRepository.findDetailOrderProductByHistoryId(findOrderHistory)
                 .orElseThrow(() -> new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND));
 
-        return o;
     }
 
     @Transactional

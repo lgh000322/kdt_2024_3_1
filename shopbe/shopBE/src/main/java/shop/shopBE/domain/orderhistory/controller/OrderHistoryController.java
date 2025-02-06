@@ -33,7 +33,7 @@ public class OrderHistoryController {
                                                                                            @PageableDefault Pageable pageable) {
         //회원 ID로 주문내역들을 리스트들을 가져와 반환
         List<OrderHistoryResponse> orderHistoryList = orderHistoryFadeService.findOrderHistoryList(authToken.getId(), pageable);
-        return ResponseEntity.ok().body(ResponseFormat.of("주문내역리스트 조회.", orderHistoryList));
+        return ResponseEntity.ok().body(ResponseFormat.of("주문내역리스트 조회성공.", orderHistoryList));
     }
 
     @PostMapping("/orderHistory")
