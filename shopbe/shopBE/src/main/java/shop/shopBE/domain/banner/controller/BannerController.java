@@ -47,11 +47,11 @@ public class BannerController {
         return ResponseEntity.ok().body(ResponseFormat.of("배너를 지우는데 성공했습니다."));
     }
 
-    @PutMapping("/banner")
+    @PutMapping(value = "/banner", consumes = {"multipart/form-data"})
     @Operation(summary = "배너 사진 전체 업데이트", description = "관리자는 현재 등록된 배너 사진을 모두 업데이트 할 수 있다.")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseFormat<Void>> updateBanners(@RequestPart(name = "saveFile") List<MultipartFile> saveFiles,
-                                                              @RequestPart(name = "deleteBannerId") List<BannerUpdateRequestForDelete> bannerUpdateRequestForDeletes,
+    public ResponseEntity<ResponseFormat<Void>> updateBanners(@RequestPart(name = "saveFile", required = false) List<MultipartFile> saveFiles,
+                                                              @RequestPart(name = "deleteBannerId", required = false) List<BannerUpdateRequestForDelete> bannerUpdateRequestForDeletes,
                                                               @AuthenticationPrincipal AuthToken authToken) {
         bannerFacadeService.updateFiles(saveFiles, bannerUpdateRequestForDeletes, authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("배너 사진 업데이트에 성공했습니다."));
