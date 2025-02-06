@@ -121,13 +121,14 @@ const Sidebar = ({ onMenuClick }) => {
   // 각각 필요한 값만 선택적으로 가져오기
   const accessToken = loginState.accessToken;
   let testRole = JSON.stringify(loginState.role[0]);
+  console.log(testRole);
 
   const menuItems =
-    testRole === `"ROLE_SELLER"`
+    testRole === `"ROLE_SELLER"` || `"SELLER`
       ? sellerMenuItems
-      : testRole === `"ROLE_USER"`
+      : testRole === `"ROLE_USER"` || `"USER"`
       ? consumerMenuItems
-      : testRole === `"ROLE_ADMIN"`
+      : testRole === `"ROLE_ADMIN"` || `"ADMIN"`
       ? managerMenuItems
       : [];
 

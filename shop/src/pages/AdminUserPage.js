@@ -3,8 +3,6 @@ import AdminPageLayout from "../layouts/AdminPageLayout";
 import { useSelector } from "react-redux";
 import { getMembers } from "../api/memberApi";
 
-const userRole = "manager";
-
 function AdminUserPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
   const [formData, setFormData] = useState([]);
@@ -15,36 +13,30 @@ function AdminUserPage() {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const accessToken = loginSlice.accessToken;
-        console.log("Access Token:", accessToken);
-
-        const response = await getMembers(accessToken);
-        console.log("API Response:", response);
-
-        // 이름 기준으로 정렬
-        const sortedData = response.data.sort((a, b) =>
+        const res = await getMembers(loginSlice.accessToken);
+        const sortedData = res.data.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
 
         setFormData(sortedData);
-        setFilteredData(sortedData); // 초기값 설정
+        setFilteredData(sortedData);
       } catch (error) {
-        console.error("Failed to fetch members:", error);
+        console.error("회원 정보 조회 실패:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    if (loginSlice.accessToken) fetchMembers();
-  }, [loginSlice.accessToken]);
+    fetchMembers();
+  }, []);
 
   useEffect(() => {
     if (searchTerm === "") {
       setFilteredData(formData); // 검색어가 없으면 전체 데이터 표시
     } else {
-      const filtered = formData.filter((member) =>
-        member.name.toLowerCase().includes(searchTerm.toLowerCase()) || // 이름 필터링
-        member.email.toLowerCase().includes(searchTerm.toLowerCase())   // 이메일 필터링
+      const filtered = formData.filter(
+        (member) =>
+          member.name.toLowerCase().includes(searchTerm.toLowerCase()) || // 이름 필터링
+          member.email.toLowerCase().includes(searchTerm.toLowerCase()) // 이메일 필터링
       );
       setFilteredData(filtered);
     }
@@ -53,7 +45,7 @@ function AdminUserPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <AdminPageLayout role={userRole}>
+    <AdminPageLayout>
       <div>
         {/* 검색 필터 섹션 */}
         <div
@@ -141,44 +133,75 @@ function AdminUserPage() {
           >
             회원 목록
           </h2>
-          <div style={{ maxHeight: "400px", overflowY:"auto" }}>
-            <table style={{ width:"100%", borderCollapse:"collapse"}}>
-              <thead style={{ position: "sticky", top: 0, backgroundColor: "#f7faff", zIndex: 1 }}>
+          <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  backgroundColor: "#f7faff",
+                  zIndex: 1,
+                }}
+              >
                 <tr>
-                  {["번호","이름","이메일","성별","전화번호","역할"].map((header,index)=>(
-                  <th key={index} 
-                   style={{
-                      borderBottom: "2px solid #ddd",
-                      padding: "10px",
-                      fontWeight: "bold",
-                      color: "#555",
-                    }}>{header}
-                  </th>))}
+                  {["번호", "이름", "이메일", "성별", "전화번호", "역할"].map(
+                    (header, index) => (
+                      <th
+                        key={index}
+                        style={{
+                          borderBottom: "2px solid #ddd",
+                          padding: "10px",
+                          fontWeight: "bold",
+                          color: "#555",
+                        }}
+                      >
+                        {header}
+                      </th>
+                    )
+                  )}
                 </tr>
               </thead>
               <tbody>
                 {filteredData.map((member, index) => (
                   <tr key={member.id}>
                     {/* 번호는 index + 1로 설정 */}
-                    <td style={{ padding: "10px", textAlign: "center" }}>{index + 1}</td>
-                    <td style={{ padding: "10px", textAlign: "center" }}>{member.name}</td>
-                    <td style={{ padding: "10px", textAlign: "center" }}>{member.email}</td>
-                    <td style={{ padding: "10px", textAlign: "center" }}>{member.gender}</td>
-                    <td style={{ padding: "10px", textAlign: "center" }}>{member.tel}</td>
-                    <td style={{ padding: "10px", textAlign: "center" }}>{member.role}</td>
+                    <td style={{ padding: "10px", textAlign: "center" }}>
+                      {index + 1}
+                    </td>
+                    <td style={{ padding: "10px", textAlign: "center" }}>
+                      {member.name}
+                    </td>
+                    <td style={{ padding: "10px", textAlign: "center" }}>
+                      {member.email}
+                    </td>
+                    <td style={{ padding: "10px", textAlign: "center" }}>
+                      {member.gender}
+                    </td>
+                    <td style={{ padding: "10px", textAlign: "center" }}>
+                      {member.tel}
+                    </td>
+                    <td style={{ padding: "10px", textAlign: "center" }}>
+                      {member.role}
+                    </td>
                   </tr>
                 ))}
                 {filteredData.length === 0 && (
                   <tr>
-                    <td colSpan="6" style={{ textAlign:"center", padding:"20px" }}>검색 결과가 없습니다.</td>
+                    <td
+                      colSpan="6"
+                      style={{ textAlign: "center", padding: "20px" }}
+                    >
+                      검색 결과가 없습니다.
+                    </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
-         </div> 
-       </div> 
-     </AdminPageLayout> );
+        </div>
+      </div>
+    </AdminPageLayout>
+  );
 }
 
 export default AdminUserPage;
