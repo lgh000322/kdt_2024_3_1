@@ -4,8 +4,6 @@ import { useSelector } from "react-redux";
 import { sellerAccept } from "../api/memberApi";
 import { sellerAcceptSubmit } from "../api/memberApi";
 
-const userRole = "manager";
-
 function AdminAcceptPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
   const [formData, setFormData] = useState([]);
