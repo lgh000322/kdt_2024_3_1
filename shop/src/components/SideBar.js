@@ -121,11 +121,14 @@ const Sidebar = ({ onMenuClick }) => {
   const [menuItems, setMenuItems] = useState([]);
 
   useEffect(() => {
-    let testRole = JSON.stringify(loginState.role[0]);
-    console.log(testRole);
-    if (testRole === `"ROLE_SELLER` || `"SELLER"`) {
+    let loginStateJson = JSON.stringify(loginState.role);
+    const jsonObject = JSON.parse(loginStateJson);
+    const roleValue = jsonObject.role[0];
+    console.log(roleValue);
+
+    if (roleValue === "ROLE_SELLER" || roleValue === "SELLER") {
       setMenuItems(sellerMenuItems);
-    } else if (testRole === `"ROLE_USER"` || testRole === `"USER"`) {
+    } else if (roleValue === "ROLE_USER" || roleValue === "USER") {
       setMenuItems(consumerMenuItems);
     } else {
       setMenuItems(managerMenuItems);

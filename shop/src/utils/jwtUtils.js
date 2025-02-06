@@ -7,9 +7,10 @@ export const getRoleFromAccessToken = (accessToken) => {
   try {
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const decodedPayload = JSON.parse(atob(base64));
+
     // role 정보 추출
     const role = decodedPayload.role;
-    return { accessToken, role };
+    return { role };
   } catch (error) {
     console.error("Failed to decode JWT:", error);
     return null;
