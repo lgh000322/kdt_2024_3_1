@@ -14,6 +14,8 @@ import shop.shopBE.domain.orderproduct.exception.OrderProductException;
 import shop.shopBE.domain.orderproduct.repository.OrderProductRepository;
 import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
 import shop.shopBE.global.exception.custom.CustomException;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,14 +28,12 @@ public class OrderProductService {
     private final OrderHistoryRepository orderHistoryRepository;
 
     @Transactional
-    public OrderProductInfo findDetailOrderProductByHistoryId(Long orderProductId) {
-        OrderProduct findOrderProduct  = orderProductRepository.findById(orderProductId)
-                .orElseThrow(() -> new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND));
+    public OrderProductInfo findDetailOrderProductByHistoryId(Long orderHistoryId) {
 
-        OrderHistory findOrderHistory = orderHistoryRepository.findById(findOrderProduct.getOrderHistory().getId())
+        OrderHistory findOrderHistory = orderHistoryRepository.findById(orderHistoryId)
                 .orElseThrow(()-> new CustomException(OrderHistoryException.OrderHistory_NOT_FOUND));
 
-        OrderProductInfo o= orderProductRepository.findDetailOrderProductByHistoryId(findOrderHistory, findOrderProduct)
+        OrderProductInfo o= orderProductRepository.findDetailOrderProductByHistoryId(findOrderHistory)
                 .orElseThrow(() -> new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND));
 
         return o;
@@ -53,7 +53,7 @@ public class OrderProductService {
                 .orElseThrow(() -> new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND));
 
         //받아온 업데이트 상태만 갖고 시간은 현재시간으로 업데이트 시킨다.
-        OrderProductDeliveryInfo update = OrderProductDeliveryInfo.createDefaultOrderProductDeliveryEntity(orderProductDeliveryInfo.getDeliveryStatus());
+        OrderProductDeliveryInfo update = OrderProductDeliveryInfo.createDefaultOrderProductDeliveryEntity(orderProductDeliveryInfo.deliveryStatus(), LocalDateTime.now());
         findOrderProduct.updateDeliveryStatus(update);
     }
 

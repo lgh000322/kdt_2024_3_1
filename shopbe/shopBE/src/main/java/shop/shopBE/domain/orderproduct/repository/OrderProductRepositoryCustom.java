@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface OrderProductRepositoryCustom {
 
-    Optional<OrderProductInfo> findDetailOrderProductByHistoryId(OrderHistory orderHistory, OrderProduct orderProduct);
+    Optional<OrderProductInfo> findDetailOrderProductByHistoryId(OrderHistory orderHistory);
 
     Optional<OrderHistoryInfoResponse> findOrderHistoryInfoById(Long orderHistoryId);
 

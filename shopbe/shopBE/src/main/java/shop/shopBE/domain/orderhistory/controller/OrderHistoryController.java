@@ -10,7 +10,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import shop.shopBE.domain.orderhistory.request.OrderHistoryInfo;
 import shop.shopBE.domain.orderhistory.request.OrderRequest;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryResponse;
 import shop.shopBE.domain.orderhistory.service.OrderHistoryFadeService;

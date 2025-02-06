@@ -32,7 +32,7 @@ public class OrderHistoryRepositoryCustomImpl implements OrderHistoryRepositoryC
         OrderHistory result = queryFactory
                 .select(orderHistory)
                 .from(orderHistory)
-                .where(orderHistory.destination.id.eq(historyId))
+                .where(orderHistory.id.eq(historyId))
                 .fetchOne();
 
         return Optional.ofNullable(result);

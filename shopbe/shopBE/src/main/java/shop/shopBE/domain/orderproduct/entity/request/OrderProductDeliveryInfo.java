@@ -12,18 +12,10 @@ public record OrderProductDeliveryInfo(
     LocalDateTime changedAt,
     DeliveryStatus deliveryStatus
     ){
-        public static OrderProductDeliveryInfo createDefaultOrderProductDeliveryEntity(DeliveryStatus state){
+        public static OrderProductDeliveryInfo createDefaultOrderProductDeliveryEntity(DeliveryStatus state, LocalDateTime time){
             return OrderProductDeliveryInfo.builder()
-                    .changedAt(LocalDateTime.now())
+                    .changedAt(time)
                     .deliveryStatus(state)
                     .build();
         }
-
-    public DeliveryStatus getDeliveryStatus() {
-            return deliveryStatus;
-    }
-
-    public LocalDateTime getChangedAt(){
-            return changedAt;
-    }
 }
