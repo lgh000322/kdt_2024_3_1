@@ -124,7 +124,7 @@ const Sidebar = ({ onMenuClick }) => {
   console.log(testRole);
 
   const menuItems =
-    testRole === `"ROLE_SELLER"` || `"SELLER`
+    testRole === `"ROLE_SELLER"` || `"SELLER"`
       ? sellerMenuItems
       : testRole === `"ROLE_USER"` || `"USER"`
       ? consumerMenuItems

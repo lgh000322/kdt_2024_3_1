@@ -14,36 +14,18 @@ function AdminAcceptPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const accessToken = loginSlice.accessToken;
-        console.log("Access Token:", accessToken);
+    const accessToken = loginSlice.accessToken;
+    sellerAccept(accessToken).then(res=>{
+      const data = res.data;
 
-       sellerAccept(accessToken).then(res=>{
-          const response=res.data
-          const authorityId=response.authorityId;
+      const sortedData = data.sort((a,b)=>{
+        a.name.localeCompare(b.name)
+      })
 
-        });
-        console.log("API Response:", response);
-        
-
-        // 이름 기준으로 정렬
-        const sortedData = response.data.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-
-        setFormData(sortedData);
-        setFilteredData(sortedData); // 초기값 설정
-      } catch (error) {
-        console.error("Failed to fetch members:", error);
-      } finally {
-        setLoading(false);
-      }
-
-      
-
-    };
-    if (loginSlice.accessToken) fetchMembers();
+      setFormData(sortedData)
+      setFilteredData(sortedData)
+      setLoading(false)
+    })
   }, [loginSlice.accessToken]);
 
   useEffect(() => {
@@ -74,7 +56,6 @@ function AdminAcceptPage() {
       const selectedMember = filteredData[selectedRowIndex];
       const accessToken = loginSlice.accessToken;
 
-      console.log("승인할 데이터:", selectedId);
 
       sellerAcceptSubmit(accessToken).then(res=>{
         const response=res.data
@@ -96,7 +77,7 @@ function AdminAcceptPage() {
   };
 
   return (
-    <AdminPageLayout role={userRole}>
+    <AdminPageLayout>
       {/* 검색 필터 섹션 */}
       <div
         style={{
