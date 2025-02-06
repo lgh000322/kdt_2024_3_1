@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import AdminPageLayout from '../layouts/AdminPageLayout';
+import React, { useState, useEffect } from "react";
+import AdminPageLayout from "../layouts/AdminPageLayout";
 import { useSelector } from "react-redux";
 import { sellerAccept } from "../api/memberApi";
-import { sellerAcceptSubmit } from '../api/memberApi';
-
+import { sellerAcceptSubmit } from "../api/memberApi";
 
 function AdminAcceptPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
@@ -19,13 +18,11 @@ function AdminAcceptPage() {
         const accessToken = loginSlice.accessToken;
         console.log("Access Token:", accessToken);
 
-       sellerAccept(accessToken).then(res=>{
-          const response=res.data
-          const authorityId=response.authorityId;
-
+        sellerAccept(accessToken).then((res) => {
+          const response = res.data;
+          const authorityId = response.authorityId;
         });
         console.log("API Response:", response);
-        
 
         // 이름 기준으로 정렬
         const sortedData = response.data.sort((a, b) =>
@@ -39,9 +36,6 @@ function AdminAcceptPage() {
       } finally {
         setLoading(false);
       }
-
-      
-
     };
     if (loginSlice.accessToken) fetchMembers();
   }, [loginSlice.accessToken]);
@@ -50,9 +44,10 @@ function AdminAcceptPage() {
     if (searchTerm === "") {
       setFilteredData(formData); // 검색어가 없으면 전체 데이터 표시
     } else {
-      const filtered = formData.filter((member) =>
-        member.memberName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        member.title.toLowerCase().includes(searchTerm.toLowerCase())  
+      const filtered = formData.filter(
+        (member) =>
+          member.memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          member.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredData(filtered);
     }
@@ -76,16 +71,18 @@ function AdminAcceptPage() {
 
       console.log("승인할 데이터:", selectedId);
 
-      sellerAcceptSubmit(accessToken).then(res=>{
-        const response=res.data
-        const authorityId=response.authorityId;
-        if(res.code === 200){
+      sellerAcceptSubmit(accessToken).then((res) => {
+        const response = res.data;
+        const authorityId = response.authorityId;
+        if (res.code === 200) {
           alert("성공");
         }
-      })
+      });
 
       // 승인 후 리스트에서 제거
-      const updatedFormData = formData.filter((member) => member.id !== selectedMember.id);
+      const updatedFormData = formData.filter(
+        (member) => member.id !== selectedMember.id
+      );
       setFormData(updatedFormData);
       setFilteredData(updatedFormData);
       setSelectedRowIndex(null); // 선택 초기화
@@ -96,7 +93,7 @@ function AdminAcceptPage() {
   };
 
   return (
-    <AdminPageLayout role={userRole}>
+    <AdminPageLayout>
       {/* 검색 필터 섹션 */}
       <div
         style={{
@@ -119,7 +116,13 @@ function AdminAcceptPage() {
         >
           판매자 검색
         </h2>
-        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
           <label
             htmlFor="searchTerm"
             style={{
@@ -161,63 +164,99 @@ function AdminAcceptPage() {
           minHeight: "50vh",
         }}
       >
-        <h2 style={{
-          marginBottom: "20px",
-          color: "#333",
-          fontSize: "20px",
-          fontWeight: "bold"
-        }}>
+        <h2
+          style={{
+            marginBottom: "20px",
+            color: "#333",
+            fontSize: "20px",
+            fontWeight: "bold",
+          }}
+        >
           판매자 목록
         </h2>
-        <div style={{ maxHeight: "400px", overflowY: "auto", marginBottom: "20px" }}>
+        <div
+          style={{
+            maxHeight: "400px",
+            overflowY: "auto",
+            marginBottom: "20px",
+          }}
+        >
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead style={{ position: "sticky", top: 0, backgroundColor: "#f7faff", zIndex: 1 }}>
+            <thead
+              style={{
+                position: "sticky",
+                top: 0,
+                backgroundColor: "#f7faff",
+                zIndex: 1,
+              }}
+            >
               <tr>
-                {["번호", "등록자", "등록 제목", "등록일", "첨부 파일"].map((header) => (
-                  <th
-                    key={header}
-                    style={{
-                      borderBottom: "2px solid #ddd",
-                      padding: "10px",
-                      fontWeight: "bold",
-                      color: "#555",
-                    }}
-                  >
-                    {header}
-                  </th>
-                ))}
+                {["번호", "등록자", "등록 제목", "등록일", "첨부 파일"].map(
+                  (header) => (
+                    <th
+                      key={header}
+                      style={{
+                        borderBottom: "2px solid #ddd",
+                        padding: "10px",
+                        fontWeight: "bold",
+                        color: "#555",
+                      }}
+                    >
+                      {header}
+                    </th>
+                  )
+                )}
               </tr>
             </thead>
             <tbody>
               {filteredData.map((member, index) => (
-                <tr 
-                  key={member.id} 
-                  style={{ 
+                <tr
+                  key={member.id}
+                  style={{
                     borderBottom: "1px solid #ddd",
-                    backgroundColor: index === selectedRowIndex ? "#e6f7ff" : "transparent",
-                    cursor: "pointer"
+                    backgroundColor:
+                      index === selectedRowIndex ? "#e6f7ff" : "transparent",
+                    cursor: "pointer",
                   }}
                   onClick={() => handleRowClick(index)}
                 >
-                  <td style={{ padding: "10px", textAlign:"center" }}>{index + 1}</td>
-                  <td style={{ padding:"10px", textAlign:"center" }}>{member.memberName}</td>
-                  <td style={{ padding:"10px", textAlign:"center" }}>{member.title}</td>
-                  <td style={{ padding:"10px", textAlign:"center" }}>{member.createAt}</td>
-                  <td style={{ padding:"10px", textAlign:"center" }}>
-                    <button style={{
-                      backgroundColor:'#007bff',
-                      color:'#fff',
-                      borderRadius:'5px',
-                      padding:'10px',
-                      fontSize:'16px',
-                      border:'none',
-                      cursor:'pointer'
-                    }}>Download</button></td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>
+                    {index + 1}
+                  </td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>
+                    {member.memberName}
+                  </td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>
+                    {member.title}
+                  </td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>
+                    {member.createAt}
+                  </td>
+                  <td style={{ padding: "10px", textAlign: "center" }}>
+                    <button
+                      style={{
+                        backgroundColor: "#007bff",
+                        color: "#fff",
+                        borderRadius: "5px",
+                        padding: "10px",
+                        fontSize: "16px",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Download
+                    </button>
+                  </td>
                 </tr>
               ))}
               {filteredData.length === 0 && (
                 <tr>
-                  <td colSpan="6" style={{ textAlign:"center", padding:"20px" }}>검색 결과가 없습니다.</td>
+                  <td
+                    colSpan="6"
+                    style={{ textAlign: "center", padding: "20px" }}
+                  >
+                    검색 결과가 없습니다.
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -225,39 +264,39 @@ function AdminAcceptPage() {
         </div>
 
         {/* 승인 및 거절 버튼 */}
-        <div 
+        <div
           style={{
-            display:'flex',
-            justifyContent:'flex-end',
-            gap:'10px'
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "10px",
           }}
         >
-          <button 
+          <button
             onClick={handleApprove}
             style={{
-              backgroundColor:'#28a745',
-              color:'#fff',
-              borderRadius:'5px',
-              padding:'10px',
-              fontSize:'16px',
-              border:'none',
-              cursor:'pointer'
+              backgroundColor: "#28a745",
+              color: "#fff",
+              borderRadius: "5px",
+              padding: "10px",
+              fontSize: "16px",
+              border: "none",
+              cursor: "pointer",
             }}
           >
             승인
           </button>
 
           {/* 거절 버튼은 추가 구현 필요 */}
-          
-          <button 
+
+          <button
             style={{
-              backgroundColor:'#dc3545',
-              color:'#fff',
-              borderRadius:'5px',
-              padding:'10px',
-              fontSize:'16px',
-              border:'none',
-              cursor:'pointer'
+              backgroundColor: "#dc3545",
+              color: "#fff",
+              borderRadius: "5px",
+              padding: "10px",
+              fontSize: "16px",
+              border: "none",
+              cursor: "pointer",
             }}
           >
             거절
