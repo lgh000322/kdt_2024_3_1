@@ -34,9 +34,10 @@ public class OrderProduct {
     private LocalDateTime changedAt; //배송 현재 날짜
 
     //배송상태 기록
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "orderProductDeliveryInfo", joinColumns = @JoinColumn(name = "orderProductId"))
-    private List<OrderProductDeliveryInfo> deliveryStatusHistory;
+    private List<OrderProductDeliveryInfo> deliveryStatusHistory = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "order_history_id")
@@ -47,8 +48,8 @@ public class OrderProduct {
     private Product product;
 
     public void updateDeliveryStatus(OrderProductDeliveryInfo newDeliveryInfo) {
-        this.currentDeliveryStatus = newDeliveryInfo.getDeliveryStatus(); // 배송 상태 업데이트
-        this.changedAt = newDeliveryInfo.getChangedAt(); // 변경된 시간 저장
+        this.currentDeliveryStatus = newDeliveryInfo.deliveryStatus(); // 배송 상태 업데이트
+        this.changedAt = newDeliveryInfo.changedAt(); // 변경된 시간 저장
 
         deliveryStatusHistory.add(newDeliveryInfo);
     }

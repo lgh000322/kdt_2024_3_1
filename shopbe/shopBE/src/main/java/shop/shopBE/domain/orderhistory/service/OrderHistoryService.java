@@ -1,6 +1,7 @@
 package shop.shopBE.domain.orderhistory.service;
 
 
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,6 @@ public class OrderHistoryService {
 
     private final OrderHistoryRepository orderHistoryRepository;
     private final MemberRepository memberRepository;
-    private final DestinationRepository destinationRepository;
     private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
     
@@ -54,26 +54,14 @@ public class OrderHistoryService {
     //주문내역 삭제
     @Transactional
     public void deleteOrderHistoryByHistoryId(Long orderHistoryId){
-        // 1. 주문내역의 배송지 정보를 제거
+        // 1. 삭제할 주문내역을 가져온다.
         OrderHistory deleteOrderHistory = orderHistoryRepository.findByOrderHistoryId(orderHistoryId)
                 .orElseThrow(() -> new CustomException(OrderHistoryException.OrderHistory_NOT_FOUND));
-        
-        //외래키를 갖는 속성들도 삭제
-        destinationRepository.deleteById(deleteOrderHistory.getDestination().getId());
+
+        //2. 주문 상품들 내역 삭제(주문 상품에 있는 외래키(OrderHistoryId)를 삭제하기 위함.
         orderProductRepository.deleteByOrderHistoryId(orderHistoryId);
 
-        /*
-        받아온 주문내역의 ID를 가진 주문내역 객체의 배송 ID를 통해서 주문내역의 배송지 삭제
-        주문내역객체의 배송지를 null 처리하고 해당 배송지정보가 없는 주문내역을 save 시켜서 영속성 처리
-        OrderHistory 객체에 Destination 을 caseCadeType.Remove 로 삭제되게 했지만 확실히 처리하기 위함.
-         */
-        if (deleteOrderHistory.getDestination() != null) {
-            destinationRepository.deleteById(deleteOrderHistory.getDestination().getId());
-            deleteOrderHistory.removeDestination(); // FK null 처리
-            orderHistoryRepository.save(deleteOrderHistory);
-        }
-
-        //2. 배송지 정보를 삭제했으므로 주문내역 삭제
+        //3. 외래키 값을 삭제했으므로 주문내역 삭제
         orderHistoryRepository.deleteById(orderHistoryId);
     }
 
@@ -89,19 +77,18 @@ public class OrderHistoryService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND));
 
-        //배송지를 조회하기전에
-
-        // 배송지 기본키로 배송지 조회
-        Destination destination = destinationRepository.findById(orderRequest.destinationId())
-                .orElseThrow(() -> new CustomException(DestinationException.DESTINATION_NOT_FOUND));
-
         // 주문정보 객체 생성
         OrderHistory orderHistory = OrderHistory.builder()
                 .orderPrice(orderRequest.totalPrice())
                 .orderCount(orderRequest.orderProductRequests().size())
                 .createdAt(LocalDateTime.now())
                 .member(member)
-                .destination(destination)
+                .address(orderRequest.address())
+                .destinationName(orderRequest.destinationName())
+                .receiverName(orderRequest.receiverName())
+                .tel(orderRequest.tel())
+                .tel(orderRequest.tel())
+                .deliveryMessage(orderRequest.deliveryMessage())
                 .build();
 
         // 주문정보 저장
@@ -120,15 +107,18 @@ public class OrderHistoryService {
             OrderProduct orderProduct = OrderProduct.builder()
                     .productCount(orderProductRequest.productCount())
                     .productTotalPrice(orderProductRequest.productTotalPrice())
+                    .changedAt(LocalDateTime.now())
                     .currentDeliveryStatus(DeliveryStatus.BEFORE_PAY) // 결제전으로 저장 ==> 결제 완료되면 재고감소
                     .orderHistory(savedOrderHistory)
                     .product(product)
                     .build();
+            
+            //배송전 상태인 디폴트 객체
+            OrderProductDeliveryInfo deliveryInfo = OrderProductDeliveryInfo.createDefaultOrderProductDeliveryEntity(DeliveryStatus.BEFORE_PAY,orderProduct.getChangedAt());
 
-            OrderProductDeliveryInfo deliveryInfo = OrderProductDeliveryInfo.createDefaultOrderProductDeliveryEntity(DeliveryStatus.BEFORE_PAY);
-
-            orderProduct.getDeliveryStatusHistory().add(deliveryInfo);
-            orderProducts.add(orderProduct);
+            //주문 상품에 배송 이력리스트에 배송전 상태 삽입
+                orderProduct.getDeliveryStatusHistory().add(deliveryInfo);
+                orderProducts.add(orderProduct);
 
         }
 

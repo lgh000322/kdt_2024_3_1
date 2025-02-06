@@ -24,8 +24,8 @@ public class OrderProductController {
 
     @GetMapping("/orderProduct/{orderProductId}")
     @Operation(summary = "주문상품 상세조회", description = "현재 로그인한 회원의 주문상품 상세조회")
-    public ResponseEntity<ResponseFormat<OrderProductInfo>> findOrderProduct(@PathVariable(name = "orderProductId") Long orderProductId) {
-        OrderProductInfo findDetailOrderProduct = orderProductService.findDetailOrderProductByHistoryId(orderProductId);
+    public ResponseEntity<ResponseFormat<OrderProductInfo>> findOrderProduct(@PathVariable(name = "orderProductId") Long orderHistoryId) {
+        OrderProductInfo findDetailOrderProduct = orderProductService.findDetailOrderProductByHistoryId(orderHistoryId);
         return ResponseEntity.ok().body(ResponseFormat.of("주문 상세조회 성공", findDetailOrderProduct));
     }
 
