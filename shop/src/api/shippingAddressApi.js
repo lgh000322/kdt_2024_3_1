@@ -54,11 +54,16 @@ export const updateShippingAddress = async (destinationId, updatedData, token) =
 
 //배송지 삭제 API
 export const deleteShippingAddress = async (destinationId, token) => {
-  const response = await axios.delete(`${preFix}/${destinationId}` ,{
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  return response.data;
-}
+  try {
+    const response = await axios.delete(`${preFix}/${destinationId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("❌ 배송지 삭제 실패:", error.response?.data || error.message);
+    throw error.response?.data || error.message;
+  }
+};
