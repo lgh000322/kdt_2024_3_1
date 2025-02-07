@@ -107,7 +107,7 @@ public class ProductController {
     // - update 할 이미지파일(RequestPart)로 받음
     //  상품제목, 제거할 이미지 정보 -> (메인이미지 id, 사이드이미지 id), description, 가격, 수량 (사이즈별 수량)-> 수량확인후 총수량 변경,
     //  사람카테고리, 시즌카테고리, 상품카테고리 requestBody로 받음.
-    @PutMapping(name = "/product/{productId}", consumes = "multipart/form-data")
+    @PutMapping(value = "/product/{productId}", consumes = "multipart/form-data")
     @Operation(summary = "상품정보 수정", description = "특정상품의 정보를 변경한다. (판매자만 제거 가능)")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<Void>> updateProduct(@PathVariable("productId") Long productId,  // 상품id
