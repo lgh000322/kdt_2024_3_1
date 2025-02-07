@@ -2,23 +2,30 @@ import React, { useState, useEffect } from "react";
 import AdminPageLayout from "../layouts/AdminPageLayout";
 import { useSelector } from "react-redux";
 import { getMembers } from "../api/memberApi";
-import { searchMemberData } from "../api/memberApi";
-
 
 function AdminUserPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
   const [formData, setFormData] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
   const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState(""); // 이메일 검색 상태
-  const [role, setRole] = useState(""); // 역할(Role) 검색 상태
+  const [searchField, setSearchField] = useState("name");
   const [error, setError] = useState(null); // 에러 상태
+  const [page, setPage] = useState(0);
 
-  const fetchMembers = async () => {
+  // 회원 목록 가져오기 함수
+  const fetchMembers = async (searchFieldValue = null, searchTermValue = null) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await getMembers(loginSlice.accessToken, null, null);
+      // API 호출 시 검색 조건 전달
+      const res = await getMembers(
+        loginSlice.accessToken,
+        page,
+        10,
+        searchFieldValue === "role" ? searchTermValue : null, // 역할 검색 조건 추가
+        searchFieldValue === "email" ? searchTermValue : null, // 이메일 검색 조건
+        searchFieldValue === "name" ? searchTermValue : null, // 이름 검색 조건
+      );
       const sortedData = res.data.sort((a, b) => a.name.localeCompare(b.name));
       setFormData(sortedData);
     } catch (err) {
@@ -28,29 +35,6 @@ function AdminUserPage() {
       setLoading(false);
     }
   };
-
-  const searchMember = async () => {
-    setLoading(true);
-    setError(null);
-  
-    try {
-      const res = await searchMemberData(loginSlice.accessToken, {
-        page: 0,
-        size: 10,
-        email,
-      });
-  
-      const sortedData = res.data.sort((a, b) => a.name.localeCompare(b.name));
-      setFormData(sortedData);
-    } catch (err) {
-      console.error("회원 정보 조회 실패:", err);
-      setError("회원 정보를 불러오는 데 실패했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-
 
   useEffect(() => {
     fetchMembers();
@@ -84,23 +68,13 @@ function AdminUserPage() {
           >
             회원 검색
           </h2>
-          <div style={{ marginBottom: "15px" }}>
-            <label
-              htmlFor="email"
-              style={{
-                marginRight: "10px",
-                fontWeight: "bold",
-                color: "#555",
-              }}
-            >
-              검색:
-            </label>
+          <div style={{ display: "flex", alignItems: "center", marginBottom: "15px" }}>
+            {/* 검색어 입력 필드 */}
             <input
               type="text"
-              id="email"
-              placeholder="이름 또는 이메일 입력"
-              value={email} // 검색어 상태와 연결
-              onChange={(e) => setEmail(e.target.value)} // 상태 업데이트
+              placeholder="검색어 입력"
+              value={searchTerm} // 검색어 상태와 연결
+              onChange={(e) => setSearchTerm(e.target.value)} // 상태 업데이트
               style={{
                 padding: "10px",
                 border: "1px solid #ccc",
@@ -109,9 +83,25 @@ function AdminUserPage() {
                 marginRight: "10px",
               }}
             />
+            {/* 드롭다운 박스 */}
+            <select
+              value={searchField}
+              onChange={(e) => setSearchField(e.target.value)} // 드롭다운 선택 상태 업데이트
+              style={{
+                padding: "10px",
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+                backgroundColor: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              <option value="name">이름</option>
+              <option value="email">이메일</option>
+              <option value="role">역할</option>
+            </select>
           </div>
           <button
-            onClick={searchMember}
+            onClick={() => fetchMembers(searchField, searchTerm)} // 검색 버튼 클릭 시 호출
             style={{
               backgroundColor: "#007BFF",
               color: "#fff",
