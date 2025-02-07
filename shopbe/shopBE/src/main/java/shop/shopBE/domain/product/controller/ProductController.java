@@ -68,15 +68,13 @@ public class ProductController {
     }
 
 
-
-
     // 상품 등록
     @PostMapping(value = "/product", consumes = {"multipart/form-data"})
     @Operation(summary = "상품 세부사항 등록", description = "상품의 세부사항을 받아 상품을 등록한다. (판매자만 등록 가능)")
     @PreAuthorize("hasRole('SELLER')")
-    public ResponseEntity<ResponseFormat<Void>> addProduct(@RequestPart @NotNull MultipartFile mainImgFile,                 // 메인 이미지 파일 -> 무조건 받아야함.
-                                                           @RequestPart  List<MultipartFile> sideImgFile,                  // 사이드 이미지 파일 -> 무조건은 아님.
-                                                           @RequestBody @Valid AddProductInforms addProductInforms,
+    public ResponseEntity<ResponseFormat<Void>> addProduct(@RequestPart(name = "mainImgFile", required = true) MultipartFile mainImgFile,                 // 메인 이미지 파일 -> 무조건 받아야함.
+                                                           @RequestPart(name = "sideImgFile", required = false)  List<MultipartFile> sideImgFile,                  // 사이드 이미지 파일 -> 무조건은 아님.
+                                                           @RequestPart(name = "addProductInforms") @Valid AddProductInforms addProductInforms,
                                                            @AuthenticationPrincipal AuthToken authToken) {
         productService.addProduct(mainImgFile, sideImgFile, addProductInforms, authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("상품 세부사항 등록 성공"));
@@ -113,9 +111,9 @@ public class ProductController {
     @Operation(summary = "상품정보 수정", description = "특정상품의 정보를 변경한다. (판매자만 제거 가능)")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<Void>> updateProduct(@PathVariable("productId") Long productId,  // 상품id
-                                                              @RequestPart(required = false) MultipartFile updateMainImg,  // update할 mainImg
-                                                              @RequestPart(required = false) List<MultipartFile> updateSideImgs, // update할 sideImg
-                                                              @RequestBody UpdateProductReq updateProductReq){
+                                                              @RequestPart(name = "updateMainImg", required = false) MultipartFile updateMainImg,  // update할 mainImg
+                                                              @RequestPart(name = "updateSideImgs",required = false) List<MultipartFile> updateSideImgs, // update할 sideImg
+                                                              @RequestPart(name = "updateProductReq") UpdateProductReq updateProductReq){
 
         productService.updateProductInforms(productId, updateMainImg, updateSideImgs, updateProductReq);
         return ResponseEntity.ok().body(ResponseFormat.of("상품 수정 성공"));
