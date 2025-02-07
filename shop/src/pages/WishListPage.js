@@ -1,113 +1,83 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import WishLayout from "../layouts/WishLayout";
+import { deleteWishItem, getWishList } from "../api/wishApi";
+import { useSelector } from "react-redux";
+
+const initState = [
+  {
+    productId: 1,
+    likesId: 1,
+    imageUrl: "/img/logo.png",
+    title: "상품 A",
+    price: 8000,
+  },
+  {
+    productId: 2,
+    likesId: 2,
+    imageUrl: "/img/logo.png",
+    title: "상품 A",
+    price: 8000,
+  },
+  {
+    productId: 3,
+    likesId: 3,
+    imageUrl: "/img/logo.png",
+    title: "상품 A",
+    price: 8000,
+  },
+];
 
 const WishlistPage = () => {
-  const [wishlist, setWishlist] = useState([
-    {
-      id: "ORD003",
-      image: "/img/logo.png", // 임시 이미지 URL
-      title: "상품 A",
-      price: 8000,
-    },
-    {
-      id: "ORD004",
-      image: "/img/naver.jpg",
-      title: "상품 B",
-      price: 20000,
-    },
-    {
-      id: "ORD005",
-      image: "/img/logo.png",
-      title: "상품 C",
-      price: 15000,
-    },
-    {
-      id: "ORD006",
-      image: "/img/naver.jpg",
-      title: "상품 D",
-      price: 56000,
-    },
-    {
-      id: "ORD007",
-      image: "/img/logo.png",
-      title: "상품 E",
-      price: 13000,
-    },
-    {
-      id: "ORD008",
-      image: "/img/naver.jpg",
-      title: "상품 F",
-      price: 4500,
-    },
-    {
-      id: "ORD009",
-      image: "/img/logo.png",
-      title: "상품 G",
-      price: 23000,
-    },
-  ]);
+  const [wishlist, setWishlist] = useState(initState);
+  const [page, setPage] = useState(0);
+  const loginState = useSelector((state) => state.loginSlice);
+  const accessToken = loginState.accessToken;
 
-  // 찜한 상품 삭제 기능
-  const removeFromWishlist = (id) => {
-    const updatedWishlist = wishlist.filter((item) => item.id !== id);
-    setWishlist(updatedWishlist);
-    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // Update localStorage
+  useEffect(() => {
+    getWishList(accessToken, page, 10).then((res) => {
+      const data = res.data;
+      setWishlist(data);
+    });
+  }, [page]);
+
+  const removeFromWishlist = (likesId, productId) => {
+    // 화면 업데이트를 하기 위한 객체
+    const updatedWishlist = wishlist.filter((item) => item.likesId !== likesId);
+
+    // delete api 실행
+    deleteWishItem(accessToken, likesId, productId).then((res) => {
+      if (res.code === 200) {
+        alert("찜 아이템을 지우는데 성공했습니다.");
+        setWishlist(updatedWishlist);
+      }
+    });
   };
 
   return (
     <WishLayout>
-      <div style={{ padding: "40px" }}>
-        <h1 style={{ textAlign: "left", fontSize: "27px", fontWeight: "bold" }}>찜한 상품</h1>
-        <hr />
-        <br />
+      <div className="p-10">
+        <h1 className="text-left text-2xl font-bold">찜한 상품</h1>
+        <hr className="my-4" />
         {wishlist.length > 0 ? (
-          <div
-            style={{
-              display: "flex",
-              gap: "28px",
-              flexWrap: "wrap",
-              justifyContent: "flex-start",
-            }}
-          >
+          <div className="flex gap-7 flex-wrap justify-start">
             {wishlist.map((item) => (
               <div
-                key={item.id}
-                style={{
-                  width: "215px", // 고정된 너비
-                  height: "320px", // 고정된 높이
-                  boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
-                  borderRadius: "8px",
-                  padding: "10px",
-                  textAlign: "center",
-                  backgroundColor: "#fff",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between", // 상하 정렬
-                }}
+                key={item.likesId}
+                className="w-52 h-80 shadow-md rounded-lg p-3 bg-white flex flex-col justify-between"
               >
                 <img
-                  src={item.image}
+                  src={item.imageUrl}
                   alt={item.title}
-                  style={{
-                    width: "100%",
-                    height: "250px",
-                    objectFit: "cover",
-                    borderRadius: "5px",
-                  }}
+                  className="w-full h-60 object-cover rounded-md"
                 />
-                <hr />
-                <h3 style={{ fontSize: "16px", margin: "5px" }}>{item.title}</h3>
-                <p style={{ color: "#888" }}>{item.price.toLocaleString()}원</p>
+                <hr className="my-2" />
+                <h3 className="text-lg font-semibold my-1">{item.title}</h3>
+                <p className="text-gray-500">{item.price.toLocaleString()}원</p>
                 <button
-                  onClick={() => removeFromWishlist(item.id)} // Connect the delete function here
-                  style={{
-                    backgroundColor: "#ff4d4f",
-                    color: "#fff",
-                    border: "none",
-                    padding: "8px 12px",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
+                  onClick={() =>
+                    removeFromWishlist(item.likesId, item.productId)
+                  }
+                  className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 transition-colors"
                 >
                   삭제
                 </button>
@@ -115,7 +85,7 @@ const WishlistPage = () => {
             ))}
           </div>
         ) : (
-          <p style={{ textAlign: "center", marginTop: "50px" }}>찜한 상품이 없습니다.</p>
+          <p className="text-center mt-12">찜한 상품이 없습니다.</p>
         )}
       </div>
     </WishLayout>
