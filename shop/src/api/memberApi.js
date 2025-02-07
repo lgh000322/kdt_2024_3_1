@@ -77,7 +77,7 @@ export const logoutRefresh = async () => {
 };
 
 // 전체 회원 조회
-export const getMembers = async (accessToken) => {
+export const getMembers = async (accessToken, email, name) => {
   const header = {
     headers: { Authorization: `Bearer ${accessToken}` },
     withCredentials: true,
@@ -140,6 +140,25 @@ export const sellerAcceptSubmit = async (accessToken, authorityId) => {
     return res.data;
   } catch (error) {
     console.error("API 요청 실패:", error);
+    throw error;
+  }
+};
+
+export const searchMemberData = async (accessToken, { page, size, email }) => {
+  try {
+    const res = await axios.get(`${adminlist}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      params: {
+        page,
+        size,
+        email,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("회원 검색 실패:", error);
     throw error;
   }
 };
