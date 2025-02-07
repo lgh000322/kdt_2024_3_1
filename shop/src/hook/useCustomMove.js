@@ -26,6 +26,7 @@ const useCustomMove = () => {
     navigate({ pathname: "/login/authenticate" });
   };
 
+
   const moveToLoginPage = () => {
     navigate({ pathname: "/login" });
   };
