@@ -65,8 +65,9 @@ public class MemberController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseFormat<List<MemberListResponseView>>> getMembers(@PageableDefault Pageable pageable,
                                                                                    @RequestParam(name = "grade", required = false) Role role,
-                                                                                   @RequestParam(name = "email", required = false) String email) {
-        List<MemberListResponseView> memberList = memberFacadeService.getMemberList(pageable, role, email);
+                                                                                   @RequestParam(name = "email", required = false) String email,
+                                                                                   @RequestParam(name = "name", required = false) String name) {
+        List<MemberListResponseView> memberList = memberFacadeService.getMemberList(pageable, role, email, name);
         return ResponseEntity.ok().body(ResponseFormat.of("회원 리스트 조회에 성공했습니다.", memberList));
     }
 

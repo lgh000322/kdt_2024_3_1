@@ -37,7 +37,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public Optional<List<MemberListResponse>> findAllByPaging(Pageable pageable, Role role, String email) {
+    public Optional<List<MemberListResponse>> findAllByPaging(Pageable pageable, Role role, String email,String name) {
         List<MemberListResponse> result = queryFactory
                 .select(Projections.constructor(MemberListResponse.class,
                         member.name,
@@ -49,7 +49,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .from(member)
                 .where(
                         isRoleEq(role),
-                        isEmailEq(email)
+                        isEmailEq(email),
+                        isNameEq(name)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -64,5 +65,9 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
     private BooleanExpression isEmailEq(String email) {
         return email == null ? null : member.email.eq(email);
+    }
+
+    private BooleanExpression isNameEq(String name) {
+        return name == null ? null : member.name.eq(name);
     }
 }
