@@ -20,6 +20,9 @@
     "styled-components": "^6.1.14",
     "web-vitals": "^4.2.4"
   },
+  "resolutions": {
+    "@toast-ui/editor": "^3.2.3"
+ },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
