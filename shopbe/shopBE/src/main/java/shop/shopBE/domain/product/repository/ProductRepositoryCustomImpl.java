@@ -83,7 +83,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                                 product.price
                                 ))
                 .from(product)
-                .join(productImage)
+                .innerJoin(productImage)
                 .on(productImage.product.eq(product))
                 .where(andProductCategory(productCategory),
                         andPersonCategory(personCategory),

@@ -41,8 +41,8 @@ public class ProductController {
                                                                                               @RequestParam(name = "seasonCategory", required = false) SeasonCategory seasonCategory,
                                                                                               @RequestParam(name = "personCategory", required = false) PersonCategory personCategory,
                                                                                               @RequestParam(name = "productCategory", required = false) ProductCategory productCategory,
-                                                                                              @RequestParam(name = "sortingOption", defaultValue = "POPULAR")SortingOption sortingOption,
-                                                                                              @RequestParam(name = "search", required = false) String keyword){
+                                                                                              @RequestParam(name = "sortingOption", defaultValue = "POPULAR") SortingOption sortingOption,
+                                                                                              @RequestParam(name = "search", required = false) String keyword) {
 
         List<ProductCardViewModel> findProductCardViews = productService.findProductCardViewsByCategorys(pageable, seasonCategory, personCategory, productCategory, sortingOption, keyword);
         return ResponseEntity.ok().body(ResponseFormat.of("메인 페이지 상품 조회 성공", findProductCardViews));
@@ -51,7 +51,7 @@ public class ProductController {
     // 상품 상세 조회 - 상품아이디를 통해 상품의 세부사항를 보여줌
     @GetMapping("/products/{productId}")
     @Operation(summary = "상품의 세부사항 조회", description = "상품의 번호를 통해 상품에 상세 설명을 보여준다")
-    public ResponseEntity<ResponseFormat<ProductInformsModelView>> findProductDetailsByProductId(@PathVariable("productId") Long productId){
+    public ResponseEntity<ResponseFormat<ProductInformsModelView>> findProductDetailsByProductId(@PathVariable("productId") Long productId) {
 
         ProductInformsModelView productInformsModelView = productService.findProductDetailsByProductId(productId);
         return ResponseEntity.ok().body(ResponseFormat.of("상품 상세정보 조회 성공", productInformsModelView));
@@ -62,7 +62,7 @@ public class ProductController {
     @Operation(summary = "판매자의 등록 상품 조회", description = "판매자가 등록한 상품들을 보여준다. (판매자만 조회 가능)")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<List<ProductCardViewModel>>> findSalesList(@PageableDefault Pageable pageable,
-                                                                                    @AuthenticationPrincipal AuthToken authToken){
+                                                                                    @AuthenticationPrincipal AuthToken authToken) {
         List<ProductCardViewModel> salesListCardViews = productService.findSalesListCardView(pageable, authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("판매자 등록 상품 조회 성공", salesListCardViews));
     }
@@ -73,7 +73,7 @@ public class ProductController {
     @Operation(summary = "상품 세부사항 등록", description = "상품의 세부사항을 받아 상품을 등록한다. (판매자만 등록 가능)")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<Void>> addProduct(@RequestPart(name = "mainImgFile", required = true) MultipartFile mainImgFile,                 // 메인 이미지 파일 -> 무조건 받아야함.
-                                                           @RequestPart(name = "sideImgFile", required = false)  List<MultipartFile> sideImgFile,                  // 사이드 이미지 파일 -> 무조건은 아님.
+                                                           @RequestPart(name = "sideImgFile", required = false) List<MultipartFile> sideImgFile,                  // 사이드 이미지 파일 -> 무조건은 아님.
                                                            @RequestPart(name = "addProductInforms") @Valid AddProductInforms addProductInforms,
                                                            @AuthenticationPrincipal AuthToken authToken) {
         productService.addProduct(mainImgFile, sideImgFile, addProductInforms, authToken.getId());
@@ -112,8 +112,8 @@ public class ProductController {
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<Void>> updateProduct(@PathVariable("productId") Long productId,  // 상품id
                                                               @RequestPart(name = "updateMainImg", required = false) MultipartFile updateMainImg,  // update할 mainImg
-                                                              @RequestPart(name = "updateSideImgs",required = false) List<MultipartFile> updateSideImgs, // update할 sideImg
-                                                              @RequestPart(name = "updateProductReq") UpdateProductReq updateProductReq){
+                                                              @RequestPart(name = "updateSideImgs", required = false) List<MultipartFile> updateSideImgs, // update할 sideImg
+                                                              @RequestPart(name = "updateProductReq") UpdateProductReq updateProductReq) {
 
         productService.updateProductInforms(productId, updateMainImg, updateSideImgs, updateProductReq);
         return ResponseEntity.ok().body(ResponseFormat.of("상품 수정 성공"));
