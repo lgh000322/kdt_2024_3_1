@@ -21,7 +21,7 @@ function MyPageLayout({ children, role }) {
         {/* 사이드바 (헤더 아래 고정) */}
         <div className="w-64 min-h-screen bg-gray-50 pt-16 fixed left-0 top-16.1">
           {/* fixed로 사이드바를 헤더 아래로 배치 (top-16은 헤더의 높이를 고려한 여백) */}
-          <Sidebar role={role} onMenuClick={handleMenuClick} />
+          <Sidebar onMenuClick={handleMenuClick} />
         </div>
 
         {/* 본문 내용 */}

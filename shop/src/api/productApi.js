@@ -1,0 +1,65 @@
+import axios from "axios";
+import { ApiHost } from "./ApiConst";
+
+const basicProductUrl = `${ApiHost}/product`;
+const defaultProductsUrl = `${ApiHost}/products`;
+
+// 판매자 상품등록 요청
+export const registerProduct = async (addProductInforms, accessToken) => {
+  if (!accessToken) {
+    throw new Error("Access Token is required for authorization.");
+  }
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "multipart/form-data",
+    },
+    withCredentials: true,
+  };
+
+  console.log("서버에 보낼 데이터: ", addProductInforms);
+
+  try {
+    const res = await axios.post(
+      `${basicProductUrl}`,
+      addProductInforms,
+      config
+    );
+    return res.data;
+  } catch (error) {
+    console.error("상품 등록 오류:", error.response || error.message);
+    throw error;
+  }
+};
+
+// 전체 상품 조회
+export const getProductList = async (
+  page,
+  size,
+  seasonCategory,
+  personCategory,
+  productCategory,
+  sortingOption,
+  search
+) => {
+  const params = new URLSearchParams();
+
+  // null이나 undefined 체크하여 쿼리 파라미터로 추가
+  if (page !== null && page !== undefined) params.append("page", page);
+  if (size !== null && size !== undefined) params.append("size", size);
+  if (seasonCategory !== null && seasonCategory !== undefined)
+    params.append("seasonCategory", seasonCategory);
+  if (personCategory !== null && personCategory !== undefined)
+    params.append("personCategory", personCategory);
+  if (productCategory !== null && productCategory !== undefined)
+    params.append("productCategory", productCategory);
+  if (sortingOption !== null && sortingOption !== undefined)
+    params.append("sortingOption", sortingOption);
+  if (search !== null && search !== undefined) params.append("search", search);
+
+  const queryString = params.toString(); // URLSearchParams를 문자열로 변환
+
+  const res = await axios.get(`${defaultProductsUrl}?${queryString}`);
+  return res.data;
+};

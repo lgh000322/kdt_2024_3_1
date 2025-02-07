@@ -1,14 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProductLayout from "../layouts/ProductLayout";
 import ProductCardComponent from "../components/ProductCardComponent";
+import { getProductList } from "../api/productApi";
 
+const initState = [
+  { id: 1, title: "상품1", price: 89000, image: "img/logo.png" },
+  { id: 2, title: "상품2", price: 99000, image: "img/logo.png" },
+  { id: 3, title: "상품3", price: 79000, image: "img/logo.png" },
+  { id: 4, title: "상품4", price: 109000, image: "img/logo.png" },
+];
 function MainPage() {
-  const products = [
-    { id: 1, title: "상품1", price: 89000, image: "img/logo.png" },
-    { id: 2, title: "상품2", price: 99000, image: "img/logo.png" },
-    { id: 3, title: "상품3", price: 79000, image: "img/logo.png" },
-    { id: 4, title: "상품4", price: 109000, image: "img/logo.png" },
-  ];
+  const [products, setProduct] = useState(initState);
+  const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    getProductList(page, 10, null, null, null, null, null).then((res) => {
+      const data = res.data;
+      console.log(data);
+    });
+  }, [page]);
 
   return (
     <div>

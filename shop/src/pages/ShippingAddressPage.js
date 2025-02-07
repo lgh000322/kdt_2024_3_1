@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BasicLayout from "../layouts/BasicLayout";
 import { useSelector } from "react-redux";
-import { getShippingAddresses, updateShippingAddress, addShippingAddress } from "../api/shippingAddressApi";
+import { getShippingAddresses, updateShippingAddress, addShippingAddress, deleteShippingAddress } from "../api/shippingAddressApi";
 
 function ShippingAddressPage() {
   const loginState = useSelector((state) => state.loginSlice);
@@ -9,6 +9,7 @@ function ShippingAddressPage() {
 
   const [shippingAddresses, setShippingAddresses] = useState([]);
   const [editingAddress, setEditingAddress] = useState(null);
+  const [deletingAddress, setDeletingAddress] = useState(null);
   const [newAddress, setNewAddress] = useState({
     destinationName: "",
     receiverName: "",
@@ -54,11 +55,6 @@ function ShippingAddressPage() {
     window.location.reload();
   };
 
-  const handleEdit = (address) => {
-    console.log("🛠 수정할 데이터:", address); // 추가
-    setEditingAddress({ ...address });
-  };
-
   const handleUpdateAddress = async () => {
     if (!editingAddress) return;
 
@@ -75,6 +71,37 @@ function ShippingAddressPage() {
     }
     window.location.reload();
   };
+
+  const handleDeleteAddress = async (address) => {
+    if (!address) return;
+  
+    // 사용자 확인 메시지 추가
+    if (!window.confirm("정말 이 배송지를 삭제하시겠습니까?")) return;
+  
+    try {
+      await deleteShippingAddress(address.destinationId, accessToken);
+  
+      // 삭제된 주소를 제외한 새로운 리스트로 업데이트
+      setShippingAddresses((prev) =>
+        prev.filter((item) => item.destinationId !== address.destinationId)
+      );
+  
+      alert("배송지가 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error("배송지 삭제 실패:", error);
+      alert(`배송지 삭제 실패: ${error.message}`);
+    }
+  };  
+
+  const handleEdit = (address) => {
+    console.log("🛠 수정할 데이터:", address); // 추가
+    setEditingAddress({ ...address });
+  };
+
+  const handleDelete = (address) => {
+    console.log("🛠 삭제할 데이터:", address);
+    setDeletingAddress({ ...address });
+  }
 
   return (
     <BasicLayout>
@@ -124,7 +151,7 @@ function ShippingAddressPage() {
                 <p><strong>연락처:</strong> {address.tel}</p>
                 <p><strong>우편번호:</strong> {address.zipCode}</p>
                 <button style={styles.editButton} onClick={() => handleEdit(address)}>수정</button>
-                <button style={styles.deleteButton} onClick={() => handleEdit(address)}>삭제</button>
+                <button style={styles.deleteButton} onClick={() => handleDeleteAddress(address)}>삭제</button>
               </div>
             )}
           </div>
@@ -213,6 +240,7 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
     transition: "background 0.3s",
+    marginLeft: "564px",
   },
   noAddress: {
     textAlign: "center",
