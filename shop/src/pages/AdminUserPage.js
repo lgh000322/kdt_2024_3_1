@@ -2,52 +2,65 @@ import React, { useState, useEffect } from "react";
 import AdminPageLayout from "../layouts/AdminPageLayout";
 import { useSelector } from "react-redux";
 import { getMembers } from "../api/memberApi";
+import { searchMemberData } from "../api/memberApi";
 
-const userRole = "manager";
 
 function AdminUserPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
   const [formData, setFormData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]); // 필터링된 데이터
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState(""); // 이메일 검색 상태
+  const [role, setRole] = useState(""); // 역할(Role) 검색 상태
+  const [error, setError] = useState(null); // 에러 상태
+
+  const fetchMembers = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getMembers(loginSlice.accessToken, null, null);
+      const sortedData = res.data.sort((a, b) => a.name.localeCompare(b.name));
+      setFormData(sortedData);
+    } catch (err) {
+      console.error("회원 정보 조회 실패:", err);
+      setError("회원 정보를 불러오는 데 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const searchMember = async () => {
+    setLoading(true);
+    setError(null);
+  
+    try {
+      const res = await searchMemberData(loginSlice.accessToken, {
+        page: 0,
+        size: 10,
+        email,
+      });
+  
+      const sortedData = res.data.sort((a, b) => a.name.localeCompare(b.name));
+      setFormData(sortedData);
+    } catch (err) {
+      console.error("회원 정보 조회 실패:", err);
+      setError("회원 정보를 불러오는 데 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const res = await getMembers(loginSlice.accessToken);
-        const sortedData = res.data.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-
-        setFormData(sortedData);
-        setFilteredData(sortedData);
-      } catch (error) {
-        console.error("회원 정보 조회 실패:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchMembers();
   }, []);
 
-  useEffect(() => {
-    if (searchTerm === "") {
-      setFilteredData(formData); // 검색어가 없으면 전체 데이터 표시
-    } else {
-      const filtered = formData.filter(
-        (member) =>
-          member.name.toLowerCase().includes(searchTerm.toLowerCase()) || // 이름 필터링
-          member.email.toLowerCase().includes(searchTerm.toLowerCase()) // 이메일 필터링
-      );
-      setFilteredData(filtered);
-    }
-  }, [searchTerm, formData]);
-
   if (loading) return <div>Loading...</div>;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   return (
-    <AdminPageLayout role={userRole}>
+    <AdminPageLayout>
       <div>
         {/* 검색 필터 섹션 */}
         <div
@@ -73,7 +86,7 @@ function AdminUserPage() {
           </h2>
           <div style={{ marginBottom: "15px" }}>
             <label
-              htmlFor="userId"
+              htmlFor="email"
               style={{
                 marginRight: "10px",
                 fontWeight: "bold",
@@ -84,10 +97,10 @@ function AdminUserPage() {
             </label>
             <input
               type="text"
-              id="userId"
+              id="email"
               placeholder="이름 또는 이메일 입력"
-              value={searchTerm} // 검색어 상태와 연결
-              onChange={(e) => setSearchTerm(e.target.value)} // 상태 업데이트
+              value={email} // 검색어 상태와 연결
+              onChange={(e) => setEmail(e.target.value)} // 상태 업데이트
               style={{
                 padding: "10px",
                 border: "1px solid #ccc",
@@ -98,7 +111,7 @@ function AdminUserPage() {
             />
           </div>
           <button
-            onClick={() => setSearchTerm("")} // 검색 초기화 버튼
+            onClick={searchMember}
             style={{
               backgroundColor: "#007BFF",
               color: "#fff",
@@ -109,7 +122,7 @@ function AdminUserPage() {
               fontSize: "16px",
             }}
           >
-            초기화
+            검색
           </button>
         </div>
 
@@ -164,7 +177,7 @@ function AdminUserPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredData.map((member, index) => (
+                {formData.map((member, index) => (
                   <tr key={member.id}>
                     {/* 번호는 index + 1로 설정 */}
                     <td style={{ padding: "10px", textAlign: "center" }}>
@@ -187,16 +200,6 @@ function AdminUserPage() {
                     </td>
                   </tr>
                 ))}
-                {filteredData.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan="6"
-                      style={{ textAlign: "center", padding: "20px" }}
-                    >
-                      검색 결과가 없습니다.
-                    </td>
-                  </tr>
-                )}
               </tbody>
             </table>
           </div>
