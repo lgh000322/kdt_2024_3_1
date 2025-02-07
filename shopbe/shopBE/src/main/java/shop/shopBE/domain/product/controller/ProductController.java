@@ -28,7 +28,6 @@ import shop.shopBE.global.response.ResponseFormat;
 import java.util.List;
 
 @RestController
-@RequestMapping("/product")
 @RequiredArgsConstructor
 @Tag(name = "상품", description = "상품 관련 API")
 public class ProductController {
@@ -36,7 +35,7 @@ public class ProductController {
 
 
     // 메인페이지 상품조회 likeCount로 조회
-    @GetMapping
+    @GetMapping("/products")
     @Operation(summary = "상품 조회", description = "메인페이지에 인기(좋아요)순으로 상품을 보여준다.")
     public ResponseEntity<ResponseFormat<List<ProductCardViewModel>>> getMainPageProductsView(@PageableDefault Pageable pageable,
                                                                                               @RequestParam(name = "seasonCategory", required = false) SeasonCategory seasonCategory,
@@ -50,7 +49,7 @@ public class ProductController {
     }
 
     // 상품 상세 조회 - 상품아이디를 통해 상품의 세부사항를 보여줌
-    @GetMapping("/{productId}")
+    @GetMapping("/products/{productId}")
     @Operation(summary = "상품의 세부사항 조회", description = "상품의 번호를 통해 상품에 상세 설명을 보여준다")
     public ResponseEntity<ResponseFormat<ProductInformsModelView>> findProductDetailsByProductId(@PathVariable("productId") Long productId){
 
@@ -59,7 +58,7 @@ public class ProductController {
     }
 
     // 판매자의 등록 상품 조회.
-    @GetMapping("/seller")
+    @GetMapping("/product/seller")
     @Operation(summary = "판매자의 등록 상품 조회", description = "판매자가 등록한 상품들을 보여준다. (판매자만 조회 가능)")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<List<ProductCardViewModel>>> findSalesList(@PageableDefault Pageable pageable,
@@ -72,7 +71,7 @@ public class ProductController {
 
 
     // 상품 등록
-    @PostMapping(consumes = {"multipart/form-data"})
+    @PostMapping(value = "/product", consumes = {"multipart/form-data"})
     @Operation(summary = "상품 세부사항 등록", description = "상품의 세부사항을 받아 상품을 등록한다. (판매자만 등록 가능)")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<Void>> addProduct(@RequestPart @NotNull MultipartFile mainImgFile,                 // 메인 이미지 파일 -> 무조건 받아야함.
@@ -85,7 +84,7 @@ public class ProductController {
 
 
     // 상품 제거 - 논리적 삭제 isdeleted를 true로만 바꿔줌.
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/product/{productId}")
     @Operation(summary = "등록 상품 제거", description = "판매자가 등록한 상품을 제거한다. (판매자만 제거 가능)")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<Void>> deleteOneProduct(@PathVariable("productId") Long productId,
@@ -96,7 +95,7 @@ public class ProductController {
     }
 
     // 상품제거 - 여러개의 상품을 제거
-    @DeleteMapping
+    @DeleteMapping("/product")
     @Operation(summary = "복수의 등록상품 제거", description = "판매자가 등록한 상품들을 제거한다. (판매자만 제거 가능)")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<Void>> deleteMultipleProducts(@RequestBody @Valid DeleteProductsReq deleteProductsReq,
@@ -110,7 +109,7 @@ public class ProductController {
     // - update 할 이미지파일(RequestPart)로 받음
     //  상품제목, 제거할 이미지 정보 -> (메인이미지 id, 사이드이미지 id), description, 가격, 수량 (사이즈별 수량)-> 수량확인후 총수량 변경,
     //  사람카테고리, 시즌카테고리, 상품카테고리 requestBody로 받음.
-    @PutMapping(name = "{productId}", consumes = "multipart/form-data")
+    @PutMapping(name = "/product/{productId}", consumes = "multipart/form-data")
     @Operation(summary = "상품정보 수정", description = "특정상품의 정보를 변경한다. (판매자만 제거 가능)")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<Void>> updateProduct(@PathVariable("productId") Long productId,  // 상품id

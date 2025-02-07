@@ -53,7 +53,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                         product.id,
                         likesItem.id,
                         productImage.savedName,
-                        product.productName
+                        product.productName,
+                        product.price
                 ))
                 .from(product)
                 .innerJoin(productImage).on(product.id.eq(productImage.product.id))
