@@ -4,6 +4,9 @@ import { Editor } from "@toast-ui/react-editor";
 import "@toast-ui/editor/dist/toastui-editor.css"; // Editor styles
 import "@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css"; // Plugin styles
 import colorSyntax from "@toast-ui/editor-plugin-color-syntax";
+import { registerProduct } from "../api/productApi";
+import { useSelector } from "react-redux";
+import useCustomMove from "../hook/useCustomMove";
 
 const productEnum = {
   SLIPPERS: { description: "슬리퍼" },
@@ -25,6 +28,8 @@ const productEnum = {
 };
 
 function ProductUploadPage() {
+  const loginSlice = useSelector((state) => state.loginSlice);
+
   const [productName, setProductName] = useState("");
   const [productCategory, setProductCategory] = useState("");
   const [personCategory, setPersonCategory] = useState("");
@@ -41,6 +46,8 @@ function ProductUploadPage() {
   const [sizeRange, setSizeRange] = useState({ min: "", max: "" });
   const [sizeInterval, setSizeInterval] = useState(""); // 간격 (5 또는 10)
   const [sizeQuantities, setSizeQuantities] = useState({});
+
+  const { moveToProductAbs } = useCustomMove();
 
   const handleSizeRangeChange = (e) => {
     const { name, value } = e.target;
@@ -118,6 +125,8 @@ function ProductUploadPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    let accessToken = loginSlice.accessToken;
+
     // TOAST UI Editor에서 Markdown 데이터 가져오기
     const editorInstance = editorRef.current.getInstance();
     const markdownContent = editorInstance.getMarkdown();
@@ -153,8 +162,72 @@ function ProductUploadPage() {
       }
     }
 
-    // 등록 처리 (여기서는 alert로 예시 처리, 실제로는 API 호출 등 처리 필요)
-    alert("상품이 등록되었습니다!");
+    // 사이즈별 수량 맵 생성
+    const sizeQuantityMap = renderSizeOptions().reduce((acc, size) => {
+      if (sizeQuantities[size]) {
+        acc[size] = sizeQuantities[size];
+      }
+      return acc;
+    }, {});
+
+    console.log("사이즈별 수량 맵:", sizeQuantityMap); // 예시: { 250: 10, 255: 5, 260: 8 }
+
+    try {
+      // FormData 객체 생성
+      const formData = new FormData();
+
+      const addProductInforms = {
+        productName: productName,
+        price: productPrice,
+        productCategory: productCategory,
+        personCategory: personCategory,
+        seasonCategory: seasonCategory,
+        description: description,
+        sizeAndQuantity: sizeQuantityMap,
+      };
+      formData.append(
+        "addProductInforms",
+        new Blob([JSON.stringify(addProductInforms)], {
+          type: "application/json",
+        })
+      );
+
+      // 대표 이미지 추가
+      if (representImage) {
+        formData.append("mainImgFile", representImage.file);
+      }
+
+      // 추가 이미지들 추가
+      images.forEach((image, index) => {
+        formData.append(`sideImgFile`, image.file);
+      });
+
+      // FormData를 객체로 변환하여 콘솔에 출력 (디버깅용)
+      const formDataObject = {};
+      for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          formDataObject[key] = {
+            fileName: value.name,
+            fileType: value.type,
+            fileSize: value.size,
+          };
+        } else {
+          formDataObject[key] = value;
+        }
+      }
+      console.log("전송될 데이터:", formData);
+
+      registerProduct(formData, accessToken).then((res) => {
+        if (res.code === 200) {
+          moveToProductAbs();
+        } else {
+          alert("상품등록에 실패했습니다.");
+        }
+      });
+    } catch (error) {
+      console.error("상품 등록 중 오류 발생:", error);
+      alert("상품 등록 중 오류가 발생했습니다.");
+    }
   };
 
   // {/* 상품 대표 이미지 팝업 위치 조정 */}
@@ -357,13 +430,15 @@ function ProductUploadPage() {
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="w-full max-w-4xl mx-auto p-4">
+            <label className="block text-sm font-medium text-gray-700 mb-4">
               신발 사이즈 및 수량
             </label>
-            <div className="flex items-center gap-4 mb-4">
-              <div>
-                <label className="block text-sm text-gray-700">
+
+            {/* Size Range Controls - Responsive Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              <div className="w-full">
+                <label className="block text-sm text-gray-700 mb-2">
                   최소 사이즈
                 </label>
                 <input
@@ -371,13 +446,14 @@ function ProductUploadPage() {
                   name="min"
                   value={sizeRange.min}
                   onChange={handleSizeRangeChange}
-                  className="block w-20 text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="최소"
                   min={0}
                 />
               </div>
-              <div>
-                <label className="block text-sm text-gray-700">
+
+              <div className="w-full">
+                <label className="block text-sm text-gray-700 mb-2">
                   최대 사이즈
                 </label>
                 <input
@@ -385,19 +461,20 @@ function ProductUploadPage() {
                   name="max"
                   value={sizeRange.max}
                   onChange={handleSizeRangeChange}
-                  className="block w-20 text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="최대"
                   min={0}
                 />
               </div>
-              <div>
-                <label className="block text-sm text-gray-700">
+
+              <div className="w-full">
+                <label className="block text-sm text-gray-700 mb-2">
                   사이즈 간격
                 </label>
                 <select
                   value={sizeInterval}
                   onChange={handleSizeIntervalChange}
-                  className="block w-25 text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="" disabled>
                     선택
@@ -408,60 +485,58 @@ function ProductUploadPage() {
               </div>
             </div>
 
-            {
-              // Show error message when no size range is provided
-              sizeInterval &&
-                !sizeRange.min &&
-                !sizeRange.max &&
-                !sizeRange.errorMessage && (
-                  <p className="text-red-500 text-sm">
-                    최소 사이즈와 최대 사이즈를 입력해주세요.
-                  </p>
-                )
-            }
+            {/* Error Messages */}
+            {sizeInterval &&
+              !sizeRange.min &&
+              !sizeRange.max &&
+              !sizeRange.errorMessage && (
+                <p className="text-red-500 text-sm mb-4">
+                  최소 사이즈와 최대 사이즈를 입력해주세요.
+                </p>
+              )}
 
-            {
-              // Show error message when size range is invalid
-              sizeInterval &&
-                sizeRange.min &&
-                sizeRange.max &&
-                (sizeRange.min > sizeRange.max ||
-                  sizeRange.min % sizeInterval !== 0 ||
-                  sizeRange.max % sizeInterval !== 0) &&
-                !sizeRange.errorMessage && (
-                  <p className="text-red-500 text-sm">
-                    정확한 사이즈 정보를 입력해주세요.
-                  </p>
-                )
-            }
+            {sizeInterval &&
+              sizeRange.min &&
+              sizeRange.max &&
+              (sizeRange.min > sizeRange.max ||
+                sizeRange.min % sizeInterval !== 0 ||
+                sizeRange.max % sizeInterval !== 0) &&
+              !sizeRange.errorMessage && (
+                <p className="text-red-500 text-sm mb-4">
+                  정확한 사이즈 정보를 입력해주세요.
+                </p>
+              )}
 
-            {
-              // Show size input fields only when all validations pass
-              sizeInterval &&
-                sizeRange.min &&
-                sizeRange.max &&
-                sizeRange.min % sizeInterval === 0 &&
-                sizeRange.max % sizeInterval === 0 &&
-                sizeRange.min <= sizeRange.max && (
-                  <div className="grid grid-cols-4 gap-4">
-                    {renderSizeOptions().map((size) => (
-                      <div key={size} className="flex items-center">
-                        <label className="text-sm text-gray-700">
-                          {size} 사이즈
-                        </label>
-                        <input
-                          type="number"
-                          value={sizeQuantities[size] || ""}
-                          onChange={(e) => handleQuantityChange(size, e)}
-                          placeholder="수량"
-                          min={0}
-                          className="ml-2 w-20 text-sm px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )
-            }
+            {/* Size Quantity Inputs - Responsive Grid */}
+            {/* Size Quantity Inputs - Responsive Grid */}
+            {sizeInterval &&
+              sizeRange.min &&
+              sizeRange.max &&
+              sizeRange.min % sizeInterval === 0 &&
+              sizeRange.max % sizeInterval === 0 &&
+              sizeRange.min <= sizeRange.max && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {renderSizeOptions().map((size) => (
+                    <div
+                      key={size}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    >
+                      <label className="text-sm text-gray-700 flex-shrink-0">
+                        {size} 사이즈
+                      </label>
+                      <div className="flex-grow mx-2" /> {/* Spacer */}
+                      <input
+                        type="number"
+                        value={sizeQuantities[size] || ""}
+                        onChange={(e) => handleQuantityChange(size, e)}
+                        placeholder="수량"
+                        min={0}
+                        className="w-20 text-sm px-3 py-1.5 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
           </div>
 
           {/* 상품 설명란 */}
