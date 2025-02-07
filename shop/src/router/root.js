@@ -44,6 +44,14 @@ const root = createBrowserRouter([
     ),
   },
   {
+    path: "product/:productId",
+    element: (
+      <Suspense fallback={Loading}>
+        <LookUpProduct></LookUpProduct>
+      </Suspense>
+    ),
+  },
+  {
     path: "login",
     element: (
       <Suspense fallback={Loading}>
@@ -200,14 +208,6 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <ProductUploadPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "lookupproduct",
-    element: (
-      <Suspense fallback={Loading}>
-        <LookUpProduct />
       </Suspense>
     ),
   },

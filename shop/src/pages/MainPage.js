@@ -56,16 +56,20 @@ function MainPage() {
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-2xl font-bold mb-6">신상품</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <div key={product.productId} className="w-full">
-                <ProductCardComponent
-                  id={product.productId}
-                  title={product.productName}
-                  price={product.price}
-                  image={product.imgUrl}
-                />
-              </div>
-            ))}
+            {loading ? (
+              <div className="spinner">Loading...</div> // You can replace this with a spinner or another indicator
+            ) : (
+              products.map((product) => (
+                <div key={product.productId} className="w-full">
+                  <ProductCardComponent
+                    id={product.productId}
+                    title={product.productName}
+                    price={product.price}
+                    image={product.imgUrl}
+                  />
+                </div>
+              ))
+            )}
           </div>
         </div>
       </ProductLayout>
