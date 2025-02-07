@@ -21,6 +21,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Builder
+@Table(
+        indexes = {
+                @Index(name = "idx_product_like_count", columnList = "likeCount"), // likeCount에 인덱스 추가
+                @Index(name = "idx_product_sales_volume", columnList = "salesVolume"), // salesVolume에 인덱스 추가
+                @Index(name = "idx_product_price", columnList = "price") // price에 인덱스 추가
+        }
+)
 public class Product {
 
     @Id

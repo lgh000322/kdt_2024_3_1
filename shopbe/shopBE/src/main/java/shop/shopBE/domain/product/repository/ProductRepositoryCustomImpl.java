@@ -88,7 +88,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .where(andProductCategory(productCategory),
                         andPersonCategory(personCategory),
                         andSeasonCategory(seasonCategory),
-                        product.productName.like("%" + keyword + "%"),
+                        productNameLike(keyword),
                         productImage.productImageCategory.eq(ProductImageCategory.MAIN))
                 .orderBy(product.likeCount.desc())
                 .offset(pageable.getOffset())
@@ -119,9 +119,9 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .where(andProductCategory(productCategory),
                         andPersonCategory(personCategory),
                         andSeasonCategory(seasonCategory),
-                        product.productName.like("%" + keyword + "%"),
+                        productNameLike(keyword),
                         productImage.productImageCategory.eq(ProductImageCategory.MAIN))
-                .orderBy(product.createdAt.desc())
+                .orderBy(product.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -149,7 +149,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .where(andProductCategory(productCategory),
                         andPersonCategory(personCategory),
                         andSeasonCategory(seasonCategory),
-                        product.productName.like("%" + keyword + "%"),
+                        productNameLike(keyword),
                         productImage.productImageCategory.eq(ProductImageCategory.MAIN))
                 .orderBy(product.salesVolume.desc())
                 .offset(pageable.getOffset())
@@ -179,7 +179,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .where(andProductCategory(productCategory),
                         andPersonCategory(personCategory),
                         andSeasonCategory(seasonCategory),
-                        product.productName.like("%" + keyword + "%"),
+                        productNameLike(keyword),
                         productImage.productImageCategory.eq(ProductImageCategory.MAIN))
                 .orderBy(product.price.asc())
                 .offset(pageable.getOffset())
@@ -233,7 +233,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .where(product.member.id.eq(sellerId),
                         productImage.productImageCategory.eq(ProductImageCategory.MAIN),
                         product.isDeleted.eq(false))
-                .orderBy(product.createdAt.desc())
+                .orderBy(product.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -289,6 +289,9 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 ? null : product.productCategory.eq(productCategory);
     }
 
+    private BooleanExpression productNameLike(String keyword){
+        return keyword == null ? null : product.productName.like("%" + keyword + "%");
+    }
 }
 
 
