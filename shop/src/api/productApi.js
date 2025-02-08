@@ -63,3 +63,8 @@ export const getProductList = async (
   const res = await axios.get(`${defaultProductsUrl}?${queryString}`);
   return res.data;
 };
+
+export const getProductOne = async (productId) => {
+  const res = await axios.get(`${defaultProductsUrl}/${productId}`);
+  return res.data;
+};
