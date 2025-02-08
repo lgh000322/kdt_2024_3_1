@@ -57,6 +57,7 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
 
             //2-2. 상품 상세 정보들 객체 생성
             DetailOrderProducts details = new DetailOrderProducts(
+                    oProduct.getId(), //해당 주문상품 id
                     new OrderProductDeliveryInfo(oProduct.getChangedAt(), oProduct.getCurrentDeliveryStatus()), // 배송 상태
                     productImageInfo.mainProductName(),    // 대표 상품 이름
                     productImageInfo.mainImageUrl(),       // 대표 이미지 URL
@@ -74,6 +75,7 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
                 oHistory.getReceiverName(),             // 주문자 이름
                 oHistory.getAddress(),     // 배송 주소
                 oHistory.getTel(),         // 전화번호
+                oHistory.getOrderPrice(),
                 orderDetailProducts                         // 주문 상세 목록
         );
 
