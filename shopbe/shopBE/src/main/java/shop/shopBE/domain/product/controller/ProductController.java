@@ -113,9 +113,10 @@ public class ProductController {
     public ResponseEntity<ResponseFormat<Void>> updateProduct(@PathVariable("productId") Long productId,  // 상품id
                                                               @RequestPart(name = "updateMainImg", required = false) MultipartFile updateMainImg,  // update할 mainImg
                                                               @RequestPart(name = "updateSideImgs", required = false) List<MultipartFile> updateSideImgs, // update할 sideImg
-                                                              @RequestPart(name = "updateProductReq") UpdateProductReq updateProductReq) {
+                                                              @RequestPart(name = "updateProductReq") UpdateProductReq updateProductReq,
+                                                              @AuthenticationPrincipal AuthToken authToken) {
 
-        productService.updateProductInforms(productId, updateMainImg, updateSideImgs, updateProductReq);
+        productService.updateProductInforms(productId, authToken.getId(), updateMainImg, updateSideImgs, updateProductReq);
         return ResponseEntity.ok().body(ResponseFormat.of("상품 수정 성공"));
     }
 

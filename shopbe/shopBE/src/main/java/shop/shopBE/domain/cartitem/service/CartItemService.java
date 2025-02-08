@@ -1,14 +1,10 @@
 package shop.shopBE.domain.cartitem.service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.shopBE.domain.cart.entity.Cart;
-import shop.shopBE.domain.cart.request.CartsPaging;
-import shop.shopBE.domain.cart.service.CartService;
 import shop.shopBE.domain.cartitem.entity.CartItem;
 import shop.shopBE.domain.cartitem.exception.CartItemExceptionCode;
 import shop.shopBE.domain.cartitem.repository.CartItemRepository;
@@ -16,11 +12,11 @@ import shop.shopBE.domain.cartitem.repository.CartItemRepository;
 import shop.shopBE.domain.cartitem.request.AddCartItemInform;
 import shop.shopBE.domain.cartitem.request.UpdateCartItemInform;
 import shop.shopBE.domain.cartitem.response.CartItemInform;
-import shop.shopBE.domain.member.service.MemberService;
+import shop.shopBE.domain.cartitem.response.CartItemInformResp;
 import shop.shopBE.domain.product.entity.Product;
-import shop.shopBE.domain.product.service.ProductService;
 import shop.shopBE.global.exception.custom.CustomException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,15 +26,13 @@ public class CartItemService {
     private final CartItemRepository cartItemRepository;
 
     // 카트아이템 조회 메서드
-    public List<CartItemInform> findCartItemInformsByCartId(Long cartId, Pageable pageable) {
+    public List<CartItemInformResp> findCartItemInformsByCartId(Long cartId, Pageable pageable) {
 
         // 카트아이템을 조회 없으면 404에러 반환
         List<CartItemInform> cartItemInforms = cartItemRepository.findCartItemInfromsById(cartId, pageable)
                 .orElseThrow(() -> new CustomException(CartItemExceptionCode.CART_ITEM_EMPTY));
 
-        setProductStatus(cartItemInforms);
-
-        return cartItemInforms;
+        return setCartItemInformRespData(cartItemInforms);
     }
 
 
@@ -84,14 +78,24 @@ public class CartItemService {
 
 
     // 상품정보(판매중, 품절) 설정로직
-    private void setProductStatus(List<CartItemInform> cartItemInforms) {
+    private List<CartItemInformResp> setCartItemInformRespData(List<CartItemInform> cartItemInforms) {
+
+        List<CartItemInformResp> cartItemInformResps = new ArrayList<>();
+
+
         for (CartItemInform cartItemInform : cartItemInforms) {
+            CartItemInformResp cartItemInformResp = new CartItemInformResp();
+
             if(cartItemInform.getSizeStock() > 0) {
-                cartItemInform.setProductStatus("판매 중");
+                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "판매 중");
             } else {
-                cartItemInform.setProductStatus("품절");
+                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "품절");
             }
+            cartItemInformResps.add(cartItemInformResp);
         }
+
+
+        return cartItemInformResps;
     }
 
 

@@ -8,6 +8,7 @@ import shop.shopBE.domain.product.entity.enums.SeasonCategory;
 import shop.shopBE.domain.product.request.SortingOption;
 import shop.shopBE.domain.product.response.ProductCardViewModel;
 import shop.shopBE.domain.product.response.ProductInformsModelView;
+import shop.shopBE.domain.product.response.ProductInformsResp;
 import shop.shopBE.domain.product.response.ProductListViewModel;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public interface ProductRepositoryCustom {
 
 
     Optional<Product> findNonDeletedProductByProductId(Long productId);
+
+    Optional<Product> findSellerProductByProductId(Long productId, Long sellerId);
 
     // 상품 카드 데이터를 리턴해주는 메소드
     ProductListViewModel getProductListViewModels(Long productId);
@@ -31,7 +34,7 @@ public interface ProductRepositoryCustom {
     Optional<List<ProductCardViewModel>> findSalesListBySellerId(Pageable pageable, Long sellerId);
 
     // 상품 상세조회의 필드를 찾기위한 메서드
-    Optional<ProductInformsModelView> findProductInformsByProductId(Long productId);
+    Optional<ProductInformsResp> findProductInformsByProductId(Long productId);
 
 
 

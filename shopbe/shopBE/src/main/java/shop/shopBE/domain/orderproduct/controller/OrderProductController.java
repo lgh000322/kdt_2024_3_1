@@ -6,10 +6,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import shop.shopBE.domain.member.entity.Member;
+import shop.shopBE.domain.member.exception.MemberExceptionCode;
 import shop.shopBE.domain.orderproduct.entity.request.OrderProductDeliveryInfo;
 import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
 import shop.shopBE.domain.orderproduct.service.OrderProductService;
+import shop.shopBE.global.config.security.mapper.token.AuthToken;
+import shop.shopBE.global.exception.custom.CustomException;
 import shop.shopBE.global.response.ResponseFormat;
 
 import java.util.List;
@@ -22,9 +27,9 @@ public class OrderProductController {
 
     private final OrderProductService orderProductService;
 
-    @GetMapping("/orderProduct/{orderProductId}")
+    @GetMapping("/orderProduct/{orderHistoryId}")
     @Operation(summary = "주문상품 상세조회", description = "현재 로그인한 회원의 주문상품 상세조회")
-    public ResponseEntity<ResponseFormat<OrderProductInfo>> findOrderProduct(@PathVariable(name = "orderProductId") Long orderHistoryId) {
+    public ResponseEntity<ResponseFormat<OrderProductInfo>> findOrderProduct(@PathVariable(name = "orderHistoryId") Long orderHistoryId) {
         OrderProductInfo findDetailOrderProduct = orderProductService.findDetailOrderProductByHistoryId(orderHistoryId);
         return ResponseEntity.ok().body(ResponseFormat.of("주문 상세조회 성공", findDetailOrderProduct));
     }

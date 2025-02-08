@@ -21,6 +21,7 @@ import shop.shopBE.domain.product.repository.ProductRepository;
 import shop.shopBE.domain.product.request.*;
 import shop.shopBE.domain.product.response.ProductCardViewModel;
 import shop.shopBE.domain.product.response.ProductInformsModelView;
+import shop.shopBE.domain.product.response.ProductInformsResp;
 import shop.shopBE.domain.product.response.ProductListViewModel;
 import shop.shopBE.domain.productdetail.entity.ProductDetail;
 import shop.shopBE.domain.productdetail.request.UpdateProductDetails;
@@ -54,6 +55,7 @@ public class ProductService {
     }
 
 
+
     // 조회시 상품카드를 조회하는 메서드
     public List<ProductCardViewModel> findProductCardViewsByCategorys(Pageable pageable, SeasonCategory seasonCategory, PersonCategory personCategory, ProductCategory productCategory, SortingOption sortingOption, String keyword) {
 
@@ -66,17 +68,16 @@ public class ProductService {
     // 상품의 상세페이지 정보들을 조회하는 메서드
     // 리스트로 받아야하는 sideImageUrl과 productDetail의 사이즈별 id, 사이즈, 사이즈별 재고는 외부에서 입력받음
     public ProductInformsModelView findProductDetailsByProductId(Long productId) {
-
-        ProductInformsModelView productInforms = productRepository.findProductInformsByProductId(productId)
+        ProductInformsResp productInformsResp = productRepository
+                .findProductInformsByProductId(productId)
                 .orElseThrow(() -> new CustomException(ProductExceptionCode.NOT_FOUND));
+
         List<ImgInforms> sideImgInforms = productImageService.findSideImgInformsByProductId(productId);  // 사이드 이미지 정보들 이미지 아이디, 이미지 url 가져옴
         List<ProductDetails> productDetailsList = productDetailService.findProductDetailsByProductId(productId);
 
-        productInforms.setSideImgInforms(sideImgInforms);
-        productInforms.setProductDetailsList(productDetailsList);
-
-        return productInforms;
+        return setProductInformsModelView(productInformsResp, sideImgInforms, productDetailsList);
     }
+
 
     // 판매자의 상품등록리스트를 가져온다.
     public List<ProductCardViewModel> findSalesListCardView(Pageable pageable, Long sellerId) {
@@ -173,6 +174,7 @@ public class ProductService {
     // 상품정보 update로직
     @Transactional
     public void updateProductInforms(Long productId,
+                                     Long sellerId,
                                      MultipartFile updateMainImg,
                                      List<MultipartFile> updateSideImgs,
                                      UpdateProductReq updateProductReq) {
@@ -180,8 +182,8 @@ public class ProductService {
         int totalStock = 0;
 
         Product product = productRepository
-                .findNonDeletedProductByProductId(productId)
-                .orElseThrow(() -> new CustomException(ProductExceptionCode.NOT_FOUND));
+                .findSellerProductByProductId(productId, sellerId)
+                .orElseThrow(() -> new CustomException(ProductExceptionCode.INVALID_PRODUCT_BY_SELLER));
 
 
         Map<Integer, Integer> sizeAndQuantity = updateProductReq.sizeAndQuantity();
@@ -207,6 +209,17 @@ public class ProductService {
 
 
     // =======================================검증 로직 ========================================================//
+
+
+    private ProductInformsModelView setProductInformsModelView(ProductInformsResp productInformsResp, List<ImgInforms> sideImgInforms, List<ProductDetails> productDetailsList) {
+        ProductInformsModelView productInformsModelView = new ProductInformsModelView();
+
+        productInformsModelView.setProductInformsResp(productInformsResp);
+        productInformsModelView.setSideImgAndDetails(sideImgInforms, productDetailsList);
+
+        return productInformsModelView;
+    }
+
 
     private int seekTotalStock(Long productId, int totalStock) {
         List<ProductDetails> productDetailsByProductId = productDetailService.findProductDetailsByProductId(productId);

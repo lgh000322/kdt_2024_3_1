@@ -15,6 +15,7 @@ import shop.shopBE.domain.product.entity.enums.SeasonCategory;
 import shop.shopBE.domain.product.request.SortingOption;
 import shop.shopBE.domain.product.response.ProductCardViewModel;
 import shop.shopBE.domain.product.response.ProductInformsModelView;
+import shop.shopBE.domain.product.response.ProductInformsResp;
 import shop.shopBE.domain.product.response.ProductListViewModel;
 import shop.shopBE.domain.productimage.entity.QProductImage;
 import shop.shopBE.domain.productimage.entity.enums.ProductImageCategory;
@@ -44,6 +45,20 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 fetchOne();
 
         return Optional.ofNullable(findProduct);
+    }
+
+    @Override
+    public Optional<Product> findSellerProductByProductId(Long productId, Long sellerId) {
+
+        Product findSellerProduct = queryFactory.select(product)
+                .from(product)
+                .where(
+                        product.id.eq(productId),
+                        product.member.id.eq(sellerId),
+                        product.isDeleted.eq(false)
+                )
+                .fetchOne();
+        return Optional.ofNullable(findSellerProduct);
     }
 
     @Override
@@ -243,15 +258,14 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
 
     @Override
-    public Optional<ProductInformsModelView> findProductInformsByProductId(Long productId) {
+    public Optional<ProductInformsResp> findProductInformsByProductId(Long productId) {
 
-        ProductInformsModelView productInform = queryFactory
-                .select(Projections.constructor(ProductInformsModelView.class,
+        ProductInformsResp productInform = queryFactory
+                .select(Projections.constructor(ProductInformsResp.class,
                         product.id,
                         product.productName,
                         productImage.id,
                         productImage.savedName,
-                        null,
                         product.price,
                         product.personCategory,
                         product.seasonCategory,
@@ -259,8 +273,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                         product.likeCount,
                         product.createdAt,
                         product.description,
-                        product.totalStock,
-                        null
+                        product.totalStock
                 ))
                 .from(product)
                 .join(productImage)
@@ -276,12 +289,12 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
     private BooleanExpression andPersonCategory(PersonCategory personCategory) {
         return personCategory == null
-                ? product.personCategory.eq(PersonCategory.ALL_PERSON) : product.personCategory.eq(personCategory);
+                ? null : product.personCategory.eq(personCategory);
     }
 
     private BooleanExpression andSeasonCategory(SeasonCategory seasonCategory) {
         return seasonCategory == null
-                ? product.seasonCategory.eq(SeasonCategory.ALL_SEASON) : product.seasonCategory.eq(seasonCategory);
+                ? null : product.seasonCategory.eq(seasonCategory);
     }
 
     private BooleanExpression andProductCategory(ProductCategory productCategory) {
