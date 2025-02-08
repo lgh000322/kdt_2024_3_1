@@ -67,8 +67,7 @@ public class ProductService {
     // 리스트로 받아야하는 sideImageUrl과 productDetail의 사이즈별 id, 사이즈, 사이즈별 재고는 외부에서 입력받음
     public ProductInformsModelView findProductDetailsByProductId(Long productId) {
 
-        ProductInformsModelView productInforms = productRepository
-                .findProductInformsByProductId(productId)
+        ProductInformsModelView productInforms = productRepository.findProductInformsByProductId(productId)
                 .orElseThrow(() -> new CustomException(ProductExceptionCode.NOT_FOUND));
         List<ImgInforms> sideImgInforms = productImageService.findSideImgInformsByProductId(productId);  // 사이드 이미지 정보들 이미지 아이디, 이미지 url 가져옴
         List<ProductDetails> productDetailsList = productDetailService.findProductDetailsByProductId(productId);

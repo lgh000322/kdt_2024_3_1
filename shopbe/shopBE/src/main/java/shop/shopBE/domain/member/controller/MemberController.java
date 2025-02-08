@@ -64,7 +64,7 @@ public class MemberController {
     @Operation(summary = "회원 정보 전체 조회", description = "관리자는 모든 회원의 정보를 조회할 수 있다")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseFormat<List<MemberListResponseView>>> getMembers(@PageableDefault Pageable pageable,
-                                                                                   @RequestParam(name = "grade", required = false) Role role,
+                                                                                   @RequestParam(name = "role", required = false) Role role,
                                                                                    @RequestParam(name = "email", required = false) String email,
                                                                                    @RequestParam(name = "name", required = false) String name) {
         List<MemberListResponseView> memberList = memberFacadeService.getMemberList(pageable, role, email, name);

@@ -264,7 +264,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 ))
                 .from(product)
                 .join(productImage)
-                .on(productImage.product.eq(product))
+                .on(productImage.product.id.eq(product.id))
                 .where(product.id.eq(productId),
                         product.isDeleted.eq(false),
                         productImage.productImageCategory.eq(ProductImageCategory.MAIN))
