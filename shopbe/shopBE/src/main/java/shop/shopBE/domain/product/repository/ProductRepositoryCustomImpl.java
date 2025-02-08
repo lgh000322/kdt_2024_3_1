@@ -48,6 +48,20 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
 
     @Override
+    public Optional<Product> findSellerProductByProductId(Long productId, Long sellerId) {
+
+        Product findSellerProduct = queryFactory.select(product)
+                .from(product)
+                .where(
+                        product.id.eq(productId),
+                        product.member.id.eq(sellerId),
+                        product.isDeleted.eq(false)
+                )
+                .fetchOne();
+        return Optional.ofNullable(findSellerProduct);
+    }
+
+    @Override
     public ProductListViewModel getProductListViewModels(Long productId) {
         return queryFactory
                 .select(Projections.constructor(ProductListViewModel.class,

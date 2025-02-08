@@ -19,6 +19,8 @@ public interface ProductRepositoryCustom {
 
     Optional<Product> findNonDeletedProductByProductId(Long productId);
 
+    Optional<Product> findSellerProductByProductId(Long productId, Long sellerId);
+
     // 상품 카드 데이터를 리턴해주는 메소드
     ProductListViewModel getProductListViewModels(Long productId);
 

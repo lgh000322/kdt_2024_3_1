@@ -55,6 +55,7 @@ public class ProductService {
     }
 
 
+
     // 조회시 상품카드를 조회하는 메서드
     public List<ProductCardViewModel> findProductCardViewsByCategorys(Pageable pageable, SeasonCategory seasonCategory, PersonCategory personCategory, ProductCategory productCategory, SortingOption sortingOption, String keyword) {
 
@@ -175,6 +176,7 @@ public class ProductService {
     // 상품정보 update로직
     @Transactional
     public void updateProductInforms(Long productId,
+                                     Long sellerId,
                                      MultipartFile updateMainImg,
                                      List<MultipartFile> updateSideImgs,
                                      UpdateProductReq updateProductReq) {
@@ -182,8 +184,8 @@ public class ProductService {
         int totalStock = 0;
 
         Product product = productRepository
-                .findNonDeletedProductByProductId(productId)
-                .orElseThrow(() -> new CustomException(ProductExceptionCode.NOT_FOUND));
+                .findSellerProductByProductId(productId, sellerId)
+                .orElseThrow(() -> new CustomException(ProductExceptionCode.INVALID_PRODUCT_BY_SELLER));
 
 
         Map<Integer, Integer> sizeAndQuantity = updateProductReq.sizeAndQuantity();

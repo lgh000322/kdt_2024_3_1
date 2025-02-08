@@ -14,7 +14,6 @@ import shop.shopBE.domain.cart.service.CartService;
 import shop.shopBE.domain.cartitem.request.AddCartItemInform;
 import shop.shopBE.domain.cartitem.request.DeleteCartItems;
 import shop.shopBE.domain.cartitem.request.UpdateCartItemInform;
-import shop.shopBE.domain.cartitem.response.CartItemInform;
 import shop.shopBE.domain.cartitem.response.CartItemInformResp;
 import shop.shopBE.global.config.security.mapper.token.AuthToken;
 import shop.shopBE.global.response.ResponseFormat;

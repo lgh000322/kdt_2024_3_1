@@ -1,20 +1,15 @@
 package shop.shopBE.domain.cart.service;
 
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.shopBE.domain.cart.entity.Cart;
 import shop.shopBE.domain.cart.repository.CartRepository;
-import shop.shopBE.domain.cart.request.CartsPaging;
-import shop.shopBE.domain.cartitem.entity.CartItem;
 import shop.shopBE.domain.cartitem.request.AddCartItemInform;
 import shop.shopBE.domain.cartitem.request.DeleteCartItems;
 import shop.shopBE.domain.cartitem.request.UpdateCartItemInform;
-import shop.shopBE.domain.cartitem.response.CartItemInform;
 import shop.shopBE.domain.cartitem.response.CartItemInformResp;
 import shop.shopBE.domain.cartitem.service.CartItemService;
 import shop.shopBE.domain.member.entity.Member;

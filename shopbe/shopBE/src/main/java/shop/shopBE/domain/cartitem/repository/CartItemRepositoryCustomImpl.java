@@ -1,14 +1,11 @@
 package shop.shopBE.domain.cartitem.repository;
 
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import shop.shopBE.domain.cartitem.response.CartItemInform;
-import shop.shopBE.domain.productdetail.entity.QProductDetail;
-import shop.shopBE.domain.productimage.entity.QProductImage;
+
 
 import java.util.List;
 import java.util.Optional;
