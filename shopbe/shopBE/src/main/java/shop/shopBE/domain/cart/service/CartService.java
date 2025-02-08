@@ -15,6 +15,7 @@ import shop.shopBE.domain.cartitem.request.AddCartItemInform;
 import shop.shopBE.domain.cartitem.request.DeleteCartItems;
 import shop.shopBE.domain.cartitem.request.UpdateCartItemInform;
 import shop.shopBE.domain.cartitem.response.CartItemInform;
+import shop.shopBE.domain.cartitem.response.CartItemInformResp;
 import shop.shopBE.domain.cartitem.service.CartItemService;
 import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.domain.member.service.MemberService;
@@ -34,7 +35,7 @@ public class CartService {
     private final ProductService productService;
 
     //카트 아이템 조회 메서드
-    public List<CartItemInform> findCartItemList(Pageable pageable, Long memberId) {
+    public List<CartItemInformResp> findCartItemList(Pageable pageable, Long memberId) {
         Member member = memberService.findById(memberId);
 
         //멤버의 장바구니가 없으면 만들어서반환 있으면있는것 반환

@@ -15,6 +15,7 @@ import shop.shopBE.domain.cartitem.request.AddCartItemInform;
 import shop.shopBE.domain.cartitem.request.DeleteCartItems;
 import shop.shopBE.domain.cartitem.request.UpdateCartItemInform;
 import shop.shopBE.domain.cartitem.response.CartItemInform;
+import shop.shopBE.domain.cartitem.response.CartItemInformResp;
 import shop.shopBE.global.config.security.mapper.token.AuthToken;
 import shop.shopBE.global.response.ResponseFormat;
 
@@ -31,9 +32,9 @@ public class CartController {
     // 장바구니 조회 메서드
     @GetMapping
     @Operation(summary = "장바구니 조회", description = "현재 로그인 한 회원의 장바구니 목록을 조회한다.")
-    public ResponseEntity<ResponseFormat<List<CartItemInform>>> findAllCartItems(@PageableDefault Pageable pageable,
+    public ResponseEntity<ResponseFormat<List<CartItemInformResp>>> findAllCartItems(@PageableDefault Pageable pageable,
                                                                                  @AuthenticationPrincipal AuthToken authToken) {
-        List<CartItemInform> cartItemList = cartService.findCartItemList(pageable, authToken.getId());
+        List<CartItemInformResp> cartItemList = cartService.findCartItemList(pageable, authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("장바구니 아이템 조회 성공.", cartItemList));
     }
 
