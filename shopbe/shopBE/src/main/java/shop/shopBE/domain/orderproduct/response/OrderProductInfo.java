@@ -8,5 +8,6 @@ public record OrderProductInfo(
         String orderName, //주문자 이름
         String deliveryAddress, //주문주소
         String phoneNumber, //주문자 전화번호
+        int totalPrice, //총 금액
         List<DetailOrderProducts> orderDetailProducts
 ) { }
