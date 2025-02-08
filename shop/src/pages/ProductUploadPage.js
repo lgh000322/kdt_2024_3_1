@@ -71,7 +71,10 @@ function ProductUploadPage() {
   const renderSizeOptions = () => {
     const sizes = [];
     const { min, max } = sizeRange;
-    for (let size = Number(min); size <= Number(max); size += sizeInterval) {
+    const minVal = Math.max(0, Number(min)) || 0;
+    const maxVal = Math.max(minVal, Number(max)) || minVal;
+    const interval = [5, 10].includes(Number(sizeInterval)) ? Number(sizeInterval) : 5;
+    for (let size = minVal; size <= maxVal; size += interval) {
       sizes.push(size);
     }
     return sizes;

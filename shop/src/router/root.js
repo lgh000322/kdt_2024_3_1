@@ -23,6 +23,7 @@ const SellerRegistration = lazy(() =>
   import("../pages/SellerRegistrationPage")
 );
 const ProductUploadPage = lazy(() => import("../pages/ProductUploadPage"));
+const ProductUpdatePage = lazy(() => import("../pages/ProductUpdatePage"));
 const LookUpProduct = lazy(() => import("../pages/LookUpProduct"));
 const OrderListPage = lazy(() => import("../pages/OrderListPage"));
 const OrderDetailPage = lazy(() => import("../pages/OrderDetailPage"));
@@ -204,10 +205,18 @@ const root = createBrowserRouter([
     ),
   },
   {
-    path: "productupload",
+    path: "product/registration",
     element: (
       <Suspense fallback={Loading}>
         <ProductUploadPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "product/modification/:productId",
+    element: (
+      <Suspense fallback={Loading}>
+        <ProductUpdatePage />
       </Suspense>
     ),
   },
