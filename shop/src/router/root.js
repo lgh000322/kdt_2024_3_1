@@ -124,7 +124,7 @@ const root = createBrowserRouter([
     ),
   },
   {
-    path: "mypage/order-detail",
+    path: "mypage/order-detail/:orderHistoryId",
     element: (
       <Suspense fallback={Loading}>
         <OrderDetailPage />

@@ -22,10 +22,19 @@ const useCustomMove = () => {
     navigate({ pathname: "/product" });
   };
 
+  const moveToOrderDetailPage = (orderHistoryId, accessToken) => {
+    if (!accessToken) return;
+
+    navigate(
+      `/mypage/order-detail/${orderHistoryId}?token=${encodeURIComponent(
+        accessToken
+      )}`
+    );
+  };
+
   const moveToAuthenticated = () => {
     navigate({ pathname: "/login/authenticate" });
   };
-
 
   const moveToLoginPage = () => {
     navigate({ pathname: "/login" });
@@ -34,6 +43,7 @@ const useCustomMove = () => {
     moveToProduct,
     moveToProductAbs,
     moveToAuthenticated,
+    moveToOrderDetailPage,
     doLogin,
     doLogout,
     moveToLoginPage,
