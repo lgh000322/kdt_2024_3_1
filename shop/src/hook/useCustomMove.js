@@ -32,6 +32,10 @@ const useCustomMove = () => {
     );
   };
 
+  const moveToProductOne = (productId) => {
+    navigate({ pathname: `/product/${productId}` });
+  };
+
   const moveToAuthenticated = () => {
     navigate({ pathname: "/login/authenticate" });
   };
@@ -47,6 +51,7 @@ const useCustomMove = () => {
     doLogin,
     doLogout,
     moveToLoginPage,
+    moveToProductOne,
   };
 };
 
