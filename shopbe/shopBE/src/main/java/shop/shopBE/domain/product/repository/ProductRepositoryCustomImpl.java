@@ -62,8 +62,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
 
     @Override
-    public ProductListViewModel getProductListViewModels(Long productId) {
-        return queryFactory
+    public Optional<List<ProductListViewModel>> getProductListViewModels(Long likesId) {
+        List<ProductListViewModel> result = queryFactory
                 .select(Projections.constructor(ProductListViewModel.class,
                         product.id,
                         likesItem.id,
@@ -73,11 +73,15 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 ))
                 .from(product)
                 .innerJoin(productImage).on(product.id.eq(productImage.product.id))
+                .innerJoin(likesItem).on(likesItem.product.id.eq(product.id))
                 .where(
+                        likesItem.likes.id.eq(likesId),
                         productImage.productImageCategory.eq(ProductImageCategory.MAIN),
                         product.isDeleted.eq(false)
                 )
-                .fetchOne();
+                .fetch();
+
+        return Optional.ofNullable(result);
     }
 
 

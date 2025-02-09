@@ -11,6 +11,7 @@ import shop.shopBE.domain.product.response.ProductInformsModelView;
 import shop.shopBE.domain.product.response.ProductInformsResp;
 import shop.shopBE.domain.product.response.ProductListViewModel;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ public interface ProductRepositoryCustom {
     Optional<Product> findSellerProductByProductId(Long productId, Long sellerId);
 
     // 상품 카드 데이터를 리턴해주는 메소드
-    ProductListViewModel getProductListViewModels(Long productId);
+    Optional<List<ProductListViewModel>> getProductListViewModels(Long likesId);
 
     // 판매자가 등록한 상품 조회
     Optional<List<Long>> findRegisteredProductsBySellerId(Long sellerId);

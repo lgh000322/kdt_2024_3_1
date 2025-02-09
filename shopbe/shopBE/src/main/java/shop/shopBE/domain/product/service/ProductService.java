@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import shop.shopBE.domain.likes.exception.LikesExceptionCode;
+import shop.shopBE.domain.likesitem.exception.LikesItemExceptionCode;
 import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.domain.member.repository.MemberRepository;
 import shop.shopBE.domain.member.service.MemberService;
@@ -101,10 +103,9 @@ public class ProductService {
 
 
 
-    public List<ProductListViewModel> getProductListViewModels(List<Long> productIds) {
-        return productIds.stream()
-                .map(productRepository::getProductListViewModels)
-                .toList();
+    public List<ProductListViewModel> getProductListViewModels(Long likesId) {
+        return productRepository.getProductListViewModels(likesId)
+                .orElseThrow(() -> new CustomException(LikesItemExceptionCode.LIKES_ITEM_EMPTY));
     }
 
 
