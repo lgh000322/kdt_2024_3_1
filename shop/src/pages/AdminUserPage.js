@@ -70,6 +70,17 @@ function AdminUserPage() {
           </h2>
           <div style={{ display: "flex", alignItems: "center", marginBottom: "15px" }}>
             {/* 검색어 입력 필드 */}
+            <label
+            htmlFor="searchTerm"
+            style={{
+              marginRight: "10px",
+              fontWeight: "bold",
+              color: "#555",
+              minWidth: "80px",
+            }}
+            >
+              검색어
+            </label>
             <input
               type="text"
               placeholder="검색어 입력"
