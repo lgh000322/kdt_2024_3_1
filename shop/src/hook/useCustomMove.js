@@ -47,6 +47,11 @@ const useCustomMove = () => {
   const moveToLoginPage = () => {
     navigate({ pathname: "/login" });
   };
+
+  const moveToCart = ()=>{
+    navigate({pathname:"/cart"})
+  }
+
   return {
     moveToProduct,
     moveToProductAbs,
@@ -57,6 +62,7 @@ const useCustomMove = () => {
     moveToLoginPage,
     moveToProductOne,
     moveToCheckOut,
+    moveToCart
   };
 };
 
