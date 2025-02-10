@@ -8,7 +8,7 @@ const sellerMenuItems = [
   {
     id: 1,
     title: "배송관리(판매자)",
-    path: "/mypage/shipping-management",
+    path: "/mypage/shipping-address",
     content: "배송관리 관련 콘텐츠",
   },
   {

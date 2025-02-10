@@ -1,101 +1,107 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BasicLayout from "../layouts/BasicLayout";
+import { getShippingAddresses } from "../api/shippingAddressApi";
+import { useSelector } from "react-redux";
 
 function ProductPaymentPage() {
+  const [destination, setDestination] = useState([]);
+  const loginState = useSelector((state) => state.loginSlice);
+  const accessToken = loginState.accessToken;
+
+  useEffect(() => {
+    getShippingAddresses(accessToken).then((data) => {
+      setDestination(data);
+    });
+  }, []);
+
   return (
     <BasicLayout>
-      <div style={{ 
-        maxWidth: "600px", 
-        margin: "40px auto", 
-        padding: "30px",
-        fontFamily: "'Noto Sans KR', sans-serif",
-        backgroundColor: "#ffffff",
-        borderRadius: "12px",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-      }}>
-        <h2 style={{ 
-          fontSize: "24px", 
-          fontWeight: "600", 
-          marginBottom: "30px",
-          color: "#333"
-        }}>
-          주문/결제
-        </h2>
-        
+      <div className="max-w-lg mx-auto my-10 p-8 bg-white rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold mb-8 text-gray-800">주문/결제</h2>
+
         <form>
-          <div style={{ marginBottom: "24px" }}>
-            <label style={labelStyle}>받는 사람 이름</label>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-600">
+              받는 사람 이름
+            </label>
             <input
               type="text"
               name="recipientName"
               placeholder="배송지 이름을 입력해주세요."
-              style={inputStyle}
+              className="w-full p-3 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div style={{ marginBottom: "24px" }}>
-            <label style={labelStyle}>전화번호</label>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-600">
+              전화번호
+            </label>
             <input
               type="tel"
               name="phoneNumber"
               placeholder="전화번호를 입력해주세요."
-              style={inputStyle}
+              className="w-full p-3 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div style={{ marginBottom: "24px" }}>
-            <label style={labelStyle}>주소</label>
-            <select
-              name="address"
-              style={selectStyle}
+          <div className="mb-6 flex items-center justify-between">
+            <label className="block text-sm font-medium text-gray-600">
+              주소
+            </label>
+            <button
+              type="button"
+              className="text-sm text-blue-500 hover:underline"
+              onClick={() => alert("새로운 배송지 추가")}
             >
-              <option value="">주소를 선택해주세요</option>
-              <option value="서울특별시">서울특별시</option>
-              <option value="부산광역시">부산광역시</option>
-              <option value="대구광역시">대구광역시</option>
-              <option value="인천광역시">인천광역시</option>
-              <option value="광주광역시">광주광역시</option>
-              <option value="대전광역시">대전광역시</option>
-              <option value="울산광역시">울산광역시</option>
-              <option value="경기도">경기도</option>
-            </select>
+              새로운 배송지 추가하기
+            </button>
           </div>
+          <select
+            name="address"
+            className="w-full p-3 mt-1 border border-gray-300 rounded-lg text-sm appearance-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">주소를 선택해주세요</option>
+            <option value="서울특별시">서울특별시</option>
+            <option value="부산광역시">부산광역시</option>
+            <option value="대구광역시">대구광역시</option>
+            <option value="인천광역시">인천광역시</option>
+            <option value="광주광역시">광주광역시</option>
+            <option value="대전광역시">대전광역시</option>
+            <option value="울산광역시">울산광역시</option>
+            <option value="경기도">경기도</option>
+          </select>
 
-          <div style={{ marginBottom: "24px" }}>
-            <label style={labelStyle}>배송 메시지</label>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-600">
+              배송 메시지
+            </label>
             <input
               type="text"
               name="deliveryMessage"
               placeholder="배송 메시지를 입력해주세요."
-              style={inputStyle}
+              className="w-full p-3 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div style={orderInfoStyle}>
-            <h3 style={{ 
-              fontSize: "18px", 
-              fontWeight: "600", 
-              marginBottom: "16px",
-              color: "#333"
-            }}>
+          <div className="mb-6 bg-gray-50 p-5 rounded-lg border border-gray-200">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">
               주문 상품 정보
             </h3>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div style={productImageStyle}>
+            <div className="flex items-center">
+              <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-xs text-gray-500">
                 이미지
               </div>
-              <div style={{ flex: 1 }}>
-                <p style={{ fontSize: "16px", fontWeight: "500", marginBottom: "8px" }}>
-                  상품 이름 외 x개
-                </p>
-                <p style={{ fontSize: "18px", fontWeight: "600", color: "#2C5282" }}>
-                  ₩ 50,000
-                </p>
+              <div className="ml-5 flex-1">
+                <p className="text-base font-medium mb-2">상품 이름 외 x개</p>
+                <p className="text-xl font-semibold text-blue-700">₩ 50,000</p>
               </div>
             </div>
           </div>
 
-          <button type="submit" style={buttonStyle}>
+          <button
+            type="submit"
+            className="w-full py-4 bg-gray-700 text-white rounded-lg text-lg font-semibold hover:bg-gray-800 transition-all"
+          >
             결제하기
           </button>
         </form>
@@ -103,75 +109,5 @@ function ProductPaymentPage() {
     </BasicLayout>
   );
 }
-
-// 스타일 상수
-const labelStyle = {
-  display: "block",
-  marginBottom: "8px",
-  fontSize: "14px",
-  fontWeight: "500",
-  color: "#4A5568"
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "12px",
-  marginTop: "4px",
-  boxSizing: "border-box",
-  border: "1px solid #E2E8F0",
-  borderRadius: "6px",
-  fontSize: "14px",
-  transition: "all 0.3s ease",
-  ":focus": {
-    borderColor: "#4299E1",
-    outline: "none",
-    boxShadow: "0 0 0 3px rgba(66, 153, 225, 0.5)"
-  }
-};
-
-const selectStyle = {
-  ...inputStyle,
-  appearance: "none",
-  backgroundRepeat: "no-repeat",
-  backgroundPosition: "right 12px center",
-  backgroundSize: "12px auto"
-};
-
-const orderInfoStyle = {
-  marginBottom: "24px",
-  backgroundColor: "#F7FAFC",
-  padding: "20px",
-  borderRadius: "8px",
-  border: "1px solid #EDF2F7"
-};
-
-const productImageStyle = {
-  width: "80px",
-  height: "80px",
-  backgroundColor: "#EDF2F7",
-  marginRight: "20px",
-  borderRadius: "8px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "12px",
-  color: "#718096"
-};
-
-const buttonStyle = {
-  width: "100%",
-  padding: "16px",
-  backgroundColor: "#4A5568",
-  color: "#ffffff",
-  border: "none",
-  borderRadius: "8px",
-  fontSize: "16px",
-  fontWeight: "600",
-  cursor: "pointer",
-  transition: "background-color 0.3s ease",
-  ":hover": {
-    backgroundColor: "#2D3748"
-  }
-};
 
 export default ProductPaymentPage;
