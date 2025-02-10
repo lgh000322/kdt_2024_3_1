@@ -4,6 +4,32 @@ import { ApiHost } from "./ApiConst";
 const basicProductUrl = `${ApiHost}/product`;
 const defaultProductsUrl = `${ApiHost}/products`;
 
+
+// 상품상세조회
+export const getProductDetails = async (productId, accessToken) => {
+
+  console.log("accessToken : ", accessToken);
+
+  if (!accessToken) {
+    throw new Error("Access Token is required for authorization.");
+  }
+
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    withCredentials: true,
+  };
+
+  
+  console.log("Request Headers: ", config);
+  const res = await axios.get(`${defaultProductsUrl}/${productId}`, config);
+
+  return res.data; // API에서 받은 데이터를 반환
+};
+
+
 // 판매자 상품등록 요청
 export const registerProduct = async (addProductInforms, accessToken) => {
   if (!accessToken) {
