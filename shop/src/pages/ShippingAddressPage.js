@@ -9,7 +9,6 @@ function ShippingAddressPage() {
 
   const [shippingAddresses, setShippingAddresses] = useState([]);
   const [editingAddress, setEditingAddress] = useState(null);
-  const [deletingAddress, setDeletingAddress] = useState(null);
   const [newAddress, setNewAddress] = useState({
     destinationName: "",
     receiverName: "",
@@ -41,6 +40,30 @@ function ShippingAddressPage() {
       setEditingAddress((prev) => ({ ...prev, [field]: value }));
     }
   };
+
+  const handleSetDefault = async (address) => {
+    try {
+      // 기본 배송지 설정 API 호출
+      await updateShippingAddress(
+        address.destinationId,
+        { ...address, isSelectedDestination: true },
+        accessToken
+      );
+  
+      // UI에서 기본 배송지 반영
+      setShippingAddresses((prev) =>
+        prev.map((item) => ({
+          ...item,
+          isSelectedDestination: item.destinationId === address.destinationId, // 선택한 것만 true
+        }))
+      );
+  
+      alert("기본 배송지가 설정되었습니다.");
+    } catch (error) {
+      console.error("기본 배송지 설정 실패:", error);
+      alert(`기본 배송지 설정 실패: ${error.message}`);
+    }
+  };  
 
   const handleAddAddress = async () => {
     try {
@@ -99,11 +122,6 @@ function ShippingAddressPage() {
     setEditingAddress({ ...address });
   };
 
-  const handleDelete = (address) => {
-    console.log("🛠 삭제할 데이터:", address);
-    setDeletingAddress({ ...address });
-  }
-
   return (
     <BasicLayout>
       <div style={styles.container}>
@@ -126,7 +144,7 @@ function ShippingAddressPage() {
             <label>
               <input type="checkbox" checked={newAddress.isSelectedDestination} onChange={(e) => handleInputChange("isSelectedDestination", e.target.checked, true)} /> 기본 배송지로 설정
             </label>
-            <button style={styles.saveButton} onClick={handleAddAddress}>추가</button>
+            <button style={styles.addAddressButton} onClick={handleAddAddress}>추가</button>
           </div>
         )}
 
@@ -134,17 +152,39 @@ function ShippingAddressPage() {
           <div key={index} style={styles.card}>
             {editingAddress && editingAddress.destinationId === address.destinationId ? (
               <div style={styles.form}>
-                <input type="text" value={editingAddress.destinationName} onChange={(e) => handleInputChange("destinationName", e.target.value)} style={styles.input} placeholder="배송지 이름" />
-                <input type="text" value={editingAddress.receiverName} onChange={(e) => handleInputChange("receiverName", e.target.value)} style={styles.input} placeholder="받는 사람" />
-                <input type="text" value={editingAddress.address} onChange={(e) => handleInputChange("address", e.target.value)} style={styles.input} placeholder="주소" />
-                <input type="text" value={editingAddress.tel} onChange={(e) => handleInputChange("tel", e.target.value)} style={styles.input} placeholder="연락처" />
-                <input type="number" value={editingAddress.zipCode} onChange={(e) => handleInputChange("zipCode", e.target.value)} style={styles.input} placeholder="우편번호" />
+                <div style={styles.formRow}>
+                    <p style={styles.label}>배송지 이름:</p>
+                    <input type="text" value={editingAddress.destinationName} onChange={(e) => handleInputChange("destinationName", e.target.value)} style={styles.input} placeholder="배송지 이름" />
+                </div>
+                <div style={styles.formRow}>
+                    <p style={styles.label}>받는 사람:</p>
+                    <input type="text" value={editingAddress.receiverName} onChange={(e) => handleInputChange("receiverName", e.target.value)} style={styles.input} placeholder="받는 사람" />
+                </div>
+                <div style={styles.formRow}>
+                    <p style={styles.label}>주소:</p>
+                    <input type="text" value={editingAddress.address} onChange={(e) => handleInputChange("address", e.target.value)} style={styles.input} placeholder="주소" />
+                </div>
+                <div style={styles.formRow}>
+                    <p style={styles.label}>연락처:</p>
+                    <input type="text" value={editingAddress.tel} onChange={(e) => handleInputChange("tel", e.target.value)} style={styles.input} placeholder="연락처" />
+                </div>
+                <div style={styles.formRow}>
+                    <p style={styles.label}>우편번호:</p>
+                    <input type="number" value={editingAddress.zipCode} onChange={(e) => handleInputChange("zipCode", e.target.value)} style={styles.input} placeholder="우편번호" />
+                </div>
                 <div style={styles.buttonContainer}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={address.isSelectedDestination} 
+                      onChange={() => handleSetDefault(address)} 
+                    /> 기본 배송지로 설정
+                  </label>
                   <button style={styles.saveButton} onClick={handleUpdateAddress}>저장</button>
                   <button style={styles.cancelButton} onClick={() => setEditingAddress(null)}>취소</button>
                 </div>
               </div>
-            ) : (
+              ) : (
               <div>
                 <h3 style={styles.addressTitle}>{address.destinationName}</h3>
                 <p><strong>받는 사람:</strong> {address.receiverName}</p>
@@ -161,7 +201,6 @@ function ShippingAddressPage() {
     </BasicLayout>
   );
 }
-
 
 const styles = {
   container: {
@@ -189,13 +228,29 @@ const styles = {
     fontWeight: "bold",
     marginBottom: "10px",
   },
-  form: {
+  defaultButton: {
+    backgroundColor: "#007bff",
+    color: "#fff",
+    border: "none",
+    padding: "10px 15px",
+    borderRadius: "5px",
+    cursor: "pointer",
+    transition: "background 0.3s",
+  },
+  formRow: {
     display: "flex",
-    flexDirection: "column",
+    alignItems: "center",
     gap: "10px",
+    marginTop: "5px"
+  },
+  label: {
+    width: "120px",
+    fontWeight: "bold",
+    textAlign: "right",
   },
   input: {
-    width: "100%",
+    flexGrow: 1,
+    width: "70%",
     padding: "8px",
     fontSize: "14px",
     borderRadius: "5px",
@@ -206,7 +261,19 @@ const styles = {
     justifyContent: "space-between",
     marginTop: "10px",
   },
+  addAddressButton: {
+    marginTop: "5px",
+    marginLeft: "465px",
+    backgroundColor: "#007bff",
+    color: "#fff",
+    border: "none",
+    padding: "10px 15px",
+    borderRadius: "5px",
+    cursor: "pointer",
+    transition: "background 0.3s",
+  },
   saveButton: {
+    marginLeft: "350px",
     backgroundColor: "#007bff",
     color: "#fff",
     border: "none",
