@@ -28,3 +28,16 @@ export const deleteWishItem = async (accessToken, likesItemId, productId) => {
   );
   return res.data;
 };
+
+// 찜 저장
+export const addWishItem = async (accessToken, productId) => {
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
+
+  const data = { productId: productId };
+
+  const res = await axios.post(`${prefix}/item`, data, header);
+  return res.data;
+};

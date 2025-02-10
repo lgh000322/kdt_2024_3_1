@@ -1,42 +1,118 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import BasicLayout from "../layouts/BasicLayout";
+import { useParams, useSearchParams } from "react-router-dom";
+import { showOrderDetail } from "../api/OrderDetailApi";
 
 function OrderDetailPage() {
+  const { orderHistoryId } = useParams();
+  const [searchParams] = useSearchParams();
+  const accessToken = searchParams.get("token");
+
+  const [orderDetail, setOrderDetail] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOrderDetail = async () => {
+      if (!accessToken) {
+        setError("❌ 인증 오류: 로그인 후 이용해주세요.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await showOrderDetail(orderHistoryId, accessToken);
+        setOrderDetail(response || {});
+
+        // ✅ 상품 목록 콘솔 출력
+        if (response?.orderDetailProducts) {
+          console.log(
+            "📦 가져온 주문 상품 리스트:",
+            response.orderDetailProducts
+          );
+        } else {
+          console.log("⚠️ 주문 상품이 없습니다.");
+        }
+      } catch (error) {
+        setError("🚨 주문 정보를 불러오는 데 실패했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (orderHistoryId) {
+      fetchOrderDetail();
+    }
+  }, [orderHistoryId, accessToken]);
+
+  if (loading) {
+    return (
+      <BasicLayout>
+        <p>🔄 주문 상세 정보를 불러오는 중...</p>
+      </BasicLayout>
+    );
+  }
+
   return (
     <BasicLayout>
       <div style={styles.container}>
         {/* 헤더 섹션 */}
         <header style={styles.header}>
           <h1 style={styles.title}>주문 상세 정보</h1>
-          <p style={styles.orderNumber}>주문번호: #20250202-001</p>
+          <p style={styles.orderNumber}>
+            주문번호: {orderDetail.orderHistoryId}
+          </p>
         </header>
 
         {/* 주문 정보 카드 */}
         <section style={styles.card}>
           <h2 style={styles.cardTitle}>배송 정보</h2>
           <div style={styles.detailGrid}>
-            <DetailItem label="수령인" value="홍길동" />
-            <DetailItem label="연락처" value="010-1234-5678" />
-            <DetailItem label="주소" value="서울특별시 강남구 테헤란로 427" />
-            <DetailItem label="배송 상태" value="배송중" status="active" />
+            <DetailItem label="수령인" value={orderDetail.orderName} />
+            <DetailItem label="연락처" value={orderDetail.phoneNumber} />
+            <DetailItem label="주소" value={orderDetail.deliveryAddress} />
+            {/* 상품 마다 배송 상태가 다를 수 있어서 주문상품마다 배송상태를 보이게 구현함. 
+            <DetailItem
+              label="배송 상태"
+              value={orderDetail.delivaeryState}
+              status="active"
+            /> */}
           </div>
         </section>
 
         {/* 상품 정보 카드 */}
         <section style={styles.card}>
           <h2 style={styles.cardTitle}>주문 상품</h2>
-          <div style={styles.productCard}>
-            {/* 개선된 상품 이미지 영역 */}
-            <div style={styles.imageContainer}>
-              <div style={styles.imagePlaceholder}>
-                <span style={styles.imageText}>상품 이미지</span>
+          {orderDetail.orderDetailProducts &&
+          orderDetail.orderDetailProducts.length > 0 ? (
+            orderDetail.orderDetailProducts.map((product) => (
+              <div key={product.orderProductId} style={styles.productCard}>
+                <div style={styles.imageContainer}>
+                  <img
+                    src={product.imageUrl}
+                    alt={product.productName}
+                    style={{
+                      width: "160px",
+                      height: "160px",
+                      borderRadius: "8px",
+                    }}
+                  />
+                </div>
+                <div style={styles.productInfo}>
+                  <h3 style={styles.productName}>{product.mainProductName}</h3>
+                  <p style={styles.productPrice}>수량: {product.count}개</p>
+                  <p style={styles.productPrice}>
+                    가격: {product.totalPrice.toLocaleString()} 원
+                  </p>
+                  <p style={styles.productPrice}>
+                    배송 상태: {product.orderProductDeliveryInfo.deliveryStatus}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div style={styles.productInfo}>
-              <h3 style={styles.productName}>프리미엄 커피 세트 외 2개</h3>
-              <p style={styles.productPrice}>총 결제 금액: 65,000원</p>
-            </div>
-          </div>
+            ))
+          ) : (
+            <p>📦 주문한 상품이 없습니다.</p>
+          )}
         </section>
 
         {/* 액션 버튼 그룹 */}
@@ -66,7 +142,7 @@ function DetailItem({ label, value, status }) {
   );
 }
 
-// 개선된 스타일 정의
+////////////////////////////////////////////////// 개선된 스타일 정의
 const styles = {
   container: {
     padding: "40px 24px",
