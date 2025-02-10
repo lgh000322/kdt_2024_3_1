@@ -53,6 +53,7 @@ const LookUpProduct = () => {
     let accessToken = loginState.accessToken;
     if (!accessToken) {
       alert("로그인 후 찜 상품을 등록할 수 있습니다.");
+      return;
     }
 
     addWishItem(accessToken, productId).then((res) => {
