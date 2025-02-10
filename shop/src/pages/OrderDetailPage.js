@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import BasicLayout from "../layouts/BasicLayout";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { showOrderDetail } from "../api/OrderDetailApi";
+import { deleteOrderHistory } from "../api/OrderListApi";
 
 function OrderDetailPage() {
   const { orderHistoryId } = useParams();
   const [searchParams] = useSearchParams();
   const accessToken = searchParams.get("token");
+  const navigate = useNavigate();
 
   const [orderDetail, setOrderDetail] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,6 +46,25 @@ function OrderDetailPage() {
       fetchOrderDetail();
     }
   }, [orderHistoryId, accessToken]);
+
+  const handleDeleteOrder = async () => {
+    if (!window.confirm("정말 주문을 취소하시겠습니까?")) {
+      return;
+    }
+
+    try {
+      console.log("📡 [클라이언트] 주문 삭제 요청:", { orderHistoryId });
+
+      await deleteOrderHistory(orderHistoryId, accessToken);
+      alert("주문이 취소되었습니다.");
+
+      // ✅ 삭제 후 주문 목록 페이지로 이동
+      navigate("/mypage/order-list");
+    } catch (error) {
+      alert("주문 취소에 실패했습니다.");
+      console.error("🚨 주문 취소 실패:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -117,7 +138,9 @@ function OrderDetailPage() {
 
         {/* 액션 버튼 그룹 */}
         <div style={styles.buttonGroup}>
-          <button style={styles.secondaryButton}>주문내역 삭제</button>
+          <button style={styles.secondaryButton} onClick={handleDeleteOrder}>
+            주문내역 삭제
+          </button>
         </div>
       </div>
     </BasicLayout>
