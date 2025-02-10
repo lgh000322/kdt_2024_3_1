@@ -14,20 +14,20 @@ export const getCartItem = async (accessToken, page, size) => {
   return res.data;
 };
 
-// // 장바구니에 상품 추가
-// export const addCartItem = async (accessToken, productId, quantity) => {
-//   const header = {
-//     headers: { Authorization: `Bearer ${accessToken}` },
-//     withCredentials: true,
-//   };
+// 장바구니에 상품 추가
+export const addCartItem = async (accessToken, productId, quantity) => {
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
 
-//   const res = await axios.post(
-//     `${prefix}`,
-//     { productId, quantity },
-//     header
-//   );
-//   return res.data;
-// };
+  const res = await axios.post(
+    `${prefix}`,
+    { productId, quantity },
+    header
+  );
+  return res.data;
+};
 
 // 장바구니 아이템 수량 변경
 export const updateCartItemQuantity = async (accessToken, cartItemId, quantity) => {
