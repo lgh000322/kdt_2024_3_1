@@ -32,6 +32,10 @@ const useCustomMove = () => {
     );
   };
 
+  const moveToCheckOut = (price) => {
+    navigate({ pathname: "/checkout" });
+  };
+
   const moveToProductOne = (productId) => {
     navigate({ pathname: `/product/${productId}` });
   };
@@ -52,6 +56,7 @@ const useCustomMove = () => {
     doLogout,
     moveToLoginPage,
     moveToProductOne,
+    moveToCheckOut,
   };
 };
 

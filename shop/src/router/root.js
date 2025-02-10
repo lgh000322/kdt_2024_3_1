@@ -1,7 +1,7 @@
 import { Suspense, lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
-const Loading = <div>Loading ...</div>;
+const Loading = <div>Loading ...</div>; // JSX로 작성
 
 const Main = lazy(() => import("../pages/MainPage"));
 const Login = lazy(() => import("../pages/LoginPage"));
@@ -29,6 +29,8 @@ const OrderDetailPage = lazy(() => import("../pages/OrderDetailPage"));
 const WishListPage = lazy(() => import("../pages/WishListPage"));
 const ShippingAddressPage = lazy(() => import("../pages/ShippingAddressPage"));
 const Cart = lazy(() => import("../pages/Cart"));
+const Check = lazy(() => import("../pages/CheckoutPage"));
+const SellerProductList = lazy(() => import("../pages/SellerProductListPage"));
 
 const root = createBrowserRouter([
   {
@@ -47,7 +49,7 @@ const root = createBrowserRouter([
     path: "product/:productId",
     element: (
       <Suspense fallback={Loading}>
-        <LookUpProduct></LookUpProduct>
+        <LookUpProduct />
       </Suspense>
     ),
   },
@@ -71,7 +73,7 @@ const root = createBrowserRouter([
     path: "login/authenticate",
     element: (
       <Suspense fallback={Loading}>
-        <LoginSuccess></LoginSuccess>
+        <LoginSuccess />
       </Suspense>
     ),
   },
@@ -224,6 +226,22 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <WishListPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "checkout",
+    element: (
+      <Suspense fallback={Loading}>
+        <Check />
+      </Suspense>
+    ),
+  },
+  {
+    path: "seller/products",
+    element: (
+      <Suspense fallback={Loading}>
+        <SellerProductList />
       </Suspense>
     ),
   },

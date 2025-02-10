@@ -47,6 +47,12 @@ const sellerMenuItems = [
     path: "/productupload",
     content: "상품 업로드",
   },
+  {
+    id: 8,
+    title: "등록한 상품 조회",
+    path: "/seller/products",
+    content: "내가 등록한 상품 조회",
+  },
 ];
 
 const consumerMenuItems = [

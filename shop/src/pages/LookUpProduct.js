@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { getProductOne } from "../api/productApi";
 import { addWishItem } from "../api/wishApi";
 import { useSelector } from "react-redux";
+import useCustomMove from "../hook/useCustomMove";
 
 const LookUpProduct = () => {
   const { productId } = useParams();
@@ -17,6 +18,7 @@ const LookUpProduct = () => {
   const [quantities, setQuantities] = useState([]); // 재고 정보
   const [selectedSize, setSelectedSize] = useState(null); // 선택된 사이즈
   const loginState = useSelector((state) => state.loginSlice);
+  const { moveToCheckOut } = useCustomMove();
 
   useEffect(() => {
     getProductOne(productId).then((res) => {
@@ -33,7 +35,6 @@ const LookUpProduct = () => {
       setDescription(data.description); // 상품에 대한 설명
       setProductName(data.productName); // 상품의 이름
       setQuantities(data.productDetailsList); // 상품의 상세 재고
-      console.log(data);
     });
   }, [productId]);
 

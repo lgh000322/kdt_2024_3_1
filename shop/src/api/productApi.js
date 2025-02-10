@@ -64,7 +64,22 @@ export const getProductList = async (
   return res.data;
 };
 
+// 특정 상품 조회
 export const getProductOne = async (productId) => {
   const res = await axios.get(`${defaultProductsUrl}/${productId}`);
+  return res.data;
+};
+
+// 판매자가 등록한 상품 조회
+export const getSellerProductList = async (accessToken, page, size) => {
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
+
+  const res = await axios.get(
+    `${basicProductUrl}/seller?page=${page}&size=${size}`,
+    header
+  );
   return res.data;
 };
