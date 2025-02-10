@@ -92,7 +92,6 @@ function ShippingAddressPage() {
       console.error("배송지 수정 실패:", error);
       alert(`배송지 수정 실패: ${error.message}`);
     }
-
     window.location.reload();
   };
 

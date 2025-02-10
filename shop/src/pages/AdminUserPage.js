@@ -3,51 +3,48 @@ import AdminPageLayout from "../layouts/AdminPageLayout";
 import { useSelector } from "react-redux";
 import { getMembers } from "../api/memberApi";
 
-const userRole = "manager";
-
 function AdminUserPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
   const [formData, setFormData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]); // 필터링된 데이터
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
   const [loading, setLoading] = useState(true);
+  const [searchField, setSearchField] = useState("name");
+  const [error, setError] = useState(null); // 에러 상태
+  const [page, setPage] = useState(0);
+
+  // 회원 목록 가져오기 함수
+  const fetchMembers = async (searchFieldValue = null, searchTermValue = null) => {
+    setLoading(true);
+    setError(null);
+    try {
+      // API 호출 시 검색 조건 전달
+      const res = await getMembers(
+        loginSlice.accessToken,
+        page,
+        10,
+        searchFieldValue === "role" ? searchTermValue : null, // 역할 검색 조건 추가
+        searchFieldValue === "email" ? searchTermValue : null, // 이메일 검색 조건
+        searchFieldValue === "name" ? searchTermValue : null, // 이름 검색 조건
+      );
+      const sortedData = res.data.sort((a, b) => a.name.localeCompare(b.name));
+      setFormData(sortedData);
+    } catch (err) {
+      console.error("회원 정보 조회 실패:", err);
+      setError("회원 정보를 불러오는 데 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const res = await getMembers(loginSlice.accessToken);
-        const sortedData = res.data.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-
-        setFormData(sortedData);
-        setFilteredData(sortedData);
-      } catch (error) {
-        console.error("회원 정보 조회 실패:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchMembers();
   }, []);
 
-  useEffect(() => {
-    if (searchTerm === "") {
-      setFilteredData(formData); // 검색어가 없으면 전체 데이터 표시
-    } else {
-      const filtered = formData.filter(
-        (member) =>
-          member.name.toLowerCase().includes(searchTerm.toLowerCase()) || // 이름 필터링
-          member.email.toLowerCase().includes(searchTerm.toLowerCase()) // 이메일 필터링
-      );
-      setFilteredData(filtered);
-    }
-  }, [searchTerm, formData]);
-
   if (loading) return <div>Loading...</div>;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   return (
-    <AdminPageLayout role={userRole}>
+    <AdminPageLayout>
       <div>
         {/* 검색 필터 섹션 */}
         <div
@@ -71,21 +68,11 @@ function AdminUserPage() {
           >
             회원 검색
           </h2>
-          <div style={{ marginBottom: "15px" }}>
-            <label
-              htmlFor="userId"
-              style={{
-                marginRight: "10px",
-                fontWeight: "bold",
-                color: "#555",
-              }}
-            >
-              검색:
-            </label>
+          <div style={{ display: "flex", alignItems: "center", marginBottom: "15px" }}>
+            {/* 검색어 입력 필드 */}
             <input
               type="text"
-              id="userId"
-              placeholder="이름 또는 이메일 입력"
+              placeholder="검색어 입력"
               value={searchTerm} // 검색어 상태와 연결
               onChange={(e) => setSearchTerm(e.target.value)} // 상태 업데이트
               style={{
@@ -96,9 +83,25 @@ function AdminUserPage() {
                 marginRight: "10px",
               }}
             />
+            {/* 드롭다운 박스 */}
+            <select
+              value={searchField}
+              onChange={(e) => setSearchField(e.target.value)} // 드롭다운 선택 상태 업데이트
+              style={{
+                padding: "10px",
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+                backgroundColor: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              <option value="name">이름</option>
+              <option value="email">이메일</option>
+              <option value="role">역할</option>
+            </select>
           </div>
           <button
-            onClick={() => setSearchTerm("")} // 검색 초기화 버튼
+            onClick={() => fetchMembers(searchField, searchTerm)} // 검색 버튼 클릭 시 호출
             style={{
               backgroundColor: "#007BFF",
               color: "#fff",
@@ -109,7 +112,7 @@ function AdminUserPage() {
               fontSize: "16px",
             }}
           >
-            초기화
+            검색
           </button>
         </div>
 
@@ -164,7 +167,7 @@ function AdminUserPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredData.map((member, index) => (
+                {formData.map((member, index) => (
                   <tr key={member.id}>
                     {/* 번호는 index + 1로 설정 */}
                     <td style={{ padding: "10px", textAlign: "center" }}>
@@ -187,16 +190,6 @@ function AdminUserPage() {
                     </td>
                   </tr>
                 ))}
-                {filteredData.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan="6"
-                      style={{ textAlign: "center", padding: "20px" }}
-                    >
-                      검색 결과가 없습니다.
-                    </td>
-                  </tr>
-                )}
               </tbody>
             </table>
           </div>

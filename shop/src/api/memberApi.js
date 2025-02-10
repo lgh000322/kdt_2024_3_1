@@ -77,14 +77,39 @@ export const logoutRefresh = async () => {
 };
 
 // 전체 회원 조회
-export const getMembers = async (accessToken) => {
+export const getMembers = async (accessToken, page, size,  role, email , name) => {
+  const params = new URLSearchParams();
+
+  if (page !== null && page !== undefined) params.append("page", page);
+  if (size !== null && size !== undefined) params.append("size", size);
+  if (role !== null && role !== undefined){
+    let submitRole;
+    if(role === '관리자'){
+      submitRole='ADMIN';
+    }
+    if(role === '일반 회원'){
+      submitRole='USER';
+    }
+    if(role === '판매자'){
+      submitRole='SELLER';
+    }
+    params.append("role", submitRole);
+  }
+    
+  if (email !== null && email !== undefined)
+    params.append("email", email);
+  if (name !== null && name !== undefined)
+    params.append("name", name);
+
+  const queryString = params.toString(); // URLSearchParams를 문자열로 변환
+
   const header = {
     headers: { Authorization: `Bearer ${accessToken}` },
     withCredentials: true,
   };
 
   try {
-    const res = await axios.get(`${adminlist}`, header);
+    const res = await axios.get(`${adminlist}?${queryString}`, header);
     return res.data;
   } catch (error) {
     if (error.response?.data?.message === "만료된 JWT입니다.") {
@@ -140,6 +165,25 @@ export const sellerAcceptSubmit = async (accessToken, authorityId) => {
     return res.data;
   } catch (error) {
     console.error("API 요청 실패:", error);
+    throw error;
+  }
+};
+
+export const searchMemberData = async (accessToken, { page, size, email }) => {
+  try {
+    const res = await axios.get(`${adminlist}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      params: {
+        page,
+        size,
+        email,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("회원 검색 실패:", error);
     throw error;
   }
 };
