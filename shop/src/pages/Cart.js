@@ -2,18 +2,26 @@ import React, { useState, useEffect } from "react";
 import HeaderComponent from "../components/HeaderComponent";
 import CartItemComponent from "../components/CartItemComponent";
 import { getCartItem, removeCartItem, updateCartItemQuantity } from "../api/cartApi"; // 🛒 API 추가
+import { useSelector } from "react-redux";
 
 const Cart = () => {
+
+  const loginSlice = useSelector((state) => state.loginSlice);
+
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const deliveryFeeThreshold = 50000;
   const baseDeliveryFee = 3000;
-
-  const accessToken = localStorage.getItem("accessToken"); // ✅ 토큰 가져오기
+  
+  const accessToken = loginSlice.accessToken;
+  //const accessToken = localStorage.getItem("accessToken"); // ✅ 토큰 가져오기
 
   // 🔹 장바구니 데이터 불러오기 (API 요청)
   useEffect(() => {
+
+    
     const fetchCartItems = async () => {
+      console.log("토큰" , accessToken);
       try {
         const response = await getCartItem(accessToken, 0, 10); // 첫 페이지 기준
         setCartItems(response.data); // API 응답 데이터 설정
