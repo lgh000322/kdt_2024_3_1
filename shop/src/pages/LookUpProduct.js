@@ -19,7 +19,7 @@ const LookUpProduct = () => {
   const [quantities, setQuantities] = useState([]); // 재고 정보
   const [selectedSize, setSelectedSize] = useState(null); // 선택된 사이즈
   const loginState = useSelector((state) => state.loginSlice);
-  const { moveToCheckOut,moveToCart } = useCustomMove();
+  const { moveToCart, moveToProductPayment } = useCustomMove();
 
   useEffect(() => {
     getProductOne(productId).then((res) => {
@@ -50,6 +50,15 @@ const LookUpProduct = () => {
   // 전체 가격
   const totalPrice = price * quantity;
 
+  const clickPay = () => {
+    if (!loginState.accessToken) {
+      alert("로그인 후 결제할 수 있습니다.");
+      return;
+    }
+
+    moveToProductPayment(productName + " " + quantity + "개", totalPrice);
+  };
+
   const addWishList = () => {
     let accessToken = loginState.accessToken;
     if (!accessToken) {
@@ -65,7 +74,6 @@ const LookUpProduct = () => {
   };
 
   const addCartList = () => {
-
     let accessToken = loginState.accessToken;
     if (!accessToken) {
       alert("로그인 후 장바구니에 담을 수 있습니다.");
@@ -73,7 +81,13 @@ const LookUpProduct = () => {
     }
 
     //api 호출
-    addCartItem(accessToken, productId, quantity, selectedSize, totalPrice).then((res) => {
+    addCartItem(
+      accessToken,
+      productId,
+      quantity,
+      selectedSize,
+      totalPrice
+    ).then((res) => {
       if (res.code === 200) {
         alert("장바구니 등록 성공");
       }
@@ -169,10 +183,18 @@ const LookUpProduct = () => {
             >
               찜하기
             </button>
-            <button className="flex-1 py-2 bg-red-300 rounded-md" onClick={addCartList}>
+            <button
+              className="flex-1 py-2 bg-red-300 rounded-md"
+              onClick={addCartList}
+            >
               장바구니
             </button>
-            <button className="flex-1 py-2 bg-red-300 rounded-md">결제</button>
+            <button
+              className="flex-1 py-2 bg-red-300 rounded-md"
+              onClick={clickPay}
+            >
+              결제
+            </button>
           </div>
         </div>
       </main>
