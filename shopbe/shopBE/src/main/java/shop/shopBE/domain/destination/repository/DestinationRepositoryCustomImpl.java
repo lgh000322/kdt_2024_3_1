@@ -34,11 +34,21 @@ public class DestinationRepositoryCustomImpl implements DestinationRepositoryCus
                                 destination.tel,
                                 destination.address,
                                 destination.zipCode,
-                                destination.deliveryMessage))
+                                destination.deliveryMessage,
+                                destination.isSelectedDestination))
                         .from(destination) // FROM 절 추가
                         .where(destination.member.id.eq(memberId)) // 조건 추가
                         .fetch();
 
         return Optional.ofNullable(result);
     }
+
+    // Destination 엔티티를 직접 조회하는 메서드 추가
+    public List<Destination> findDestinationsByMemberId(Long memberId) {
+        return queryFactory
+                .selectFrom(destination)
+                .where(destination.member.id.eq(memberId))
+                .fetch();
+    }
+
 }

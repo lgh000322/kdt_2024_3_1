@@ -1,15 +1,10 @@
 package shop.shopBE.domain.orderhistory.service;
 
-
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import shop.shopBE.domain.destination.entity.Destination;
-import shop.shopBE.domain.destination.exception.DestinationException;
-import shop.shopBE.domain.destination.repository.DestinationRepository;
 import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.domain.member.exception.MemberExceptionCode;
 import shop.shopBE.domain.member.repository.MemberRepository;
@@ -22,7 +17,6 @@ import shop.shopBE.domain.orderproduct.entity.request.OrderProductDeliveryInfo;
 import shop.shopBE.domain.orderproduct.entity.enums.DeliveryStatus;
 import shop.shopBE.domain.orderproduct.repository.OrderProductRepository;
 import shop.shopBE.domain.orderproduct.request.OrderProductRequest;
-import shop.shopBE.domain.orderproduct.service.OrderProductService;
 import shop.shopBE.domain.product.entity.Product;
 import shop.shopBE.domain.product.exception.ProductExceptionCode;
 import shop.shopBE.domain.product.repository.ProductRepository;
@@ -59,7 +53,7 @@ public class OrderHistoryService {
                 .orElseThrow(() -> new CustomException(OrderHistoryException.OrderHistory_NOT_FOUND));
 
         //2. 주문 상품들 내역 삭제(주문 상품에 있는 외래키(OrderHistoryId)를 삭제하기 위함.
-        orderProductRepository.deleteByOrderHistoryId(orderHistoryId);
+        orderProductRepository.deleteOrderProductsByOrderHistoryId(orderHistoryId);
 
         //3. 외래키 값을 삭제했으므로 주문내역 삭제
         orderHistoryRepository.deleteById(orderHistoryId);
