@@ -135,11 +135,11 @@ function ShippingAddressPage() {
         {showNewAddressForm && (
           <div style={styles.card}>
             <h3>새 배송지 추가</h3>
-            <input type="text" value={newAddress.destinationName} onChange={(e) => handleInputChange("destinationName", e.target.value, true)} style={styles.input} placeholder="배송지 이름" />
-            <input type="text" value={newAddress.receiverName} onChange={(e) => handleInputChange("receiverName", e.target.value, true)} style={styles.input} placeholder="받는 사람" />
-            <input type="text" value={newAddress.address} onChange={(e) => handleInputChange("address", e.target.value, true)} style={styles.input} placeholder="주소" />
-            <input type="text" value={newAddress.tel} onChange={(e) => handleInputChange("tel", e.target.value, true)} style={styles.input} placeholder="연락처" />
-            <input type="number" value={newAddress.zipCode} onChange={(e) => handleInputChange("zipCode", e.target.value, true)} style={styles.input} placeholder="우편번호" />
+            <input type="text" value={newAddress.destinationName} onChange={(e) => handleInputChange("destinationName", e.target.value, true)} style={styles.addinput} placeholder="배송지 이름" />
+            <input type="text" value={newAddress.receiverName} onChange={(e) => handleInputChange("receiverName", e.target.value, true)} style={styles.addinput} placeholder="받는 사람" />
+            <input type="text" value={newAddress.address} onChange={(e) => handleInputChange("address", e.target.value, true)} style={styles.addinput} placeholder="주소" />
+            <input type="text" value={newAddress.tel} onChange={(e) => handleInputChange("tel", e.target.value, true)} style={styles.addinput} placeholder="연락처" />
+            <input type="number" value={newAddress.zipCode} onChange={(e) => handleInputChange("zipCode", e.target.value, true)} style={styles.addinput} placeholder="우편번호" />
             <label>
               <input type="checkbox" checked={newAddress.isSelectedDestination} onChange={(e) => handleInputChange("isSelectedDestination", e.target.checked, true)} /> 기본 배송지로 설정
             </label>
@@ -153,23 +153,23 @@ function ShippingAddressPage() {
               <div style={styles.form}>
                 <div style={styles.formRow}>
                     <p style={styles.label}>배송지 이름:</p>
-                    <input type="text" value={editingAddress.destinationName} onChange={(e) => handleInputChange("destinationName", e.target.value)} style={styles.input} placeholder="배송지 이름" />
+                    <input type="text" value={editingAddress.destinationName} onChange={(e) => handleInputChange("destinationName", e.target.value)} style={styles.editinput} placeholder="배송지 이름" />
                 </div>
                 <div style={styles.formRow}>
                     <p style={styles.label}>받는 사람:</p>
-                    <input type="text" value={editingAddress.receiverName} onChange={(e) => handleInputChange("receiverName", e.target.value)} style={styles.input} placeholder="받는 사람" />
+                    <input type="text" value={editingAddress.receiverName} onChange={(e) => handleInputChange("receiverName", e.target.value)} style={styles.editinput} placeholder="받는 사람" />
                 </div>
                 <div style={styles.formRow}>
                     <p style={styles.label}>주소:</p>
-                    <input type="text" value={editingAddress.address} onChange={(e) => handleInputChange("address", e.target.value)} style={styles.input} placeholder="주소" />
+                    <input type="text" value={editingAddress.address} onChange={(e) => handleInputChange("address", e.target.value)} style={styles.editinput} placeholder="주소" />
                 </div>
                 <div style={styles.formRow}>
                     <p style={styles.label}>연락처:</p>
-                    <input type="text" value={editingAddress.tel} onChange={(e) => handleInputChange("tel", e.target.value)} style={styles.input} placeholder="연락처" />
+                    <input type="text" value={editingAddress.tel} onChange={(e) => handleInputChange("tel", e.target.value)} style={styles.editinput} placeholder="연락처" />
                 </div>
                 <div style={styles.formRow}>
                     <p style={styles.label}>우편번호:</p>
-                    <input type="number" value={editingAddress.zipCode} onChange={(e) => handleInputChange("zipCode", e.target.value)} style={styles.input} placeholder="우편번호" />
+                    <input type="number" value={editingAddress.zipCode} onChange={(e) => handleInputChange("zipCode", e.target.value)} style={styles.editinput} placeholder="우편번호" />
                 </div>
                 <div style={styles.buttonContainer}>
                   <label>
@@ -247,7 +247,14 @@ const styles = {
     fontWeight: "bold",
     textAlign: "right",
   },
-  input: {
+  addinput: {
+    width: "100%",
+    padding: "8px",
+    fontSize: "14px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+  },
+  editinput: {
     flexGrow: 1,
     width: "70%",
     padding: "8px",
