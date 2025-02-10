@@ -2,17 +2,49 @@ import React, { useEffect, useState } from "react";
 import BasicLayout from "../layouts/BasicLayout";
 import { getShippingAddresses } from "../api/shippingAddressApi";
 import { useSelector } from "react-redux";
+import useCustomMove from "../hook/useCustomMove";
+import { useSearchParams } from "react-router-dom";
 
 function ProductPaymentPage() {
   const [destination, setDestination] = useState([]);
+  const [selectedDestination, setSelectedDestination] = useState(null); // 선택된 destination 객체 저장
+  const { moveToDestination, moveToPay } = useCustomMove();
   const loginState = useSelector((state) => state.loginSlice);
   const accessToken = loginState.accessToken;
+  const [queryParams] = useSearchParams();
+  const productName = queryParams.get("productName");
+  const totalPrice = queryParams.get("totalPrice");
+
+  const handleAddressChange = (e) => {
+    const selectedId = e.target.value; // 선택한 destinationId
+    const selected = destination.find((item) => {
+      return item.destinationId == selectedId;
+    }); // destination 목록에서 선택된 객체 찾기
+    setSelectedDestination(selected); // 선택된 객체 상태로 저장
+  };
+
+  const clickPaymentBtn = (e) => {
+    e.preventDefault();
+    moveToPay();
+  };
 
   useEffect(() => {
     getShippingAddresses(accessToken).then((data) => {
-      setDestination(data);
+      const list = data.map((item) => {
+        return {
+          address: item.address,
+          destinationId: item.destinationId,
+          destinationName: item.destinationName,
+          tel: item.tel,
+          zipCode: item.zipCode,
+          receiverName: item.receiverName,
+          deliveryMessage: item.deliveryMessage,
+        };
+      });
+
+      setDestination(list);
     });
-  }, []);
+  }, [accessToken]);
 
   return (
     <BasicLayout>
@@ -29,6 +61,9 @@ function ProductPaymentPage() {
               name="recipientName"
               placeholder="배송지 이름을 입력해주세요."
               className="w-full p-3 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+              defaultValue={
+                selectedDestination ? selectedDestination.receiverName : ""
+              }
             />
           </div>
 
@@ -41,6 +76,7 @@ function ProductPaymentPage() {
               name="phoneNumber"
               placeholder="전화번호를 입력해주세요."
               className="w-full p-3 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+              defaultValue={selectedDestination ? selectedDestination.tel : ""}
             />
           </div>
 
@@ -51,7 +87,7 @@ function ProductPaymentPage() {
             <button
               type="button"
               className="text-sm text-blue-500 hover:underline"
-              onClick={() => alert("새로운 배송지 추가")}
+              onClick={moveToDestination}
             >
               새로운 배송지 추가하기
             </button>
@@ -59,16 +95,17 @@ function ProductPaymentPage() {
           <select
             name="address"
             className="w-full p-3 mt-1 border border-gray-300 rounded-lg text-sm appearance-none focus:ring-2 focus:ring-blue-500"
+            onChange={handleAddressChange}
           >
-            <option value="">주소를 선택해주세요</option>
-            <option value="서울특별시">서울특별시</option>
-            <option value="부산광역시">부산광역시</option>
-            <option value="대구광역시">대구광역시</option>
-            <option value="인천광역시">인천광역시</option>
-            <option value="광주광역시">광주광역시</option>
-            <option value="대전광역시">대전광역시</option>
-            <option value="울산광역시">울산광역시</option>
-            <option value="경기도">경기도</option>
+            <option value="">배송지를 선택하세요</option>
+            {destination.map((destination) => (
+              <option
+                key={destination.destinationId}
+                value={destination.destinationId}
+              >
+                {destination.destinationName} : {destination.address}
+              </option>
+            ))}
           </select>
 
           <div className="mb-6">
@@ -80,6 +117,9 @@ function ProductPaymentPage() {
               name="deliveryMessage"
               placeholder="배송 메시지를 입력해주세요."
               className="w-full p-3 mt-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+              defaultValue={
+                selectedDestination ? selectedDestination.deliveryMessage : ""
+              }
             />
           </div>
 
@@ -92,15 +132,17 @@ function ProductPaymentPage() {
                 이미지
               </div>
               <div className="ml-5 flex-1">
-                <p className="text-base font-medium mb-2">상품 이름 외 x개</p>
-                <p className="text-xl font-semibold text-blue-700">₩ 50,000</p>
+                <p className="text-base font-medium mb-2">{productName}</p>
+                <p className="text-xl font-semibold text-blue-700">
+                  ₩ {totalPrice}
+                </p>
               </div>
             </div>
           </div>
 
           <button
-            type="submit"
             className="w-full py-4 bg-gray-700 text-white rounded-lg text-lg font-semibold hover:bg-gray-800 transition-all"
+            onClick={clickPaymentBtn}
           >
             결제하기
           </button>

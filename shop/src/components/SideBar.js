@@ -136,7 +136,6 @@ const Sidebar = ({ onMenuClick }) => {
     let loginStateJson = JSON.stringify(loginState.role);
     const jsonObject = JSON.parse(loginStateJson);
     const roleValue = jsonObject.role[0];
-    console.log(roleValue);
 
     if (roleValue === "ROLE_SELLER" || roleValue === "SELLER") {
       setMenuItems(sellerMenuItems);
