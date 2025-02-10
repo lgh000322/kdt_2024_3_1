@@ -73,7 +73,7 @@ public class OrderProductService {
 
     @Transactional
     public Optional<Void> deleteByOrderHistoryId(Long orderHistoryId) {
-        return Optional.ofNullable(orderProductRepository.deleteByOrderHistoryId(orderHistoryId)
+        return Optional.ofNullable(orderProductRepository.deleteOrderProductsByOrderHistoryId(orderHistoryId)
                 .orElseThrow(() -> new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND)));
     }
 }

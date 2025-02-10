@@ -68,4 +68,5 @@ public class DestinationController {
         destinationService.deleteDestination(destinationId);
         return ResponseEntity.ok().body(ResponseFormat.of("회원의 배송지를 삭제하는데 성공했습니다."));
     }
+
 }
