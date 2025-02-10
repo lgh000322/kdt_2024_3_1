@@ -14,6 +14,11 @@ function ProductPaymentPage() {
   const [queryParams] = useSearchParams();
   const productName = queryParams.get("productName");
   const totalPrice = queryParams.get("totalPrice");
+  const formattedPrice = new Intl.NumberFormat("ko-KR").format(
+    parseInt(totalPrice)
+  );
+  // const orderId = queryParams.get("orderId");
+  const orderId = 1;
 
   const handleAddressChange = (e) => {
     const selectedId = e.target.value; // 선택한 destinationId
@@ -25,7 +30,7 @@ function ProductPaymentPage() {
 
   const clickPaymentBtn = (e) => {
     e.preventDefault();
-    moveToPay();
+    moveToPay(productName, totalPrice, orderId);
   };
 
   useEffect(() => {
@@ -134,7 +139,7 @@ function ProductPaymentPage() {
               <div className="ml-5 flex-1">
                 <p className="text-base font-medium mb-2">{productName}</p>
                 <p className="text-xl font-semibold text-blue-700">
-                  ₩ {totalPrice}
+                  ₩ {formattedPrice}
                 </p>
               </div>
             </div>

@@ -56,8 +56,7 @@ const LookUpProduct = () => {
       return;
     }
 
-    const formattedPrice = new Intl.NumberFormat("ko-KR").format(totalPrice);
-    moveToProductPayment(productName + " " + quantity + "개", formattedPrice);
+    moveToProductPayment(productName + " " + quantity + "개", totalPrice);
   };
 
   const addWishList = () => {

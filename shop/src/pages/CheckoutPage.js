@@ -2,16 +2,22 @@ import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getSubFromJWT } from "../utils/jwtUtils";
+import { useSearchParams } from "react-router-dom";
+import { current } from "@reduxjs/toolkit";
 
 // TODO: clientKey는 개발자센터의 결제위젯 연동 키 > 클라이언트 키로 바꾸세요.
 // TODO: 구매자의 고유 아이디를 불러와서 customerKey로 설정하세요. 이메일・전화번호와 같이 유추가 가능한 값은 안전하지 않습니다.
 // @docs https://docs.tosspayments.com/sdk/v2/js#토스페이먼츠-초기화
 const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
 
-export default function CheckoutPage({ price }) {
+export default function CheckoutPage() {
   const loginState = useSelector((state) => state.loginSlice);
   const accessToken = loginState.accessToken;
   const customerKey = getSubFromJWT(accessToken);
+  const [searchParams] = useSearchParams();
+  const price = searchParams.get("price");
+  const productName = searchParams.get("productName");
+  const orderId = searchParams.get("orderId");
 
   const [amount, setAmount] = useState({
     currency: "KRW",
@@ -21,6 +27,7 @@ export default function CheckoutPage({ price }) {
   const [widgets, setWidgets] = useState(null);
 
   useEffect(() => {
+    setAmount({ currency: "KRW", value: parseInt(price) });
     async function fetchPaymentWidgets() {
       try {
         // ------  SDK 초기화 ------
@@ -103,9 +110,10 @@ export default function CheckoutPage({ price }) {
               // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
               await widgets.requestPayment({
                 orderId: generateRandomString(), // 추후에 백엔드단의 orderId를 uuid로 변경하고 그 값을 넣어줘야 함
-                orderName: "토스 티셔츠 외 2건",
-                successUrl: window.location.origin + "/success",
-                failUrl: window.location.origin + "/fail",
+                orderName: productName,
+                successUrl:
+                  window.location.origin + `/success?customId=${orderId}`,
+                failUrl: window.location.origin + `/fail?customId=${orderId}`,
                 // customerEmail: "customer123@gmail.com",
                 // customerName: "김토스",
                 // customerMobilePhone: "01012341234",

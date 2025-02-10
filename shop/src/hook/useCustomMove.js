@@ -65,8 +65,13 @@ const useCustomMove = () => {
     });
   };
 
-  const moveToPay = () => {
-    navigate({ pathname: "/checkout" });
+  const moveToPay = (productName, price, orderId) => {
+    navigate({
+      pathname: "/checkout",
+      search: `?productName=${encodeURIComponent(
+        productName
+      )}&price=${price}&orderId=${orderId}`,
+    });
   };
 
   return {
