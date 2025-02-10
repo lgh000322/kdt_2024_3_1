@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import BasicLayout from "../layouts/BasicLayout";
 import { useSelector } from "react-redux";
-import { getOrderHistory } from "../api/OrderListApi";
+import { getOrderHistory, deleteOrderHistory } from "../api/OrderListApi";
 import useCustomMove from "../hook/useCustomMove";
 
 const PageContainer = styled.div`
@@ -129,7 +129,30 @@ const orders = [
   },
 ];
 
-const renderOrderCard = (order, moveToOrderDetailPage, accessToken) => (
+// 주문 취소 함수
+const handleDeleteOrder = async (orderId, token, setOrders) => {
+  if (!window.confirm("정말 주문을 취소하시겠습니까?")) {
+    return;
+  }
+
+  try {
+    await deleteOrderHistory(orderId, token);
+    alert("주문이 취소되었습니다.");
+    setOrders((prevOrders) =>
+      prevOrders.filter((order) => order.orderId !== orderId)
+    );
+  } catch (error) {
+    alert("주문 취소에 실패했습니다.");
+    console.error("🚨 주문 취소 실패:", error);
+  }
+};
+
+const renderOrderCard = (
+  order,
+  moveToOrderDetailPage,
+  accessToken,
+  setOrders
+) => (
   <OrderCard key={order.orderId}>
     <OrderInfo>
       <OrderDate>주문일시: {order.createdAt}</OrderDate>
@@ -153,7 +176,11 @@ const renderOrderCard = (order, moveToOrderDetailPage, accessToken) => (
         주문 상세 내역
       </ActionButton>
       <ActionButton>배송 조회</ActionButton>
-      <ActionButton>취소</ActionButton>
+      <ActionButton
+        onClick={() => handleDeleteOrder(order.orderId, accessToken, setOrders)}
+      >
+        취소
+      </ActionButton>
       <ActionButton>리뷰 작성</ActionButton>
     </ActionButtons>
   </OrderCard>
@@ -191,7 +218,12 @@ function OrderListPage() {
         <PageTitle>주문 목록</PageTitle>
         {orders.length > 0 ? (
           orders.map((order) =>
-            renderOrderCard(order, moveToOrderDetailPage, accessToken)
+            renderOrderCard(
+              order,
+              moveToOrderDetailPage,
+              accessToken,
+              setOrders
+            )
           )
         ) : (
           <p>주문 내역이 없습니다.</p>

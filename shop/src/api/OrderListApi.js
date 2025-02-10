@@ -26,3 +26,23 @@ export const getOrderHistory = async (token, page = 0, size = 10) => {
     throw error.response?.data || error.message;
   }
 };
+
+export const deleteOrderHistory = async (orderHistoryId, token) => {
+  try {
+    console.log("삭제할 주문내역 ID값:", orderHistoryId);
+
+    const response = await axios.delete(`${preFix}/${orderHistoryId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // ✅ JWT 포함
+      },
+    });
+    console.log("✅ 주문내역 삭제 성공:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "❌ 주문내역 삭제 실패:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || error.message;
+  }
+};
