@@ -41,30 +41,6 @@ function ShippingAddressPage() {
     }
   };
 
-  const handleSetDefault = async (address) => {
-    try {
-      // 기본 배송지 설정 API 호출
-      await updateShippingAddress(
-        address.destinationId,
-        { ...address, isSelectedDestination: true },
-        accessToken
-      );
-  
-      // UI에서 기본 배송지 반영
-      setShippingAddresses((prev) =>
-        prev.map((item) => ({
-          ...item,
-          isSelectedDestination: item.destinationId === address.destinationId, // 선택한 것만 true
-        }))
-      );
-  
-      alert("기본 배송지가 설정되었습니다.");
-    } catch (error) {
-      console.error("기본 배송지 설정 실패:", error);
-      alert(`기본 배송지 설정 실패: ${error.message}`);
-    }
-  };  
-
   const handleAddAddress = async () => {
     try {
       const addedAddress = await addShippingAddress(newAddress, accessToken);
@@ -149,6 +125,7 @@ function ShippingAddressPage() {
 
         {shippingAddresses.map((address, index) => (
           <div key={index} style={styles.card}>
+            {address.isSelectedDefault && <span style={styles.defaultBadge}>기본 배송지</span>}
             {editingAddress && editingAddress.destinationId === address.destinationId ? (
               <div style={styles.form}>
                 <div style={styles.formRow}>
@@ -175,9 +152,15 @@ function ShippingAddressPage() {
                   <label>
                     <input
                       type="checkbox"
-                      checked={address.isSelectedDestination} 
-                      onChange={() => handleSetDefault(address)} 
-                    /> 기본 배송지로 설정
+                      checked={editingAddress.isSelectedDestination}
+                      onChange={(e) =>
+                        setEditingAddress((prev) => ({
+                          ...prev,
+                          isSelectedDestination: e.target.checked,
+                        }))
+                      }
+                    />
+                    기본 배송지로 설정
                   </label>
                   <button style={styles.saveButton} onClick={handleUpdateAddress}>저장</button>
                   <button style={styles.cancelButton} onClick={() => setEditingAddress(null)}>취소</button>
@@ -226,6 +209,16 @@ const styles = {
     fontSize: "18px",
     fontWeight: "bold",
     marginBottom: "10px",
+  },
+  defaultBadge: {
+    display: "inline-block",
+    backgroundColor: "#ff9800",
+    color: "#fff",
+    padding: "5px 10px",
+    fontSize: "12px",
+    fontWeight: "bold",
+    borderRadius: "5px",
+    marginBottom: "5px",
   },
   defaultButton: {
     backgroundColor: "#007bff",
