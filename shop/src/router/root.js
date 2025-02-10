@@ -28,6 +28,7 @@ const OrderListPage = lazy(() => import("../pages/OrderListPage"));
 const OrderDetailPage = lazy(() => import("../pages/OrderDetailPage"));
 const WishListPage = lazy(() => import("../pages/WishListPage"));
 const ShippingAddressPage = lazy(() => import("../pages/ShippingAddressPage"));
+const ProductPaymentPage = lazy(() => import("../pages/ProductPaymentPage"));
 const Cart = lazy(() => import("../pages/Cart"));
 const Check = lazy(() => import("../pages/CheckoutPage"));
 const SellerProductList = lazy(() => import("../pages/SellerProductListPage"));
@@ -210,6 +211,14 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <ProductUploadPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "productpayment",
+    element: (
+      <Suspense fallback={Loading}>
+        <ProductPaymentPage />
       </Suspense>
     ),
   },

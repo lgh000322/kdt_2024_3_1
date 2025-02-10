@@ -6,60 +6,49 @@ import { getMembers } from "../api/memberApi";
 function AdminSellerPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
   const [formData, setFormData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchFilter, setSearchFilter] = useState("name"); // Default filter is "name"
+  const [error, setError] = useState(null); // 에러 상태
+  const [page, setPage] = useState(0);
+  
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const accessToken = loginSlice.accessToken;
-        console.log("Access Token:", accessToken);
-
-        const response = await getMembers(accessToken);
-        console.log("API Response:", response);
-
-        // 역할이 seller인 데이터만 필터링
-        const sellersOnly = response.data.filter(
-          (member) => member.role === "판매자"
-        );
-
-        // 이름 기준으로 정렬
-        const sortedData = sellersOnly.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-
-        setFormData(sortedData);
-        setFilteredData(sortedData); // 초기값 설정
-      } catch (error) {
-        console.error("Failed to fetch members:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (loginSlice.accessToken) fetchMembers();
-  }, [loginSlice.accessToken]);
-
-  // 검색어 변경 시 필터링 로직
-  useEffect(() => {
-    if (searchTerm === "") {
-      setFilteredData(formData); // 검색어가 없으면 전체 데이터 표시
-    } else {
-      const filtered = formData.filter(
-        (member) =>
-          member.name.toLowerCase().includes(searchTerm.toLowerCase()) || // 이름 필터링
-          member.email.toLowerCase().includes(searchTerm.toLowerCase()) // 이메일 필터링
+// 회원 목록 가져오기 함수
+  const fetchMembers = async (searchFieldValue = null, searchTermValue = null) => {
+    setLoading(true);
+    setError(null);
+    try {
+      // API 호출 시 검색 조건 전달
+      const res = await getMembers(
+        loginSlice.accessToken,
+        page,
+        10,
+        null,
+        searchFieldValue === "email" ? searchTermValue : null, // 이름 검색 조건
+        searchFieldValue === "name" ? searchTermValue : null, // 이메일 검색 조건
       );
-      setFilteredData(filtered);
+      const filteredData = res.data.filter((member) => member.role === "판매자");
+      const sortedData = filteredData.sort((a, b) => a.name.localeCompare(b.name));
+      setFormData(sortedData);
+    } catch (err) {
+      console.error("회원 정보 조회 실패:", err);
+      setError("회원 정보를 불러오는 데 실패했습니다.");
+    } finally {
+      setLoading(false);
     }
-  }, [searchTerm, formData]);
+  };
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
+
 
   if (loading) return <div>Loading...</div>;
 
   return (
     <AdminPageLayout>
-      {/* 검색 필터 섹션 */}
+      {/* Search Filter Section */}
       <div
         style={{
           padding: "80px",
@@ -101,22 +90,49 @@ function AdminSellerPage() {
           </label>
           <input
             type="text"
-            id="searchTerm"
-            placeholder="회원명, 아이디 또는 공급사명을 입력하세요"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchTerm} // 검색어 상태와 연결
+            onChange={(e) => setSearchTerm(e.target.value)} // 상태 업데이트
+            placeholder="회원명 또는 이메일을 입력하세요"
             style={{
               flexGrow: 1,
               padding: "10px",
               border: "1px solid #ccc",
               borderRadius: "5px",
               width: "250px",
+              marginRight: "10px", // Add spacing between input and dropdown
             }}
           />
+          <select
+            value={searchFilter}
+            onChange={(e) => setSearchFilter(e.target.value)}
+            style={{
+              padding: "10px",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              backgroundColor: "#fff",
+              color: "#555",
+            }}
+          >
+            <option value="name">판매자명</option>
+            <option value="email">이메일</option>
+          </select>
         </div>
+        <button
+            onClick={() => fetchMembers(searchFilter, searchTerm)} // 검색 버튼 클릭 시 호출
+            style={{
+              backgroundColor: "#007BFF",
+              color: "#fff",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "5px",
+              cursor: "pointer",
+              fontSize: "16px",
+            }}
+          >
+            검색
+          </button>
       </div>
 
-      {/* 테이블 섹션 */}
       <div
         style={{
           padding: "20px",
@@ -167,7 +183,7 @@ function AdminSellerPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((member, index) => (
+              {formData.map((member, index) => (
                 <tr key={member.id}>
                   <td style={{ padding: "10px", textAlign: "center" }}>
                     {index + 1}
@@ -186,16 +202,6 @@ function AdminSellerPage() {
                   </td>
                 </tr>
               ))}
-              {filteredData.length === 0 && (
-                <tr>
-                  <td
-                    colSpan="6"
-                    style={{ textAlign: "center", padding: "20px" }}
-                  >
-                    검색 결과가 없습니다.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>

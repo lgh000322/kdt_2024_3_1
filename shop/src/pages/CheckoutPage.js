@@ -8,7 +8,7 @@ import { getSubFromJWT } from "../utils/jwtUtils";
 // @docs https://docs.tosspayments.com/sdk/v2/js#토스페이먼츠-초기화
 const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
 
-export default function CheckoutPage({ price, customerName }) {
+export default function CheckoutPage({ price }) {
   const loginState = useSelector((state) => state.loginSlice);
   const accessToken = loginState.accessToken;
   const customerKey = getSubFromJWT(accessToken);
