@@ -86,7 +86,7 @@ public class DestinationService {
         for (Destination destination : existingDestinations) {
             if (destination.isSelectedDestination()) {
                 destination.changeDefaultDestination(false); // 기본 배송지 해제
-                destinationRepository.save(destination); // 변경 저장
+//                destinationRepository.save(destination); // 변경 저장
             }
         }
     }

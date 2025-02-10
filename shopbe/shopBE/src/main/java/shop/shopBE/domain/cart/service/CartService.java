@@ -42,6 +42,7 @@ public class CartService {
 
 
 
+    @Transactional
     // 장바구니에 상품추가 메서드 - 카트 서비스에서 관련정보를 모두 찾고 카트아이템서비스에서 장바구니에 상품추가.
     public void addCartItem(AddCartItemInform addCartItemInform, Long memberId) {
 
