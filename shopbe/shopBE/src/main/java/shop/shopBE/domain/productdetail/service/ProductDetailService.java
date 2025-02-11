@@ -22,6 +22,14 @@ public class ProductDetailService {
     private final ProductDetailRepository productDetailRepository;
 
 
+
+    // 프로덕트 아이디와 사이즈를 통해서 프로덕트 디테일 수량찾는 메서드
+    public int findQuantityByProductIdAndSize(Long productId, int size) {
+        return productDetailRepository
+                .findQuantityByProductIdAndSize(productId, size)
+                .orElseThrow(() -> new CustomException(ProductDetailExceptionCustom.STOCK_NOT_FOUNT));
+    }
+
     // 프로덕트 조회메서드
     public ProductDetail findProductDetailById(Long productDetailId){
         return productDetailRepository.findById(productDetailId)
@@ -34,7 +42,6 @@ public class ProductDetailService {
                 .findProductDetailsByProductId(productId)
                 .orElseThrow(() -> new CustomException(ProductDetailExceptionCustom.PRODUCT_DETAIL_NOT_FOUND));
     }
-
 
 
     // 상품상세정보 저장 메서드
@@ -75,6 +82,7 @@ public class ProductDetailService {
             productDetailRepository.save(productDetail);
         }
     }
+
 
 
 
