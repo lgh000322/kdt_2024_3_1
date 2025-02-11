@@ -14,19 +14,21 @@ import shop.shopBE.domain.productdetail.response.ProductDetails;
 import java.util.List;
 import java.util.Optional;
 
-import static shop.shopBE.domain.productdetail.entity.QProductDetail.*;
+import static shop.shopBE.domain.productdetail.entity.QProductDetail.productDetail;
+
 
 @RequiredArgsConstructor
-public class ProductDetailRepositoryCustomImpl implements ProductDetailRepositoryCustom{
+public class ProductDetailRepositoryCustomImpl implements ProductDetailRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+
     @Override
     public Optional<List<ProductDetails>> findProductDetailsByProductId(Long productId) {
 
         List<ProductDetails> productDetailsList = queryFactory.select(Projections.constructor(ProductDetails.class,
-                productDetail.id,
-                productDetail.shoesSize,
-                productDetail.sizeStock))
+                        productDetail.id,
+                        productDetail.shoesSize,
+                        productDetail.sizeStock))
                 .from(productDetail)
                 .where(productDetail.product.id.eq(productId))
                 .fetch();
@@ -35,7 +37,6 @@ public class ProductDetailRepositoryCustomImpl implements ProductDetailRepositor
     }
 
     @Override
-<<<<<<< HEAD
     public Optional<Integer> findQuantityByProductIdAndSize(Long productId, int size) {
         Integer findQuantity = queryFactory
                 .select(productDetail.sizeStock)
@@ -44,7 +45,9 @@ public class ProductDetailRepositoryCustomImpl implements ProductDetailRepositor
                 .fetchOne();
 
         return Optional.ofNullable(findQuantity);
-=======
+    }
+
+    @Override
     public Optional<ProductDetail> findByProductIdAndSize(Long productId, int size) {
 
         ProductDetail result = queryFactory
@@ -54,7 +57,5 @@ public class ProductDetailRepositoryCustomImpl implements ProductDetailRepositor
                 .fetchOne();
 
         return Optional.ofNullable(result);
-
->>>>>>> 20bd19f28fe0ea88fbdd9f1c904144853b17f387
     }
 }
