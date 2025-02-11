@@ -46,3 +46,31 @@ export const deleteOrderHistory = async (orderHistoryId, token) => {
     throw error.response?.data || error.message;
   }
 };
+
+export const postOrderHistory = async (accessToken, orderRequest) => {
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
+
+  const res = await axios.post(`${preFix}`, orderRequest, header);
+  return res.data;
+};
+
+export const postOrderHistoryAfterPay = async (
+  accessToken,
+  orderHistoryId,
+  deliveryStatus
+) => {
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
+
+  const res = await axios.put(
+    `${preFix}/${orderHistoryId}`,
+    deliveryStatus,
+    header
+  );
+  return res.data;
+};
