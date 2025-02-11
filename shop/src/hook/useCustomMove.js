@@ -21,15 +21,8 @@ const useCustomMove = () => {
   const moveToProductAbs = () => {
     navigate({ pathname: "/product" });
   };
-
-  const moveToOrderDetailPage = (orderHistoryId, accessToken) => {
-    if (!accessToken) return;
-
-    navigate(
-      `/mypage/order-detail/${orderHistoryId}?token=${encodeURIComponent(
-        accessToken
-      )}`
-    );
+  const moveToOrderDetailPage = (orderHistoryId) => {
+    navigate({ pathname: `/mypage/order-detail/${orderHistoryId}` });
   };
 
   const moveToCheckOut = (price) => {
@@ -46,8 +39,8 @@ const useCustomMove = () => {
 
   const moveToModificationPage = (productId) => {
     navigate({ pathname: `/product/modification/${productId}` });
-  }
-  
+  };
+
   const moveToLoginPage = () => {
     navigate({ pathname: "/login" });
   };

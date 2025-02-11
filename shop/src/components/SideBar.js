@@ -5,24 +5,24 @@ import { logoutRefresh } from "../api/memberApi";
 import useCustomMove from "../hook/useCustomMove";
 
 const sellerMenuItems = [
-  {
-    id: 1,
-    title: "배송관리(판매자)",
-    path: "/mypage/shipping-address",
-    content: "배송관리 관련 콘텐츠",
-  },
-  {
-    id: 2,
-    title: "주문관리(판매자)",
-    path: "/mypage/order-management",
-    content: "주문관리 관련 콘텐츠",
-  },
-  {
-    id: 3,
-    title: "문의내역",
-    path: "/mypage/inquiry",
-    content: "문의내역 관련 콘텐츠",
-  },
+  // {
+  //   id: 1,
+  //   title: "배송관리(판매자)",
+  //   path: "/mypage/address-management",
+  //   content: "배송관리 관련 콘텐츠",
+  // },
+  // {
+  //   id: 2,
+  //   title: "주문관리(판매자)",
+  //   path: "/mypage/order-management",
+  //   content: "주문관리 관련 콘텐츠",
+  // },
+  // {
+  //   id: 3,
+  //   title: "문의내역",
+  //   path: "/mypage/inquiry",
+  //   content: "문의내역 관련 콘텐츠",
+  // },
   {
     id: 4,
     title: "찜리스트",
@@ -38,7 +38,7 @@ const sellerMenuItems = [
   {
     id: 6,
     title: "배송지 관리",
-    path: "/mypage/address-management",
+    path: "/mypage/shipping-address",
     content: "배송지 관리 관련 콘텐츠",
   },
   {
@@ -68,12 +68,12 @@ const consumerMenuItems = [
     path: "/mypage/shipping-address",
     content: "배송지 관리 관련 콘텐츠",
   },
-  {
-    id: 3,
-    title: "문의내역",
-    path: "/mypage/inquiry",
-    content: "문의내역 관련 콘텐츠",
-  },
+  // {
+  //   id: 3,
+  //   title: "문의내역",
+  //   path: "/mypage/inquiry",
+  //   content: "문의내역 관련 콘텐츠",
+  // },
   {
     id: 4,
     title: "찜리스트",

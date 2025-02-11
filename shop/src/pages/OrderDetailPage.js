@@ -1,51 +1,27 @@
 import React, { useState, useEffect } from "react";
 import BasicLayout from "../layouts/BasicLayout";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { showOrderDetail } from "../api/OrderDetailApi";
 import { deleteOrderHistory } from "../api/OrderListApi";
+import { useSelector } from "react-redux";
 
 function OrderDetailPage() {
-  const { orderHistoryId } = useParams();
-  const [searchParams] = useSearchParams();
-  const accessToken = searchParams.get("token");
   const navigate = useNavigate();
+  const loginState = useSelector((state) => state.loginSlice);
+  const accessToken = loginState.accessToken;
 
+  const { orderHistoryId } = useParams();
   const [orderDetail, setOrderDetail] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchOrderDetail = async () => {
-      if (!accessToken) {
-        setError("❌ 인증 오류: 로그인 후 이용해주세요.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await showOrderDetail(orderHistoryId, accessToken);
-        setOrderDetail(response || {});
-
-        // ✅ 상품 목록 콘솔 출력
-        if (response?.orderDetailProducts) {
-          console.log(
-            "📦 가져온 주문 상품 리스트:",
-            response.orderDetailProducts
-          );
-        } else {
-          console.log("⚠️ 주문 상품이 없습니다.");
-        }
-      } catch (error) {
-        setError("🚨 주문 정보를 불러오는 데 실패했습니다.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (orderHistoryId) {
-      fetchOrderDetail();
-    }
-  }, [orderHistoryId, accessToken]);
+    showOrderDetail(orderHistoryId, accessToken).then((res) => {
+      const data = res.data;
+      console.log(data);
+      setOrderDetail(data);
+      setLoading(false);
+    });
+  }, [orderHistoryId]);
 
   const handleDeleteOrder = async () => {
     if (!window.confirm("정말 주문을 취소하시겠습니까?")) {
@@ -58,7 +34,6 @@ function OrderDetailPage() {
       await deleteOrderHistory(orderHistoryId, accessToken);
       alert("주문이 취소되었습니다.");
 
-      // ✅ 삭제 후 주문 목록 페이지로 이동
       navigate("/mypage/order-list");
     } catch (error) {
       alert("주문 취소에 실패했습니다.");
@@ -66,79 +41,100 @@ function OrderDetailPage() {
     }
   };
 
+  const handleDeliveryStatus = (id) => {
+    const data = orderDetail.find((order) => order.orderId == id);
+
+    if (data.deliveryStatus == "BEFORE_DELIVERY") {
+      return "배송 전";
+    } else if (data.deliveryStatus == "BEFORE_PAY") {
+      return "결제 전";
+    } else if (data.deliveryStatus == "START_DELIVERY") {
+      return "배송 중";
+    } else if (data.deliveryStatus == "END_DELIVERY") {
+      return "배송 후";
+    } else {
+      return "주문 취소";
+    }
+  };
+
   if (loading) {
     return (
       <BasicLayout>
-        <p>🔄 주문 상세 정보를 불러오는 중...</p>
+        <p className="text-center p-4">🔄 주문 상세 정보를 불러오는 중...</p>
       </BasicLayout>
     );
   }
 
   return (
     <BasicLayout>
-      <div style={styles.container}>
+      <div className="px-6 py-10 bg-gray-50 min-h-screen font-sans">
         {/* 헤더 섹션 */}
-        <header style={styles.header}>
-          <h1 style={styles.title}>주문 상세 정보</h1>
-          <p style={styles.orderNumber}>
-            주문번호: {orderDetail.orderHistoryId}
-          </p>
+        <header className="mb-12 text-center">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2 tracking-tight">
+            주문 상세 정보
+          </h1>
         </header>
 
         {/* 주문 정보 카드 */}
-        <section style={styles.card}>
-          <h2 style={styles.cardTitle}>배송 정보</h2>
-          <div style={styles.detailGrid}>
-            <DetailItem label="수령인" value={orderDetail.orderName} />
-            <DetailItem label="연락처" value={orderDetail.phoneNumber} />
-            <DetailItem label="주소" value={orderDetail.deliveryAddress} />
-            {/* 상품 마다 배송 상태가 다를 수 있어서 주문상품마다 배송상태를 보이게 구현함. 
-            <DetailItem
-              label="배송 상태"
-              value={orderDetail.delivaeryState}
-              status="active"
-            /> */}
+        <section className="bg-white rounded-2xl p-8 mb-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-gray-800 mb-7 pb-4 border-b-2 border-gray-100">
+            배송 정보
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <DetailItem label="수령인" value={orderDetail[0].orderName} />
+            <DetailItem label="연락처" value={orderDetail[0].phoneNumber} />
+            <DetailItem label="주소" value={orderDetail[0].deliveryAddress} />
           </div>
         </section>
 
         {/* 상품 정보 카드 */}
-        <section style={styles.card}>
-          <h2 style={styles.cardTitle}>주문 상품</h2>
-          {orderDetail.orderDetailProducts &&
-          orderDetail.orderDetailProducts.length > 0 ? (
-            orderDetail.orderDetailProducts.map((product) => (
-              <div key={product.orderProductId} style={styles.productCard}>
-                <div style={styles.imageContainer}>
+        <section className="bg-white rounded-2xl p-8 mb-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-gray-800 mb-7 pb-4 border-b-2 border-gray-100">
+            주문 상품
+          </h2>
+          {orderDetail.length > 0 ? (
+            orderDetail.map((order) => (
+              <div
+                key={order.orderId}
+                className="flex gap-8 items-center p-5 bg-gray-100 rounded-xl mb-4"
+              >
+                <div className="flex-shrink-0">
                   <img
-                    src={product.imageUrl}
-                    alt={product.productName}
-                    style={{
-                      width: "160px",
-                      height: "160px",
-                      borderRadius: "8px",
-                    }}
+                    src={order.imgUrl}
+                    alt={order.productName}
+                    className="w-40 h-40 rounded-lg object-cover"
                   />
                 </div>
-                <div style={styles.productInfo}>
-                  <h3 style={styles.productName}>{product.mainProductName}</h3>
-                  <p style={styles.productPrice}>수량: {product.count}개</p>
-                  <p style={styles.productPrice}>
-                    가격: {product.totalPrice.toLocaleString()} 원
+                <div className="flex-grow">
+                  <h3 className="text-xl font-bold text-gray-800 mb-3">
+                    {order.productName}
+                  </h3>
+                  <p className="text-lg text-gray-800 font-semibold mb-2">
+                    수량: {order.orderProductCount}개
                   </p>
-                  <p style={styles.productPrice}>
-                    배송 상태: {product.orderProductDeliveryInfo.deliveryStatus}
+                  <p className="text-lg text-gray-800 font-semibold mb-2">
+                    가격: {order.totalPrice.toLocaleString()} 원
+                  </p>
+                  <p className="text-lg text-gray-800 font-semibold">
+                    배송 상태: {handleDeliveryStatus(order.orderId)}
                   </p>
                 </div>
               </div>
             ))
           ) : (
-            <p>📦 주문한 상품이 없습니다.</p>
+            <p className="text-center text-gray-600">
+              📦 주문한 상품이 없습니다.
+            </p>
           )}
         </section>
 
         {/* 액션 버튼 그룹 */}
-        <div style={styles.buttonGroup}>
-          <button style={styles.secondaryButton} onClick={handleDeleteOrder}>
+        <div className="flex justify-center gap-5 mt-10">
+          <button
+            className="px-10 py-4 border-2 border-red-500 text-red-500 rounded-lg font-bold 
+                       hover:bg-red-50 transition-colors duration-200"
+            onClick={handleDeleteOrder}
+          >
             주문내역 삭제
           </button>
         </div>
@@ -148,152 +144,13 @@ function OrderDetailPage() {
 }
 
 // 재사용 가능한 디테일 아이템 컴포넌트
-function DetailItem({ label, value, status }) {
+function DetailItem({ label, value }) {
   return (
-    <div style={styles.detailItem}>
-      <span style={styles.detailLabel}>{label}</span>
-      <span
-        style={
-          status
-            ? { ...styles.detailValue, ...styles[status] }
-            : styles.detailValue
-        }
-      >
-        {value}
-      </span>
+    <div className="flex justify-stretch items-center py-4 border-b border-gray-100">
+      <span className="text-gray-500 text-sm font-medium">{label}</span>
+      <span className={"text-base font-semibold ml-20"}>{value}</span>
     </div>
   );
 }
-
-////////////////////////////////////////////////// 개선된 스타일 정의
-const styles = {
-  container: {
-    padding: "40px 24px",
-    backgroundColor: "#f9fafb",
-    minHeight: "100vh",
-    fontFamily: "'Noto Sans KR', sans-serif",
-  },
-  header: {
-    marginBottom: "48px",
-    textAlign: "center",
-  },
-  title: {
-    fontSize: "32px",
-    fontWeight: "700",
-    color: "#1f2937",
-    marginBottom: "8px",
-    letterSpacing: "-0.5px",
-  },
-  orderNumber: {
-    color: "#6b7280",
-    fontSize: "14px",
-  },
-  card: {
-    backgroundColor: "white",
-    borderRadius: "16px",
-    padding: "32px",
-    marginBottom: "24px",
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
-  },
-  cardTitle: {
-    fontSize: "22px",
-    fontWeight: "600",
-    color: "#1f2937",
-    marginBottom: "28px",
-    paddingBottom: "16px",
-    borderBottom: "2px solid #f3f4f6",
-  },
-  detailGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-    gap: "24px",
-  },
-  detailItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "16px 0",
-    borderBottom: "1px solid #f3f4f6",
-  },
-  detailLabel: {
-    color: "#6b7280",
-    fontSize: "15px",
-    fontWeight: "500",
-  },
-  detailValue: {
-    color: "#1f2937",
-    fontWeight: "600",
-    fontSize: "16px",
-  },
-  active: {
-    color: "#3b82f6",
-    fontWeight: "700",
-  },
-  productCard: {
-    display: "flex",
-    gap: "32px",
-    alignItems: "center",
-    padding: "20px",
-    backgroundColor: "#f3f4f6",
-    borderRadius: "12px",
-  },
-  imageContainer: {
-    flexShrink: 0,
-    position: "relative",
-  },
-  imagePlaceholder: {
-    width: "160px",
-    height: "160px",
-    backgroundColor: "#e5e7eb",
-    borderRadius: "8px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "transform 0.2s ease",
-    ":hover": {
-      transform: "scale(1.02)",
-    },
-  },
-  imageText: {
-    color: "#6b7280",
-    fontSize: "14px",
-    fontWeight: "500",
-  },
-  productInfo: {
-    flexGrow: 1,
-  },
-  productName: {
-    fontSize: "20px",
-    fontWeight: "700",
-    color: "#1f2937",
-    marginBottom: "12px",
-  },
-  productPrice: {
-    fontSize: "18px",
-    color: "#1f2937",
-    fontWeight: "600",
-    letterSpacing: "-0.5px",
-  },
-  buttonGroup: {
-    display: "flex",
-    gap: "20px",
-    justifyContent: "center",
-    marginTop: "40px",
-  },
-  secondaryButton: {
-    padding: "16px 40px",
-    backgroundColor: "transparent",
-    color: "#ef4444",
-    borderRadius: "8px",
-    border: "2px solid #ef4444",
-    cursor: "pointer",
-    fontSize: "16px",
-    fontWeight: "700",
-    transition: "all 0.2s ease",
-    ":hover": {
-      backgroundColor: "#fee2e2",
-    },
-  },
-};
 
 export default OrderDetailPage;

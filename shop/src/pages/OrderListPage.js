@@ -105,30 +105,6 @@ const ActionButton = styled.button`
   }
 `;
 
-const orders = [
-  {
-    id: "ORD001",
-    date: "2025-01-20",
-    status: "배송중",
-    items: "상품 이름 외 2개",
-    price: "₩30,000",
-  },
-  {
-    id: "ORD002",
-    date: "2025-01-21",
-    status: "구매완료",
-    items: "상품 이름 외 1개",
-    price: "₩15,000",
-  },
-  {
-    id: "ORD003",
-    date: "2025-01-22",
-    status: "구매완료",
-    items: "상품 이름 외 1개",
-    price: "₩15,000",
-  },
-];
-
 // 주문 취소 함수
 const handleDeleteOrder = async (orderId, token, setOrders) => {
   if (!window.confirm("정말 주문을 취소하시겠습니까?")) {
@@ -156,7 +132,7 @@ const renderOrderCard = (
   <OrderCard key={order.orderId}>
     <OrderInfo>
       <OrderDate>주문일시: {order.createdAt}</OrderDate>
-      <OrderStatus>주문상태: {order.status || "확인 중"}</OrderStatus>
+      <OrderStatus>&nbsp;</OrderStatus>
       <ProductPreview>
         <ProductImage>
           <img src={order.imageUrl} alt="상품 이미지" width="80" height="80" />
@@ -171,7 +147,7 @@ const renderOrderCard = (
     <ActionButtons>
       <ActionButton
         $primary
-        onClick={() => moveToOrderDetailPage(order.orderId, accessToken)}
+        onClick={() => moveToOrderDetailPage(order.orderId)}
       >
         주문 상세 내역
       </ActionButton>

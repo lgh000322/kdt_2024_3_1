@@ -43,7 +43,6 @@ function ProductPaymentPage() {
   const clickPaymentBtn = (e) => {
     e.preventDefault();
 
-    console.log(selectedDestination);
     // 주문 상태를 저장하는 api를 호출해야한다 (결제전)
     const orderRequest = {
       totalPrice: totalPrice,
@@ -53,6 +52,7 @@ function ProductPaymentPage() {
       tel: selectedDestination.tel,
       zipCode: selectedDestination.zipCode,
       deliveryMessage: selectedDestination.deliveryMessage,
+      orderProductCount: 1,
       orderProductRequests: [
         {
           productId: productId,
