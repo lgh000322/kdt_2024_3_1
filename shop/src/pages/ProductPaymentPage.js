@@ -4,6 +4,7 @@ import { getShippingAddresses } from "../api/shippingAddressApi";
 import { useSelector } from "react-redux";
 import useCustomMove from "../hook/useCustomMove";
 import { useSearchParams } from "react-router-dom";
+import { postOrderHistory } from "../api/OrderListApi";
 
 function ProductPaymentPage() {
   const [destination, setDestination] = useState([]);
@@ -12,13 +13,16 @@ function ProductPaymentPage() {
   const loginState = useSelector((state) => state.loginSlice);
   const accessToken = loginState.accessToken;
   const [queryParams] = useSearchParams();
-  const productName = queryParams.get("productName");
-  const totalPrice = queryParams.get("totalPrice");
+  const productName = queryParams.get("productName"); // 선택된 상품의 이름 (쿼리 파라미터에서 가져옴)
+  const productCount = queryParams.get("productCount"); // 선택한 상품의 수
+  const totalPrice = queryParams.get("totalPrice"); // 선택된 상품의 총 가격 (쿼리 파라미터에서 가져옴)
+  const imgUrl = queryParams.get("imgUrl"); // 선택된 상품의 메인이미지 (쿼리 파라미터에서 가져옴)
+  const selectedSize = queryParams.get("selectedSize"); // 선택된 상품의 신발 사이즈 (쿼리 파라미터에서 가져옴)
+  const productId = queryParams.get("productId"); // 상품의 아이디
+
   const formattedPrice = new Intl.NumberFormat("ko-KR").format(
     parseInt(totalPrice)
   );
-  // const orderId = queryParams.get("orderId");
-  const orderId = 1;
 
   const handleAddressChange = (e) => {
     const selectedId = e.target.value; // 선택한 destinationId
@@ -28,9 +32,43 @@ function ProductPaymentPage() {
     setSelectedDestination(selected); // 선택된 객체 상태로 저장
   };
 
+  const handleDeliveryMessageChange = (e) => {
+    const deliveryMessage = {
+      deliveryMessage: e.target.value,
+    };
+
+    setSelectedDestination((prev) => ({ ...prev, ...deliveryMessage }));
+  };
+
   const clickPaymentBtn = (e) => {
     e.preventDefault();
-    moveToPay(productName, totalPrice, orderId);
+
+    console.log(selectedDestination);
+    // 주문 상태를 저장하는 api를 호출해야한다 (결제전)
+    const orderRequest = {
+      totalPrice: totalPrice,
+      address: selectedDestination.address,
+      destinationName: selectedDestination.destinationName,
+      receiverName: selectedDestination.receiverName,
+      tel: selectedDestination.tel,
+      zipCode: selectedDestination.zipCode,
+      deliveryMessage: selectedDestination.deliveryMessage,
+      orderProductRequests: [
+        {
+          productId: productId,
+          shoesSize: selectedSize,
+          productCount: productCount,
+          productTotalPrice: totalPrice,
+        },
+      ],
+    };
+
+    postOrderHistory(accessToken, orderRequest).then((res) => {
+      if (res.code === 200) {
+        const orderId = res.data;
+        moveToPay(productName, totalPrice, orderId);
+      }
+    });
   };
 
   useEffect(() => {
@@ -125,6 +163,7 @@ function ProductPaymentPage() {
               defaultValue={
                 selectedDestination ? selectedDestination.deliveryMessage : ""
               }
+              onChange={handleDeliveryMessageChange}
             />
           </div>
 
@@ -134,7 +173,7 @@ function ProductPaymentPage() {
             </h3>
             <div className="flex items-center">
               <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-xs text-gray-500">
-                이미지
+                <img src={imgUrl} alt="상품 이미지"></img>
               </div>
               <div className="ml-5 flex-1">
                 <p className="text-base font-medium mb-2">{productName}</p>
