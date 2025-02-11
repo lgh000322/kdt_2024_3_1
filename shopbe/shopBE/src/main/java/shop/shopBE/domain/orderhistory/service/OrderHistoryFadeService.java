@@ -2,11 +2,9 @@ package shop.shopBE.domain.orderhistory.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
-import shop.shopBE.domain.orderhistory.request.OrderHistoryInfo;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryResponse;
 import shop.shopBE.domain.orderproduct.service.OrderProductService;

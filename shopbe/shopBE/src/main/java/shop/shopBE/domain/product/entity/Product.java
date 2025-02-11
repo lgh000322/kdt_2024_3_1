@@ -102,7 +102,7 @@ public class Product {
 
 
         // 현재 stock이 0일경우 재고를 줄일수 없음
-        if(this.totalStock < 0){
+        if (this.totalStock < 0) {
             // 400에러를 날려준다. 재고 감소할수없다는 에러 메세지를 보내줌.
             throw new CustomException(ProductExceptionCode.OUT_OF_STOCK);
         }
@@ -111,7 +111,7 @@ public class Product {
 
     // 찜숫자 감소(업데이트) 메서드 - 찜숫자가 0인 상태에서 minusLikeCOunt를 한다면 에러를 보내줌.
     public void minusLikeCount() {
-        if(this.likeCount < 0) {
+        if (this.likeCount < 0) {
             // 400에러를 날려준다. 좋아요 감소할수없다는 에러 메세지를 보내줌.
             throw new CustomException(ProductExceptionCode.INVALID_MINUS_LIKE_REQUEST);
         }
@@ -122,6 +122,7 @@ public class Product {
     public void plusSalesVolume(int salesVolume) {
         this.salesVolume += salesVolume;
     }
+
     // 찜숫자 증가 (업데이트) 메서드
     public void plusLikeCount() {
         this.likeCount += 1;
@@ -139,7 +140,7 @@ public class Product {
                               ProductCategory productCategory,
                               SeasonCategory seasonCategory,
                               int totalStock
-                              ) {
+    ) {
 
     }
 }

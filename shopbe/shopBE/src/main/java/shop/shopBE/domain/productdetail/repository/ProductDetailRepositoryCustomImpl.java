@@ -6,6 +6,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import shop.shopBE.domain.productdetail.entity.ProductDetail;
 import shop.shopBE.domain.productdetail.entity.QProductDetail;
 import shop.shopBE.domain.productdetail.response.ProductDetails;
 
@@ -30,5 +31,18 @@ public class ProductDetailRepositoryCustomImpl implements ProductDetailRepositor
                 .fetch();
 
         return Optional.ofNullable(productDetailsList);
+    }
+
+    @Override
+    public Optional<ProductDetail> findByProductIdAndSize(Long productId, int size) {
+
+        ProductDetail result = queryFactory
+                .select(productDetail)
+                .from(productDetail)
+                .where(productDetail.product.id.eq(productId).and(productDetail.shoesSize.eq(size)))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+
     }
 }
