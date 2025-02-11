@@ -43,11 +43,12 @@ public class ProductDetailService {
     }
 
 
+    @Transactional
     //사이즈별 수량 변경메서드
     public void updateSizeAndStock(List<UpdateProductDetails> updateProductDetails) {
         for (UpdateProductDetails updateProductDetail : updateProductDetails) {
             ProductDetail productDetail = findProductDetailById(updateProductDetail.productDetailId());
-            productDetail.plusSizeStock(updateProductDetail.quantity());
+            productDetail.plusSizeStock(updateProductDetail.quantityBySize());
         }
     }
 

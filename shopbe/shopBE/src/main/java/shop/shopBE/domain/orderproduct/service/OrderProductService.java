@@ -50,5 +50,6 @@ public class OrderProductService {
     @Transactional
     public void deleteByOrderProductId(Long orderProductId) {
         orderProductRepository.deleteById(orderProductId);
+
     }
 }

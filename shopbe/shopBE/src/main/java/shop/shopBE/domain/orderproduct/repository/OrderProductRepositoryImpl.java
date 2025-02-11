@@ -10,9 +10,11 @@ import shop.shopBE.domain.orderhistory.entity.QOrderHistory;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
 import shop.shopBE.domain.orderproduct.entity.OrderProduct;
 import shop.shopBE.domain.orderproduct.request.OrderProductDeliveryInfo;
+import shop.shopBE.domain.orderproduct.exception.OrderProductException;
 import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
 import shop.shopBE.domain.productdetail.entity.QProductDetail;
 import shop.shopBE.domain.productimage.entity.enums.ProductImageCategory;
+import shop.shopBE.global.exception.custom.CustomException;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +61,31 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
                 .fetch();
 
         return Optional.ofNullable(result);
+    }
+
+    public Optional<Void> deleteOrderProductsByOrderHistoryId(Long orderHistoryId) {
+        // 1. 주문 상품(OrderProduct) 리스트 조회
+        List<OrderProduct> oProducts = queryFactory
+                .selectFrom(orderProduct)
+                .where(orderProduct.orderHistory.id.eq(orderHistoryId))
+                .fetch();
+
+        // 2. 삭제할 데이터가 없는 경우 예외 처리
+        if (oProducts.isEmpty()) {
+            throw new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND);
+        }
+
+        // 3. 조회된 리스트를 삭제
+        for (OrderProduct oProduct : oProducts) {
+            queryFactory
+                    .delete(orderProduct)
+                    .where(orderProduct.id.eq(oProduct.getId())) // 각 OrderProduct의 ID로 삭제
+                    .execute();
+        }
+
+
+        // 4. Optional<Void>를 반환하는 가장 적절한 방식
+        return Optional.empty();
     }
 
 
