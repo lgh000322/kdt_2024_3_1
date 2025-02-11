@@ -17,6 +17,4 @@ public interface OrderProductRepositoryCustom {
     Optional<List<OrderProduct>> findOrderProductByOrderHistoryId(Long orderHistoryId);
 
     Optional<List<OrderProductInfo>> findOrderProductInfoByOrderHistoryId(Long orderHistoryId);
-
-    Optional<Void> deleteOrderProductsByOrderHistoryId(Long orderHistoryId);
 }

@@ -63,30 +63,6 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
         return Optional.ofNullable(result);
     }
 
-    public Optional<Void> deleteOrderProductsByOrderHistoryId(Long orderHistoryId) {
-        // 1. 주문 상품(OrderProduct) 리스트 조회
-        List<OrderProduct> oProducts = queryFactory
-                .selectFrom(orderProduct)
-                .where(orderProduct.orderHistory.id.eq(orderHistoryId))
-                .fetch();
-
-        // 2. 삭제할 데이터가 없는 경우 예외 처리
-        if (oProducts.isEmpty()) {
-            throw new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND);
-        }
-
-        // 3. 조회된 리스트를 삭제
-        for (OrderProduct oProduct : oProducts) {
-            queryFactory
-                    .delete(orderProduct)
-                    .where(orderProduct.id.eq(oProduct.getId())) // 각 OrderProduct의 ID로 삭제
-                    .execute();
-        }
-
-
-        // 4. Optional<Void>를 반환하는 가장 적절한 방식
-        return Optional.empty();
-    }
 
 
 

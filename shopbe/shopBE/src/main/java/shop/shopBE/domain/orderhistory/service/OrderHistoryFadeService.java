@@ -24,12 +24,22 @@ public class OrderHistoryFadeService {
         List<OrderHistory> orderHistories = orderHistoryService.findOrderHistoryByMemberId(memberId, pageable);
 
         // 상품의 orderHistory로 OrderHistoryResponse를 응답받는다.
-        List<OrderHistoryResponse> result = getOrderHistoryResponses(orderHistories);
+        List<OrderHistoryResponse> result = getOrderHistoryResponses(orderHistories,pageable);
 
         return result;
     }
 
-    private List<OrderHistoryResponse> getOrderHistoryResponses(List<OrderHistory> orderHistories) {
+    private List<OrderHistoryResponse> getOrderHistoryResponses(List<OrderHistory> orderHistories,Pageable pageable) {
+
+        /**
+         * 문제상황
+         * orderHistories : 10개
+         * OrderHistoryInfoResponse response = orderProductService.findOrderHistoryInfos(orderHistory.getId());
+         * 10번 호출 (좋은 방법이 아님)
+         * page, size 조인해서 10개 한번 쿼리로 가져와서
+         * 밑에서 List<OrderHistoryResponse> 이거를 조합해서 리턴해야 함
+         */
+
         return orderHistories.stream()
                 .map(orderHistory -> {
                     OrderHistoryInfoResponse response = orderProductService.findOrderHistoryInfos(orderHistory.getId());
