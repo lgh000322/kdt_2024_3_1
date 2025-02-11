@@ -49,7 +49,7 @@ public class OrderHistoryService {
 
     //주문내역 삭제
     @Transactional
-    public void deleteOrderHistoryByHistoryId(Long orderHistoryId){
+    public void deleteOrderHistoryByHistoryId(Long orderHistoryId) {
         OrderHistory orderHistory = orderHistoryRepository.findByOrderHistoryId(orderHistoryId)
                 .orElseThrow(() -> new CustomException(OrderHistoryException.OrderHistory_NOT_FOUND));
 
@@ -59,6 +59,7 @@ public class OrderHistoryService {
 
     /**
      * 주문기록저장과 주문 아이템 목록저장을 하나의 트랜잭션에서 처리해야 함.
+     *
      * @param memberId
      * @param orderRequest
      */
@@ -70,14 +71,15 @@ public class OrderHistoryService {
 
         // 주문정보 객체 생성
         OrderHistory orderHistory = OrderHistory.createDefaultOrderHistory(
-                        orderRequest.totalPrice(),
-                        orderRequest.orderProductCount(),
-                        orderRequest.address(),
-                        orderRequest.destinationName(),
-                        orderRequest.receiverName(),
-                        orderRequest.tel(),
-                        orderRequest.zipCode(),
-                        orderRequest.deliveryMessage(), member
+                orderRequest.totalPrice(),
+                orderRequest.orderProductCount(),
+                orderRequest.address(),
+                orderRequest.destinationName(),
+                orderRequest.receiverName(),
+                orderRequest.tel(),
+                orderRequest.zipCode(),
+                orderRequest.deliveryMessage(),
+                member
         );
 
 

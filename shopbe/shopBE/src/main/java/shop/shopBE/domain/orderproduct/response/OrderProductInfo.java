@@ -6,6 +6,8 @@ import shop.shopBE.domain.orderproduct.entity.enums.DeliveryStatus;
 
 public record OrderProductInfo(
         Long productId, // 상품의 아이디
+        Long orderId, // 주문 번호
+        int orderProductCount, // 상품 주문 수량
         String productName, // 해당 상품의 이름
         String orderName, //주문자 이름
         String deliveryAddress, //주문자 주소

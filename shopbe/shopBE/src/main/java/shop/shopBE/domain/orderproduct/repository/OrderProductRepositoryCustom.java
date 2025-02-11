@@ -13,7 +13,9 @@ public interface OrderProductRepositoryCustom {
 
     Optional<OrderProduct> findOrderProductByProductDetailId(Long productDetailId);
 
-    Optional<List<OrderHistoryInfoResponse>> findOrderHistoryInfoByIds(List<Long> orderHistoryIds, Pageable pageable);
+//    Optional<List<OrderHistoryInfoResponse>> findOrderHistoryInfoByIds(List<Long> orderHistoryIds, Pageable pageable);
+
+    Optional<List<OrderHistoryInfoResponse>> findOrderHistoryInfoByIds(List<OrderHistory> orderHistories);
 
     Optional<List<OrderProduct>> findOrderProductByOrderHistoryId(Long orderHistoryId);
 

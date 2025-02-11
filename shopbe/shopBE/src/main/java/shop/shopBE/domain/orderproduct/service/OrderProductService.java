@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.shopBE.domain.orderhistory.entity.OrderHistory;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
+import shop.shopBE.domain.orderhistory.response.OrderHistoryResponse;
 import shop.shopBE.domain.orderproduct.entity.OrderProduct;
 import shop.shopBE.domain.orderproduct.entity.enums.DeliveryStatus;
 import shop.shopBE.domain.orderproduct.exception.OrderProductException;
@@ -31,9 +33,14 @@ public class OrderProductService {
     }
 
 
+//
+//    public List<OrderHistoryInfoResponse> findOrderHistoryInfos(List<Long> orderHistoryIds, Pageable pageable) {
+//        return orderProductRepository.findOrderHistoryInfoByIds(orderHistoryIds, pageable)
+//                .orElseThrow(() -> new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND));
+//    }
 
-    public List<OrderHistoryInfoResponse> findOrderHistoryInfos(List<Long> orderHistoryIds, Pageable pageable) {
-        return orderProductRepository.findOrderHistoryInfoByIds(orderHistoryIds, pageable)
+    public List<OrderHistoryInfoResponse> findOrderHistoryInfos(List<OrderHistory> orderHistories) {
+        return orderProductRepository.findOrderHistoryInfoByIds(orderHistories)
                 .orElseThrow(() -> new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND));
     }
 

@@ -1,6 +1,9 @@
 package shop.shopBE.domain.orderproduct.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.SubQueryExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,25 +49,57 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
     }
 
     @Override
-    public Optional<List<OrderHistoryInfoResponse>> findOrderHistoryInfoByIds(List<Long> orderHistoryIds, Pageable pageable) {
+    public Optional<List<OrderHistoryInfoResponse>> findOrderHistoryInfoByIds(List<OrderHistory> orderHistories) {
         List<OrderHistoryInfoResponse> result = queryFactory
                 .select(Projections.constructor(OrderHistoryInfoResponse.class,
-                        orderProduct.orderHistory.id,
-                        product.productName,  // 대표 상품명
-                        productImage.savedName // 대표 이미지 (없으면 NULL 반환)
+                        orderHistory.id,
+                        product.productName,
+                        productImage.savedName
                 ))
-                .from(orderProduct)
-                .join(orderProduct.productDetail, productDetail)
-                .join(productDetail.product, product)
-                .join(productImage).on(productImage.product.id.eq(product.id)
-                        .and(productImage.productImageCategory.eq(ProductImageCategory.MAIN))) // 대표 이미지 필터링 (JOIN 조건에서)
-                .where(orderProduct.orderHistory.id.in(orderHistoryIds)) // WHERE 에서는 주문 ID 필터링만 적용
-                .offset(pageable.getOffset()) // 페이징 적용
-                .limit(pageable.getPageSize())
+                .from(orderHistory)
+                .leftJoin(orderProduct).on(orderProduct.orderHistory.id.eq(orderHistory.id))
+                .leftJoin(productDetail).on(orderProduct.productDetail.id.eq(productDetail.id))
+                .leftJoin(product).on(productDetail.product.id.eq(product.id))
+                .leftJoin(productImage).on(productImage.product.id.eq(product.id))
+                .where(
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        orderHistory.in(orderHistories),
+                        orderProduct.id.in(
+                                orderProductSubQuery()
+                        )
+                )
                 .fetch();
 
         return Optional.ofNullable(result);
     }
+
+    private JPQLQuery<Long> orderProductSubQuery() {
+        return JPAExpressions.select(orderProduct.id.min())
+                .from(orderProduct)
+                .groupBy(orderProduct.orderHistory.id);
+    }
+
+
+//    @Override
+//    public Optional<List<OrderHistoryInfoResponse>> findOrderHistoryInfoByIds(List<Long> orderHistoryIds, Pageable pageable) {
+//        List<OrderHistoryInfoResponse> result = queryFactory
+//                .select(Projections.constructor(OrderHistoryInfoResponse.class,
+//                        orderProduct.orderHistory.id,
+//                        product.productName,  // 대표 상품명
+//                        productImage.savedName // 대표 이미지 (없으면 NULL 반환)
+//                ))
+//                .from(orderProduct)
+//                .join(orderProduct.productDetail, productDetail)
+//                .join(productDetail.product, product)
+//                .join(productImage).on(productImage.product.id.eq(product.id)
+//                        .and(productImage.productImageCategory.eq(ProductImageCategory.MAIN))) // 대표 이미지 필터링 (JOIN 조건에서)
+//                .where(orderProduct.orderHistory.id.in(orderHistoryIds)) // WHERE 에서는 주문 ID 필터링만 적용
+//                .offset(pageable.getOffset()) // 페이징 적용
+//                .limit(pageable.getPageSize())
+//                .fetch();
+//
+//        return Optional.ofNullable(result);
+//    }
 
 
 
@@ -89,6 +124,8 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
         List<OrderProductInfo> result = queryFactory
                 .select(Projections.constructor(OrderProductInfo.class,
                         product.id,
+                        orderHistory.id,
+                        orderProduct.productCount,
                         product.productName,
                         member.name,
                         orderHistory.address,
@@ -98,12 +135,15 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
                         orderProduct.productTotalPrice
                 ))
                 .from(orderProduct)
-                .leftJoin(orderHistory).on(orderProduct.orderHistory.id.eq(orderHistoryId))
+                .leftJoin(orderHistory).on(orderProduct.orderHistory.id.eq(orderHistory.id))
                 .leftJoin(productDetail).on(orderProduct.productDetail.id.eq(productDetail.id))
                 .leftJoin(member).on(orderHistory.member.id.eq(member.id))
                 .leftJoin(product).on(productDetail.product.id.eq(product.id))
                 .leftJoin(productImage).on(productImage.product.id.eq(product.id))
-                .where(productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .where(
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
+                        orderHistory.id.eq(orderHistoryId)
+                )
                 .fetch();
 
         return Optional.ofNullable(result);

@@ -60,6 +60,7 @@ public class OrderHistory {
                 .zipCode(zipCode)
                 .deliveryMessage(deliveryMessage)
                 .member(member)
+                .orderCount(orderCount)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
