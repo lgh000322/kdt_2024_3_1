@@ -7,12 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
 import shop.shopBE.domain.orderproduct.entity.enums.DeliveryStatus;
-import shop.shopBE.domain.orderproduct.entity.request.OrderProductDeliveryInfo;
 import shop.shopBE.domain.product.entity.Product;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import shop.shopBE.domain.productdetail.entity.ProductDetail;
 
 @Entity
 @AllArgsConstructor
@@ -29,29 +25,28 @@ public class OrderProduct {
 
     private int productTotalPrice;
 
+    @Enumerated(EnumType.STRING)
     private DeliveryStatus currentDeliveryStatus; //배송상태 기록
-
-    private LocalDateTime changedAt; //배송 현재 날짜
-
-    //배송상태 기록
-    @Builder.Default
-    @ElementCollection
-    @CollectionTable(name = "orderProductDeliveryInfo", joinColumns = @JoinColumn(name = "orderProductId"))
-    private List<OrderProductDeliveryInfo> deliveryStatusHistory = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "order_history_id")
     private OrderHistory orderHistory;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @JoinColumn(name = "product_detail_id")
+    private ProductDetail productDetail;
 
-    public void updateDeliveryStatus(OrderProductDeliveryInfo newDeliveryInfo) {
-        this.currentDeliveryStatus = newDeliveryInfo.deliveryStatus(); // 배송 상태 업데이트
-        this.changedAt = newDeliveryInfo.changedAt(); // 변경된 시간 저장
-
-        deliveryStatusHistory.add(newDeliveryInfo);
+    public static OrderProduct createDefaultOrderProduct(int productCount, int productTotalPrice, DeliveryStatus deliveryStatus, OrderHistory orderHistory, ProductDetail productDetail) {
+        return OrderProduct.builder()
+                .productCount(productCount)
+                .productTotalPrice(productTotalPrice)
+                .currentDeliveryStatus(deliveryStatus)
+                .orderHistory(orderHistory)
+                .productDetail(productDetail)
+                .build();
     }
 
+    public void changeDeliveryStatus(DeliveryStatus deliveryStatus) {
+        this.currentDeliveryStatus = deliveryStatus;
+    }
 }

@@ -6,15 +6,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import shop.shopBE.domain.member.entity.Member;
-import shop.shopBE.domain.member.exception.MemberExceptionCode;
-import shop.shopBE.domain.orderproduct.entity.request.OrderProductDeliveryInfo;
+import shop.shopBE.domain.orderproduct.request.OrderProductDeliveryInfo;
 import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
 import shop.shopBE.domain.orderproduct.service.OrderProductService;
 import shop.shopBE.global.config.security.mapper.token.AuthToken;
-import shop.shopBE.global.exception.custom.CustomException;
 import shop.shopBE.global.response.ResponseFormat;
 
 import java.util.List;
@@ -29,23 +27,35 @@ public class OrderProductController {
 
     @GetMapping("/orderProduct/{orderHistoryId}")
     @Operation(summary = "주문상품 상세조회", description = "현재 로그인한 회원의 주문상품 상세조회")
-    public ResponseEntity<ResponseFormat<OrderProductInfo>> findOrderProduct(@PathVariable(name = "orderHistoryId") Long orderHistoryId) {
-        OrderProductInfo findDetailOrderProduct = orderProductService.findDetailOrderProductByHistoryId(orderHistoryId);
-        return ResponseEntity.ok().body(ResponseFormat.of("주문 상세조회 성공", findDetailOrderProduct));
+    public ResponseEntity<ResponseFormat<List<OrderProductInfo>>> findOrderProduct(@PathVariable(name = "orderHistoryId") Long orderHistoryId) {
+        List<OrderProductInfo> orderInfos = orderProductService.getOrderInfos(orderHistoryId);
+        return ResponseEntity.ok().body(ResponseFormat.of("주문 상세조회 성공", orderInfos));
     }
 
-    @PatchMapping("/orderProduct/{orderProductId}")
+    @PutMapping("/orderProduct/{productDetailId}")
     @Operation(summary = "주문상품 배송상태 업데이트", description = "현재 로그인한 회원의 주문상품 배송상태를 업데이트")
-    public ResponseEntity<ResponseFormat<List<OrderProductInfo>>> UpdateOrderProductDeliveryState( @PathVariable(name = "orderProductId") Long orderProductId,
-                                                                                                   @RequestBody @Valid OrderProductDeliveryInfo orderProductDeliveryInfo) {
-        orderProductService.UpdateOrderProductDeliveryState(orderProductId, orderProductDeliveryInfo);
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ResponseFormat<List<OrderProductInfo>>> updateOrderProductDeliveryState(@PathVariable(name = "productDetailId") Long orderProductDetailId,
+                                                                                                  @RequestBody @Valid OrderProductDeliveryInfo orderProductDeliveryInfo) {
+        orderProductService.updateOrderProductDeliveryState(orderProductDetailId, orderProductDeliveryInfo.deliveryStatus());
         return ResponseEntity.ok().body(ResponseFormat.of("주문 상품 배송상태 업데이트 성공"));
     }
 
-    @GetMapping("orderProduct/deliverySearch/{orderProductID}")
-    @Operation(summary = "주문상품 배송조회", description = "현재 로그인한 회원이 주문한 상품의 배송조회")
-    public ResponseEntity<ResponseFormat<List<OrderProductDeliveryInfo>>> findOrderProductState(@PathVariable(name = "orderProductID") Long orderProductID){
-        List<OrderProductDeliveryInfo> deliveryStatusHistoryList = orderProductService.getOrderProductDeliveryListByHistoryId(orderProductID);
-        return ResponseEntity.ok().body(ResponseFormat.of("주문 상품 배송조회 성공", deliveryStatusHistoryList));
+    @DeleteMapping("/orderProduct/{orderProductId}")
+    @Operation(summary = "주문 상품 로그 삭제", description = "주문한 상품의 기록을 삭제한다.")
+    public ResponseEntity<ResponseFormat<Void>> deleteOrderProduct(@PathVariable(name = "orderProductId") Long orderProductId) {
+        orderProductService.deleteByOrderProductId(orderProductId);
+        return ResponseEntity.ok().body(ResponseFormat.of("주문 상품 로그를 삭제하는데 성공했습니다."));
     }
+
+    /**
+     * 이거 뭔지 모르겠음..
+     */
+//    @GetMapping("orderProduct/deliverySearch/{orderProductID}")
+//    @Operation(summary = "주문상품 배송조회", description = "현재 로그인한 회원이 주문한 상품의 배송조회")
+//    public ResponseEntity<ResponseFormat<List<OrderProductDeliveryInfo>>> findOrderProductState(@PathVariable(name = "orderProductID") Long orderProductID){
+//        List<OrderProductDeliveryInfo> deliveryStatusHistoryList = orderProductService.getOrderProductDeliveryListByHistoryId(orderProductID);
+//        return ResponseEntity.ok().body(ResponseFormat.of("주문 상품 배송조회 성공", deliveryStatusHistoryList));
+//    }
+
 }

@@ -10,9 +10,11 @@ import java.util.Optional;
 
 public interface OrderProductRepositoryCustom {
 
-    Optional<OrderProductInfo> findDetailOrderProductByHistoryId(OrderHistory orderHistory);
+    Optional<OrderProduct> findOrderProductByProductDetailId(Long productDetailId);
 
     Optional<OrderHistoryInfoResponse> findOrderHistoryInfoById(Long orderHistoryId);
 
-    Optional<Void> deleteOrderProductsByOrderHistoryId(Long orderHistoryId);
+    Optional<List<OrderProduct>> findOrderProductByOrderHistoryId(Long orderHistoryId);
+
+    Optional<List<OrderProductInfo>> findOrderProductInfoByOrderHistoryId(Long orderHistoryId);
 }

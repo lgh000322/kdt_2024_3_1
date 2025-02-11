@@ -4,22 +4,26 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import shop.shopBE.domain.member.entity.QMember;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
+import shop.shopBE.domain.orderhistory.entity.QOrderHistory;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
 import shop.shopBE.domain.orderproduct.entity.OrderProduct;
-import shop.shopBE.domain.orderproduct.entity.request.OrderProductDeliveryInfo;
+import shop.shopBE.domain.orderproduct.request.OrderProductDeliveryInfo;
 import shop.shopBE.domain.orderproduct.exception.OrderProductException;
-import shop.shopBE.domain.orderproduct.response.DetailOrderProducts;
 import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
+import shop.shopBE.domain.productdetail.entity.QProductDetail;
 import shop.shopBE.domain.productimage.entity.enums.ProductImageCategory;
 import shop.shopBE.global.exception.custom.CustomException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static shop.shopBE.domain.member.entity.QMember.member;
+import static shop.shopBE.domain.orderhistory.entity.QOrderHistory.orderHistory;
 import static shop.shopBE.domain.orderproduct.entity.QOrderProduct.orderProduct;
 import static shop.shopBE.domain.product.entity.QProduct.product;
+import static shop.shopBE.domain.productdetail.entity.QProductDetail.productDetail;
 import static shop.shopBE.domain.productimage.entity.QProductImage.productImage;
 
 @Slf4j
@@ -29,104 +33,63 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
     private final JPAQueryFactory queryFactory;
 
 
-    //주문내역번호로 주문상품 상세보기
     @Override
-    public Optional<OrderProductInfo> findDetailOrderProductByHistoryId(OrderHistory oHistory) {
-
-        // 1. 주문 상품(OrderProduct) 리스트 조회
-        List<OrderProduct> orderProducts = queryFactory
-                .selectFrom(orderProduct)
-                .where(orderProduct.orderHistory.id.eq(oHistory.getId()))
-                .fetch();
-
-        // 2. 각 주문 상품에 대한 상세 정보 생성
-        List<DetailOrderProducts> orderDetailProducts = new ArrayList<>();
-
-        for (OrderProduct oProduct : orderProducts) {
-
-            // 2-1. 상품 이미지 정보 가져오기
-            OrderHistoryInfoResponse productImageInfo = queryFactory
-                    .select(Projections.constructor(OrderHistoryInfoResponse.class,
-                            product.productName,
-                            productImage.savedName
-                    ))
-                    .from(orderProduct)
-                    .innerJoin(product).on(orderProduct.product.id.eq(product.id))
-                    .leftJoin(productImage).on(productImage.product.id.eq(product.id))
-                    .where(orderProduct.id.eq(oProduct.getId())
-                            .and(productImage.productImageCategory.eq(ProductImageCategory.MAIN))) //상품의 Main이미지만 가져오도록
-                    .fetchOne();
-
-            //2-2. 상품 상세 정보들 객체 생성
-            DetailOrderProducts details = new DetailOrderProducts(
-                    oProduct.getId(), //해당 주문상품 id
-                    new OrderProductDeliveryInfo(oProduct.getChangedAt(), oProduct.getCurrentDeliveryStatus()), // 배송 상태
-                    productImageInfo.mainProductName(),    // 대표 상품 이름
-                    productImageInfo.mainImageUrl(),       // 대표 이미지 URL
-                    oProduct.getProductCount(),            // 구매 수량
-                    oProduct.getProductTotalPrice()        // 총 가격
-            );
-
-            //2-2 리스트에 하나씩 삽입.
-            orderDetailProducts.add(details);
-        }
-
-        //3. 반환할 객체 생성
-        OrderProductInfo result = new OrderProductInfo(
-                oHistory.getId(),                            // 주문 내역 ID
-                oHistory.getReceiverName(),             // 주문자 이름
-                oHistory.getAddress(),     // 배송 주소
-                oHistory.getTel(),         // 전화번호
-                oHistory.getOrderPrice(),
-                orderDetailProducts                         // 주문 상세 목록
-        );
+    public Optional<OrderProduct> findOrderProductByProductDetailId(Long productDetailId) {
+        OrderProduct result = queryFactory
+                .select(orderProduct)
+                .from(orderProduct)
+                .where(orderProduct.productDetail.id.eq(productDetailId))
+                .fetchOne();
 
         return Optional.ofNullable(result);
     }
 
-    //주문내역 번호로 대표 이미지 주소와 이름 반환
     @Override
     public Optional<OrderHistoryInfoResponse> findOrderHistoryInfoById(Long orderHistoryId) {
-            OrderHistoryInfoResponse result = queryFactory
-                    .select(Projections.constructor(OrderHistoryInfoResponse.class,
-                            product.productName,
-                            productImage.savedName
-                    ))
-                    .from(orderProduct)
-                    .innerJoin(product).on(orderProduct.product.id.eq(product.id))
-                    .innerJoin(productImage).on(productImage.product.id.eq(product.id))
-                    .where(orderProduct.orderHistory.id.eq(orderHistoryId)
-                        .and(productImage.productImageCategory.eq(ProductImageCategory.MAIN)))
-                    .fetchFirst();
-
-        return Optional.ofNullable(result);
-    }
-
-    public Optional<Void> deleteOrderProductsByOrderHistoryId(Long orderHistoryId) {
-        // 1. 주문 상품(OrderProduct) 리스트 조회
-        List<OrderProduct> oProducts = queryFactory
-                .selectFrom(orderProduct)
-                .where(orderProduct.orderHistory.id.eq(orderHistoryId))
-                .fetch();
-
-        // 2. 삭제할 데이터가 없는 경우 예외 처리
-        if (oProducts.isEmpty()) {
-            throw new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND);
-        }
-
-        // 3. 조회된 리스트를 삭제
-        for (OrderProduct oProduct : oProducts) {
-            queryFactory
-                    .delete(orderProduct)
-                    .where(orderProduct.id.eq(oProduct.getId())) // 각 OrderProduct의 ID로 삭제
-                    .execute();
-        }
-
-
-        // 4. Optional<Void>를 반환하는 가장 적절한 방식
         return Optional.empty();
     }
 
+
+    @Override
+    public Optional<List<OrderProduct>> findOrderProductByOrderHistoryId(Long orderHistoryId) {
+        List<OrderProduct> result = queryFactory
+                .select(orderProduct)
+                .from(orderProduct)
+                .join(orderProduct.productDetail,productDetail).fetchJoin()
+                .join(productDetail.product,product).fetchJoin()
+                .where(orderProduct.orderHistory.id.eq(orderHistoryId))
+                .fetch();
+
+        return Optional.ofNullable(result);
+    }
+
+
+
+
+    @Override
+    public Optional<List<OrderProductInfo>> findOrderProductInfoByOrderHistoryId(Long orderHistoryId) {
+        List<OrderProductInfo> result = queryFactory
+                .select(Projections.constructor(OrderProductInfo.class,
+                        product.id,
+                        product.productName,
+                        member.name,
+                        orderHistory.address,
+                        orderHistory.tel,
+                        orderProduct.currentDeliveryStatus,
+                        productImage.savedName,
+                        orderProduct.productTotalPrice
+                ))
+                .from(orderProduct)
+                .leftJoin(orderHistory).on(orderProduct.orderHistory.id.eq(orderHistoryId))
+                .leftJoin(productDetail).on(orderProduct.productDetail.id.eq(productDetail.id))
+                .leftJoin(member).on(orderHistory.member.id.eq(member.id))
+                .leftJoin(product).on(productDetail.product.id.eq(product.id))
+                .leftJoin(productImage).on(productImage.product.id.eq(product.id))
+                .where(productImage.productImageCategory.eq(ProductImageCategory.MAIN))
+                .fetch();
+
+        return Optional.ofNullable(result);
+    }
 
 
 }

@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 
+import shop.shopBE.domain.productdetail.entity.ProductDetail;
 import shop.shopBE.domain.productdetail.entity.QProductDetail;
 import shop.shopBE.domain.productdetail.response.ProductDetails;
 
@@ -34,6 +35,7 @@ public class ProductDetailRepositoryCustomImpl implements ProductDetailRepositor
     }
 
     @Override
+<<<<<<< HEAD
     public Optional<Integer> findQuantityByProductIdAndSize(Long productId, int size) {
         Integer findQuantity = queryFactory
                 .select(productDetail.sizeStock)
@@ -42,5 +44,17 @@ public class ProductDetailRepositoryCustomImpl implements ProductDetailRepositor
                 .fetchOne();
 
         return Optional.ofNullable(findQuantity);
+=======
+    public Optional<ProductDetail> findByProductIdAndSize(Long productId, int size) {
+
+        ProductDetail result = queryFactory
+                .select(productDetail)
+                .from(productDetail)
+                .where(productDetail.product.id.eq(productId).and(productDetail.shoesSize.eq(size)))
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+
+>>>>>>> 20bd19f28fe0ea88fbdd9f1c904144853b17f387
     }
 }
