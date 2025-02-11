@@ -109,18 +109,6 @@ const managerMenuItems = [
   },
   {
     id: 4,
-    title: "통계분석",
-    path: "/admin_statistic",
-    content: "통계분석 관련 콘텐츠",
-  },
-  {
-    id: 5,
-    title: "고객지원(1대1 상담)",
-    path: "/mypage/counsel",
-    content: "고객지원(1대1 상담) 관련 콘텐츠",
-  },
-  {
-    id: 6,
     title: "배너 관리",
     path: "/admin_banner",
     content: "배너관리 관련 콘텐츠",

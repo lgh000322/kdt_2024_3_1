@@ -18,6 +18,7 @@ const LookUpProduct = () => {
   const [productName, setProductName] = useState(""); // 상품의 이름
   const [quantities, setQuantities] = useState([]); // 재고 정보
   const [selectedSize, setSelectedSize] = useState(null); // 선택된 사이즈
+  const [mainImage, setMainImage] = useState(null); // 결제 화면에 전달할 메인 이미지 경로
   const loginState = useSelector((state) => state.loginSlice);
   const { moveToCart, moveToProductPayment } = useCustomMove();
 
@@ -25,6 +26,7 @@ const LookUpProduct = () => {
     getProductOne(productId).then((res) => {
       const data = res.data;
       setPrice(data.price); // 가격 세팅
+      setMainImage(data.mainImgUrl);
 
       const imageForm = [
         data.mainImgUrl,
@@ -56,7 +58,14 @@ const LookUpProduct = () => {
       return;
     }
 
-    moveToProductPayment(productName + " " + quantity + "개", totalPrice);
+    moveToProductPayment(
+      productName,
+      totalPrice,
+      mainImage,
+      selectedSize,
+      productId,
+      quantity
+    );
   };
 
   const addWishList = () => {

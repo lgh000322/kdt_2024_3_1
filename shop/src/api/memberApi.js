@@ -140,13 +140,12 @@ export const getMembers = async (accessToken, page, size,  role, email , name) =
   }
 };
 
-export const sellerAccept = async (accessToken, page, size, name) => {
+export const sellerAccept = async (accessToken, page, size, name ) => {
   const params = new URLSearchParams();
 
   if (page !== null && page !== undefined) params.append("page", page);
   if (size !== null && size !== undefined) params.append("size", size);
-  if (name !== null && name !== undefined)
-    params.append("name", name);
+  if (name !== null && name !== undefined) params.append("name", name);
 
   const queryString = params.toString(); // URLSearchParams를 문자열로 변환
 
@@ -187,9 +186,8 @@ export const sellerAccept = async (accessToken, page, size, name) => {
 
 export const sellerAcceptFile = async (accessToken, authorityId) => {
   try {
-    const res = await axios.put(
+    const res = await axios.get(
       `${selleracceptfile}/${authorityId}`,
-      {},
       {
         headers: { Authorization: `Bearer ${accessToken}` }, 
         withCredentials: true, 

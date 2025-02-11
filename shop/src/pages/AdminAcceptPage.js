@@ -16,53 +16,63 @@ function AdminAcceptPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
 
- const sellerList = async (searchTermValue = null) => {
-     setLoading(true);
-     try {
-       // API 호출 시 검색 조건 전달
-       const res = await sellerAccept(
-         loginSlice.accessToken,
-         page,
-         10,
-         searchTermValue
-       );
-       const sortedData = res.data.sort((a, b) => {
-        if (!a.name) return 1;
-        if (!b.name) return -1;
-        return a.name.localeCompare(b.name);
-      });
-       setFormData(sortedData);
-     } catch (err) {
-       console.error("회원 정보 조회 실패:", err);
-     } finally {
-       setLoading(false);
-     }
-   };
+const sellerList = async (searchTermValue = "") => {
+  setLoading(true);
+  try {
+    const res = await sellerAccept(
+      loginSlice.accessToken,
+      page,
+      10,
+      searchTermValue // 검색 조건 전달
+    );
+    const sortedData = res.data.sort((a, b) => {
+      if (!a.name) return 1;
+      if (!b.name) return -1;
+      return a.name.localeCompare(b.name);
+    });
+    setFormData(sortedData);
+    setFilteredData(sortedData); // 화면에 표시할 데이터 업데이트
+  } catch (err) {
+    console.error("회원 정보 조회 실패:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     sellerList();
-    }, []);
-
+  }, []);
   if (loading) return <div>Loading...</div>;
 
   const handleRowClick = (index) => {
     setSelectedRowIndex(index);
   };
 
+  const handleSearch = () => {
+    sellerList(searchTerm); // 검색어를 기반으로 API 호출
+  };
+
   const handleFile = async () => {
-
+    if (selectedRowIndex === null) {
+      alert("항목을 선택하세요.");
+      return;
+    }
     try {
-      const selectedMember = filteredData
+      const selectedMember = filteredData[selectedRowIndex];
       const accessToken = loginSlice.accessToken;
-
-      // 선택된 데이터의 authorityId를 사용하여 API 호출
-      const response = await sellerAcceptSubmit(
+      const response = await sellerAcceptFile(
         accessToken,
         selectedMember.authorityId
       );
-
       if (response.code === 200) {
         alert("성공");
+        setSelectedRowIndex(null); // 선택 초기화
+  
+        const fileData = response.data?.[0]; // data 배열의 첫 번째 항목
+        if (fileData && fileData.imageUrl) {
+          window.open(fileData.imageUrl); 
+        }
       } else {
         alert(`승인 실패: ${response.message}`);
       }
@@ -71,7 +81,7 @@ function AdminAcceptPage() {
       alert("승인 중 오류가 발생했습니다.");
     }
   };
-
+  
   const handleApprove = async () => {
     if (selectedRowIndex === null) {
       alert("항목을 선택하세요.");
@@ -91,12 +101,6 @@ function AdminAcceptPage() {
       if (response.code === 200) {
         alert("성공");
 
-        // 승인 후 리스트에서 제거
-        const updatedFormData = formData.filter(
-          (member) => member.id !== selectedMember.id
-        );
-        setFormData(updatedFormData);
-        setFilteredData(updatedFormData);
         setSelectedRowIndex(null); // 선택 초기화
       } else {
         alert(`승인 실패: ${response.message}`);
@@ -126,12 +130,6 @@ function AdminAcceptPage() {
       if (response.code === 200) {
         alert("성공");
 
-        // 승인 후 리스트에서 제거
-        const updatedFormData = formData.filter(
-          (member) => member.id !== selectedMember.id
-        );
-        setFormData(updatedFormData);
-        setFilteredData(updatedFormData);
         setSelectedRowIndex(null); // 선택 초기화
       } else {
         alert(`승인 실패: ${response.message}`);
@@ -198,7 +196,7 @@ function AdminAcceptPage() {
             }}
           />
           <button
-            onClick={() => sellerList(searchTerm)}
+            onClick={handleSearch}
             style={{
               backgroundColor: "#007BFF",
               color: "#fff",
@@ -255,9 +253,9 @@ function AdminAcceptPage() {
             >
               <tr>
                 {["번호", "등록자", "등록 제목", "등록일", "첨부 파일"].map(
-                  (header) => (
+                  (header, index) => (
                     <th
-                      key={header}
+                      key={index}
                       style={{
                         borderBottom: "2px solid #ddd",
                         padding: "10px",
@@ -272,7 +270,7 @@ function AdminAcceptPage() {
               </tr>
             </thead>
             <tbody>
-              {formData.map((member, index) => (
+              {filteredData.map((member, index) => (
                 <tr
                   key={member.id}
                   style={{

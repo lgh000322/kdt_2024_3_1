@@ -60,16 +60,24 @@ const useCustomMove = () => {
     navigate({ pathname: "/mypage/shipping-address" });
   };
 
-  const moveToProductPayment = (productName, totalPrice) => {
+  const moveToProductPayment = (
+    productName,
+    totalPrice,
+    imgUrl,
+    selectedSize,
+    productId,
+    productCount
+  ) => {
     navigate({
       pathname: "/productpayment",
       search: `?productName=${encodeURIComponent(
         productName
-      )}&totalPrice=${totalPrice}`,
+      )}&totalPrice=${totalPrice}&imgUrl=${imgUrl}&selectedSize=${selectedSize}&productId=${productId}&productCount=${productCount}`,
     });
   };
 
   const moveToPay = (productName, price, orderId) => {
+    console.log(orderId);
     navigate({
       pathname: "/checkout",
       search: `?productName=${encodeURIComponent(

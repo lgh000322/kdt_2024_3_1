@@ -112,8 +112,10 @@ export default function CheckoutPage() {
                 orderId: generateRandomString(), // 추후에 백엔드단의 orderId를 uuid로 변경하고 그 값을 넣어줘야 함
                 orderName: productName,
                 successUrl:
-                  window.location.origin + `/success?customId=${orderId}`,
-                failUrl: window.location.origin + `/fail?customId=${orderId}`,
+                  window.location.origin +
+                  `/checkout/success?customId=${orderId}`,
+                failUrl:
+                  window.location.origin + `/checkout/fail?customId=${orderId}`,
                 // customerEmail: "customer123@gmail.com",
                 // customerName: "김토스",
                 // customerMobilePhone: "01012341234",

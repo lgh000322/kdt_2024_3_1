@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
+import CheckoutFailHandler from "../handler/CheckoutFailHandler";
 
 const Loading = <div>Loading ...</div>; // JSX로 작성
 
@@ -33,6 +34,12 @@ const ProductPaymentPage = lazy(() => import("../pages/ProductPaymentPage"));
 const Cart = lazy(() => import("../pages/Cart"));
 const Check = lazy(() => import("../pages/CheckoutPage"));
 const SellerProductList = lazy(() => import("../pages/SellerProductListPage"));
+const CheckOutSuccessHandler = lazy(() =>
+  import("../handler/CheckoutSuccessHandler")
+);
+const CheckOutFailHandler = lazy(() =>
+  import("../handler/CheckoutFailHandler")
+);
 
 const root = createBrowserRouter([
   {
@@ -261,6 +268,22 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <SellerProductList />
+      </Suspense>
+    ),
+  },
+  {
+    path: "checkout/success",
+    element: (
+      <Suspense fallback={Loading}>
+        <CheckOutSuccessHandler></CheckOutSuccessHandler>
+      </Suspense>
+    ),
+  },
+  {
+    path: "checkout/fail",
+    element: (
+      <Suspense fallback={Loading}>
+        <CheckoutFailHandler></CheckoutFailHandler>
       </Suspense>
     ),
   },
