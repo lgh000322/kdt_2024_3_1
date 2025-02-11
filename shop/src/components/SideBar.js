@@ -113,6 +113,12 @@ const managerMenuItems = [
     path: "/admin_banner",
     content: "배너관리 관련 콘텐츠",
   },
+  {
+    id: 5,
+    title: "찜리스트",
+    path: "/mypage/wishlist",
+    content: "찜리스트 관련 콘텐츠",
+  },
 ];
 
 const Sidebar = ({ onMenuClick }) => {

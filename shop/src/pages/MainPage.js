@@ -68,8 +68,6 @@ function MainPage() {
 
       // 페이지 하단에 도달했을 때 더 많은 상품을 불러오기
       if (currentScroll >= scrollableHeight - 100 && !loading) {
-        console.log(searchParams.get("page"));
-        console.log(searchParams.get("query"));
         let page = parseInt(searchParams.get("page")) || 0; // 페이지 번호가 없을 경우 0으로 설정
         let updatedPage = page + 1;
         let query = searchParams.get("query") || ""; // 쿼리 파라미터 가져오기
