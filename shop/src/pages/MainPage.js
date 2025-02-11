@@ -9,6 +9,16 @@ function MainPage() {
   const [loading, setLoading] = useState(false); // 로딩 상태 (중복 API 요청 방지)
   const [noMoreProducts, setNoMoreProducts] = useState(false);
 
+  const handleScroll = () => {
+    const scrollableHeight = document.documentElement.scrollHeight;
+    const currentScroll = window.innerHeight + window.scrollY;
+
+    // 페이지 하단에 도달했을 때 더 많은 상품을 불러오기
+    if (currentScroll >= scrollableHeight - 100 && !loading) {
+      setPage((prevPage) => prevPage + 1); // 페이지 번호 증가
+    }
+  };
+
   useEffect(() => {
     if (noMoreProducts || loading) return; // 로딩 중일 경우 API 요청 방지
 
@@ -31,23 +41,13 @@ function MainPage() {
     // 더 이상 가져올 상품이 없으면 실행하지 않음
     if (noMoreProducts) return;
 
-    const handleScroll = () => {
-      const scrollableHeight = document.documentElement.scrollHeight;
-      const currentScroll = window.innerHeight + window.scrollY;
-
-      // 페이지 하단에 도달했을 때 더 많은 상품을 불러오기
-      if (currentScroll >= scrollableHeight - 100 && !loading) {
-        setPage((prevPage) => prevPage + 1); // 페이지 번호 증가
-      }
-    };
-
     window.addEventListener("scroll", handleScroll);
 
     // 컴포넌트 언마운트 시 이벤트 리스너 제거
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [loading, noMoreProducts]);
+  }, []);
 
   return (
     <div>

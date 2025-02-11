@@ -5,6 +5,44 @@ const basicProductUrl = `${ApiHost}/product`;
 const defaultProductsUrl = `${ApiHost}/products`;
 
 
+
+
+// 상품 업데이트요청
+export const updateProduct = async (productId, updateProductInforms, accessToken) => {
+
+
+  if (!accessToken) {
+    throw new Error("Access Token is required for authorization.");
+  }
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "multipart/form-data",
+    },
+    withCredentials: true,
+  };
+
+  console.log("서버에 보낼 데이터: ", updateProductInforms);
+
+
+  try {
+    
+    const res = await axios.put(
+      `${basicProductUrl}/${productId}`,
+      updateProductInforms,
+      config
+    );
+    return res.data;
+
+  } catch (error) {
+
+    console.error("상품 등록 오류:", error.response || error.message);
+    throw error;
+  
+  }
+}
+
 // 상품상세조회
 export const getProductDetails = async (productId, accessToken) => {
 
@@ -87,5 +125,25 @@ export const getProductList = async (
   const queryString = params.toString(); // URLSearchParams를 문자열로 변환
 
   const res = await axios.get(`${defaultProductsUrl}?${queryString}`);
+  return res.data;
+};
+
+// 특정 상품 조회
+export const getProductOne = async (productId) => {
+  const res = await axios.get(`${defaultProductsUrl}/${productId}`);
+  return res.data;
+};
+
+// 판매자가 등록한 상품 조회
+export const getSellerProductList = async (accessToken, page, size) => {
+  const header = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    withCredentials: true,
+  };
+
+  const res = await axios.get(
+    `${basicProductUrl}/seller?page=${page}&size=${size}`,
+    header
+  );
   return res.data;
 };

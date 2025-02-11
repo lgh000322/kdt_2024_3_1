@@ -7,6 +7,7 @@ import colorSyntax from "@toast-ui/editor-plugin-color-syntax";
 import { registerProduct } from "../api/productApi";
 import { useSelector } from "react-redux";
 import useCustomMove from "../hook/useCustomMove";
+import { X } from "lucide-react";
 
 const productEnum = {
   SLIPPERS: { description: "슬리퍼" },
@@ -275,76 +276,68 @@ function ProductUploadPage() {
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg border relative">
         <h1 className="text-2xl font-bold mb-6">상품 등록</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* 대표 이미지 업로드 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              대표 이미지 업로드
-            </label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleRepresentImageUpload}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
-            />
-            {representImage && (
-              <div className="mt-4 relative">
+       {/* 대표 이미지 업로드 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            대표 이미지 업로드
+          </label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleRepresentImageUpload}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
+          />
+          {representImage && (
+            <div className="mt-4 relative w-60 h-auto">
+              <img
+                src={representImage.preview}
+                alt="대표 이미지"
+                className="w-full h-auto object-cover rounded-lg"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveRepresentImage}
+                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* 상품 이미지 업로드 */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            상품 이미지 업로드
+          </label>
+          <input
+            ref={multiFileInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
+          />
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            {images.map((image, index) => (
+              <div key={index} className="relative">
                 <img
-                  src={representImage.preview}
-                  alt="대표 이미지"
-                  className="w-60 h-auto object-cover rounded-lg"
-                  // onMouseMove={(e) => handleHoverRepresentImage(representImage, e)}
-                  // onMouseLeave={handleMouseLeave}
+                  src={image.preview}
+                  alt={`uploaded-${index}`}
+                  className="w-full h-auto object-cover rounded-lg"
                 />
                 <button
                   type="button"
-                  onClick={handleRemoveRepresentImage}
-                  className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-sm rounded-full"
+                  onClick={() => handleRemoveImage(index)}
+                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full transition-colors"
                 >
-                  삭제
+                  <X size={16} />
                 </button>
               </div>
-            )}
+            ))}
           </div>
-
-          {/* 상품 이미지 업로드 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              상품 이미지 업로드
-            </label>
-            <input
-              ref={multiFileInputRef}
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
-            />
-            <div className="mt-4 grid grid-cols-3 gap-4">
-              {images.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative"
-                  // onMouseMove={(e) => handleHoverImage(image, e)}
-                  // onMouseLeave={handleMouseLeave}
-                >
-                  <img
-                    src={image.preview}
-                    alt={`uploaded-${index}`}
-                    className="w-60 h-auto object-cover rounded-lg"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-sm rounded-full"
-                  >
-                    삭제
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
+        </div>
           {/* 상품명 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">

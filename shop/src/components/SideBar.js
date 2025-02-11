@@ -41,6 +41,18 @@ const sellerMenuItems = [
     path: "/mypage/address-management",
     content: "배송지 관리 관련 콘텐츠",
   },
+  {
+    id: 7,
+    title: "상품 등록",
+    path: "/productupload",
+    content: "상품 업로드",
+  },
+  {
+    id: 8,
+    title: "등록한 상품 조회",
+    path: "/seller/products",
+    content: "내가 등록한 상품 조회",
+  },
 ];
 
 const consumerMenuItems = [
