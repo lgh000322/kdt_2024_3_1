@@ -14,6 +14,9 @@ import shop.shopBE.domain.cartitem.request.UpdateCartItemInform;
 import shop.shopBE.domain.cartitem.response.CartItemInform;
 import shop.shopBE.domain.cartitem.response.CartItemInformResp;
 import shop.shopBE.domain.product.entity.Product;
+import shop.shopBE.domain.productdetail.entity.ProductDetail;
+import shop.shopBE.domain.productdetail.response.ProductDetails;
+import shop.shopBE.domain.productdetail.service.ProductDetailService;
 import shop.shopBE.global.exception.custom.CustomException;
 
 import java.util.ArrayList;
@@ -24,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CartItemService {
     private final CartItemRepository cartItemRepository;
-
+    private final ProductDetailService productDetailService;
     // 카트아이템 조회 메서드
     public List<CartItemInformResp> findCartItemInformsByCartId(Long cartId, Pageable pageable) {
 
@@ -32,7 +35,23 @@ public class CartItemService {
         List<CartItemInform> cartItemInforms = cartItemRepository.findCartItemInfromsById(cartId, pageable)
                 .orElseThrow(() -> new CustomException(CartItemExceptionCode.CART_ITEM_EMPTY));
 
-        return setCartItemInformRespData(cartItemInforms);
+        List<CartItemInformResp> cartItemInformResps = new ArrayList<>();
+
+        for (CartItemInform cartItemInform : cartItemInforms) {
+            int quantity = productDetailService.findQuantityByProductIdAndSize(cartItemInform.getProductId(), cartItemInform.getCartItemSize());
+            CartItemInformResp cartItemInformResp = new CartItemInformResp();
+
+            if (quantity > 0) {
+                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "판매 중");
+            } else {
+                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "품절");
+            }
+
+            cartItemInformResps.add(cartItemInformResp);
+
+        }
+
+        return cartItemInformResps;
     }
 
 
@@ -77,26 +96,28 @@ public class CartItemService {
 
 
 
-    // 상품정보(판매중, 품절) 설정로직
-    private List<CartItemInformResp> setCartItemInformRespData(List<CartItemInform> cartItemInforms) {
-
-        List<CartItemInformResp> cartItemInformResps = new ArrayList<>();
-
-
-        for (CartItemInform cartItemInform : cartItemInforms) {
-            CartItemInformResp cartItemInformResp = new CartItemInformResp();
-
-            if(cartItemInform.getSizeStock() > 0) {
-                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "판매 중");
-            } else {
-                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "품절");
-            }
-            cartItemInformResps.add(cartItemInformResp);
-        }
-
-
-        return cartItemInformResps;
-    }
+//    // 상품정보(판매중, 품절) 설정로직
+//    private List<CartItemInformResp> setCartItemInformRespData(List<CartItemInform> cartItemInforms) {
+//
+//        List<CartItemInformResp> cartItemInformResps = new ArrayList<>();
+//        List<ProductDetails> productDetailsByProductId = productDetailService.findProductDetailsByProductId(cartItemInform.getProductId());
+//
+//        for (CartItemInform cartItemInform : cartItemInforms) {
+//            CartItemInformResp cartItemInformResp = new CartItemInformResp();
+//
+//
+//
+//      /*      if(cartItemInform.getSizeStock() > 0) {
+//                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "판매 중");
+//            } else {
+//                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "품절");
+//            }
+//            cartItemInformResps.add(cartItemInformResp);*/
+//        }
+//
+//
+//        return cartItemInformResps;
+//    }
 
 
 }

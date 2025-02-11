@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ProductDetailRepositoryCustom {
     Optional<List<ProductDetails>> findProductDetailsByProductId(Long productId);
+    Optional<Integer> findQuantityByProductIdAndSize(Long productId, int size);
 }
