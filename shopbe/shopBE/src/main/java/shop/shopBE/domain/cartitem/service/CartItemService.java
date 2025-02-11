@@ -35,24 +35,10 @@ public class CartItemService {
         List<CartItemInform> cartItemInforms = cartItemRepository.findCartItemInfromsById(cartId, pageable)
                 .orElseThrow(() -> new CustomException(CartItemExceptionCode.CART_ITEM_EMPTY));
 
-        List<CartItemInformResp> cartItemInformResps = new ArrayList<>();
 
-        for (CartItemInform cartItemInform : cartItemInforms) {
-            int quantity = productDetailService.findQuantityByProductIdAndSize(cartItemInform.getProductId(), cartItemInform.getCartItemSize());
-            CartItemInformResp cartItemInformResp = new CartItemInformResp();
-
-            if (quantity > 0) {
-                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "판매 중");
-            } else {
-                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "품절");
-            }
-
-            cartItemInformResps.add(cartItemInformResp);
-
-        }
-
-        return cartItemInformResps;
+        return setCartItemInformRespData(cartItemInforms);
     }
+
 
 
     // 카트 아이템 추가 메서드
@@ -96,6 +82,32 @@ public class CartItemService {
 
 
 
+    // 상품정보(판매중, 품절) 설정로직
+    private List<CartItemInformResp> setCartItemInformRespData(List<CartItemInform> cartItemInforms) {
+        List<CartItemInformResp> cartItemInformResps = new ArrayList<>();
+
+        for (CartItemInform cartItemInform : cartItemInforms) {
+            int quantity = productDetailService.findQuantityByProductIdAndSize(cartItemInform.getProductId(), cartItemInform.getCartItemSize());
+            CartItemInformResp cartItemInformResp = new CartItemInformResp();
+
+            if (quantity > 0) {
+                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "판매 중");
+            } else {
+                cartItemInformResp.addCartItemInformAndStatus(cartItemInform, "품절");
+            }
+
+            cartItemInformResps.add(cartItemInformResp);
+
+        }
+        return cartItemInformResps;
+    }
+
+
+
+}
+
+
+
 //    // 상품정보(판매중, 품절) 설정로직
 //    private List<CartItemInformResp> setCartItemInformRespData(List<CartItemInform> cartItemInforms) {
 //
@@ -118,6 +130,3 @@ public class CartItemService {
 //
 //        return cartItemInformResps;
 //    }
-
-
-}
