@@ -2,6 +2,7 @@ package shop.shopBE.domain.orderproduct.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
@@ -31,10 +32,11 @@ public class OrderProductService {
 
 
 
-    public OrderHistoryInfoResponse findOrderHistoryInfos(Long orderHistoryId) {
-        return orderProductRepository.findOrderHistoryInfoById(orderHistoryId)
+    public List<OrderHistoryInfoResponse> findOrderHistoryInfos(List<Long> orderHistoryIds, Pageable pageable) {
+        return orderProductRepository.findOrderHistoryInfoByIds(orderHistoryIds, pageable)
                 .orElseThrow(() -> new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND));
     }
+
 
     @Transactional
     //주문상품의 배송상태를 업데이트
@@ -52,4 +54,5 @@ public class OrderProductService {
         orderProductRepository.deleteById(orderProductId);
 
     }
+
 }

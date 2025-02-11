@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import shop.shopBE.domain.member.entity.QMember;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
 import shop.shopBE.domain.orderhistory.entity.QOrderHistory;
@@ -45,9 +46,26 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
     }
 
     @Override
-    public Optional<OrderHistoryInfoResponse> findOrderHistoryInfoById(Long orderHistoryId) {
-        return Optional.empty();
+    public Optional<List<OrderHistoryInfoResponse>> findOrderHistoryInfoByIds(List<Long> orderHistoryIds, Pageable pageable) {
+        List<OrderHistoryInfoResponse> result = queryFactory
+                .select(Projections.constructor(OrderHistoryInfoResponse.class,
+                        orderProduct.orderHistory.id,
+                        product.productName,  // 대표 상품명
+                        productImage.savedName // 대표 이미지 (없으면 NULL 반환)
+                ))
+                .from(orderProduct)
+                .join(orderProduct.productDetail, productDetail)
+                .join(productDetail.product, product)
+                .join(productImage).on(productImage.product.id.eq(product.id)
+                        .and(productImage.productImageCategory.eq(ProductImageCategory.MAIN))) // 대표 이미지 필터링 (JOIN 조건에서)
+                .where(orderProduct.orderHistory.id.in(orderHistoryIds)) // WHERE 에서는 주문 ID 필터링만 적용
+                .offset(pageable.getOffset()) // 페이징 적용
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return Optional.ofNullable(result);
     }
+
 
 
     @Override
