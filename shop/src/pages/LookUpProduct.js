@@ -6,6 +6,7 @@ import { getProductOne } from "../api/productApi";
 import { addWishItem } from "../api/wishApi";
 import { useSelector } from "react-redux";
 import useCustomMove from "../hook/useCustomMove";
+import { addCartItem } from "../api/cartApi";
 
 const LookUpProduct = () => {
   const { productId } = useParams();
@@ -18,7 +19,7 @@ const LookUpProduct = () => {
   const [quantities, setQuantities] = useState([]); // 재고 정보
   const [selectedSize, setSelectedSize] = useState(null); // 선택된 사이즈
   const loginState = useSelector((state) => state.loginSlice);
-  const { moveToCheckOut } = useCustomMove();
+  const { moveToCart, moveToProductPayment } = useCustomMove();
 
   useEffect(() => {
     getProductOne(productId).then((res) => {
@@ -49,6 +50,15 @@ const LookUpProduct = () => {
   // 전체 가격
   const totalPrice = price * quantity;
 
+  const clickPay = () => {
+    if (!loginState.accessToken) {
+      alert("로그인 후 결제할 수 있습니다.");
+      return;
+    }
+
+    moveToProductPayment(productName + " " + quantity + "개", totalPrice);
+  };
+
   const addWishList = () => {
     let accessToken = loginState.accessToken;
     if (!accessToken) {
@@ -59,6 +69,27 @@ const LookUpProduct = () => {
     addWishItem(accessToken, productId).then((res) => {
       if (res.code === 200) {
         alert("찜 등록 성공");
+      }
+    });
+  };
+
+  const addCartList = () => {
+    let accessToken = loginState.accessToken;
+    if (!accessToken) {
+      alert("로그인 후 장바구니에 담을 수 있습니다.");
+      return;
+    }
+
+    //api 호출
+    addCartItem(
+      accessToken,
+      productId,
+      quantity,
+      selectedSize,
+      totalPrice
+    ).then((res) => {
+      if (res.code === 200) {
+        alert("장바구니 등록 성공");
       }
     });
   };
@@ -152,10 +183,18 @@ const LookUpProduct = () => {
             >
               찜하기
             </button>
-            <button className="flex-1 py-2 bg-red-300 rounded-md">
+            <button
+              className="flex-1 py-2 bg-red-300 rounded-md"
+              onClick={addCartList}
+            >
               장바구니
             </button>
-            <button className="flex-1 py-2 bg-red-300 rounded-md">결제</button>
+            <button
+              className="flex-1 py-2 bg-red-300 rounded-md"
+              onClick={clickPay}
+            >
+              결제
+            </button>
           </div>
         </div>
       </main>

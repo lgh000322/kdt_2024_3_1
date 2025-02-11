@@ -1,55 +1,47 @@
 import React, { useState, useEffect } from "react";
 import HeaderComponent from "../components/HeaderComponent";
 import CartItemComponent from "../components/CartItemComponent";
+import { getCartItem, removeCartItem, updateCartItemQuantity } from "../api/cartApi"; // 🛒 API 추가
+import { useSelector } from "react-redux";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      imageUrl: "/api/placeholder/96/96",
-      makerName: "메이커홀딩",
-      productName: "프리미엄 상품",
-      initialQuantity: 1,
-      basePrice: 48000,
-      isSelected: false, // 기본 선택된 상태
-    },
-    {
-      id: 2,
-      imageUrl: "/api/placeholder/96/96",
-      makerName: "메이커홀딩",
-      productName: "스탠다드 상품",
-      initialQuantity: 1,
-      basePrice: 89000,
-      isSelected: false,
-    },
-  ]);
 
-  const [totalPrice, setTotalPrice] = useState(0); // 총 주문 금액
-  const deliveryFeeThreshold = 50000; // 무료 배송 기준 금액
-  const baseDeliveryFee = 3000; // 기본 배송비
+  const loginSlice = useSelector((state) => state.loginSlice);
 
-  // 총 주문 금액 계산 함수
-  const calculateTotalPrice = () => {
-    const total = cartItems
-      .filter((item) => item.isSelected) // 선택된 아이템만 포함
-      .reduce((sum, item) => sum + item.basePrice * item.initialQuantity, 0);
-    setTotalPrice(total); // 총 주문 금액 업데이트
-  };
+  const [cartItems, setCartItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const deliveryFeeThreshold = 50000;
+  const baseDeliveryFee = 3000;
+  
+  const accessToken = loginSlice.accessToken;
+  //const accessToken = localStorage.getItem("accessToken"); // ✅ 토큰 가져오기
 
-  // cartItems 상태가 변경될 때마다 총 주문 금액 재계산
+  // 🔹 장바구니 데이터 불러오기 (API 요청)
   useEffect(() => {
-    calculateTotalPrice();
+
+    
+    const fetchCartItems = async () => {
+      console.log("토큰" , accessToken);
+      try {
+        const response = await getCartItem(accessToken, 0, 10); // 첫 페이지 기준
+        setCartItems(response.data); // API 응답 데이터 설정
+      } catch (error) {
+        console.error("장바구니 데이터를 불러오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchCartItems();
+  }, []);
+
+  // 🔹 총 주문 금액 계산 함수
+  useEffect(() => {
+    const total = cartItems
+      .filter((item) => item.isSelected)
+      .reduce((sum, item) => sum + item.basePrice * item.initialQuantity, 0);
+    setTotalPrice(total);
   }, [cartItems]);
 
-  // 전체 선택/해제
-  const handleSelectAll = () => {
-    const allSelected = cartItems.every((item) => item.isSelected);
-    setCartItems((prevItems) =>
-      prevItems.map((item) => ({ ...item, isSelected: !allSelected }))
-    );
-  };
-
-  // 개별 선택
+  // 🔹 개별 선택
   const handleSelectItem = (id) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
@@ -58,48 +50,60 @@ const Cart = () => {
     );
   };
 
-  // 아이템 삭제
-  const handleRemoveItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  // 🔹 장바구니 상품 삭제 (API 연동)
+  const handleRemoveItem = async (id) => {
+    try {
+      await removeCartItem(accessToken, id);
+      setCartItems((prevItems) => prevItems.filter((item) => item.id !== id)); // UI 반영
+    } catch (error) {
+      console.error("상품 삭제 중 오류 발생:", error);
+    }
   };
 
-  // 수량 증가
-  const handleIncreaseQuantity = (id) => {
+  // 🔹 수량 증가 (API 연동)
+  const handleIncreaseQuantity = async (id) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id
-          ? { ...item, initialQuantity: item.initialQuantity + 1 }
-          : item
+        item.id === id ? { ...item, initialQuantity: item.initialQuantity + 1 } : item
       )
     );
+
+    try {
+      const item = cartItems.find((item) => item.id === id);
+      await updateCartItemQuantity(accessToken, id, item.initialQuantity + 1);
+    } catch (error) {
+      console.error("수량 증가 중 오류 발생:", error);
+    }
   };
 
-  // 수량 감소
-  const handleDecreaseQuantity = (id) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.initialQuantity > 1
-          ? { ...item, initialQuantity: item.initialQuantity - 1 }
-          : item
-      )
-    );
+  // 🔹 수량 감소 (API 연동)
+  const handleDecreaseQuantity = async (id) => {
+    const item = cartItems.find((item) => item.id === id);
+    if (item.initialQuantity > 1) {
+      setCartItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === id ? { ...item, initialQuantity: item.initialQuantity - 1 } : item
+        )
+      );
+
+      try {
+        await updateCartItemQuantity(accessToken, id, item.initialQuantity - 1);
+      } catch (error) {
+        console.error("수량 감소 중 오류 발생:", error);
+      }
+    }
   };
 
-  // 배송비 계산 (5만원 이상이면 무료)
+  // 배송비 계산
   const deliveryFee = totalPrice >= deliveryFeeThreshold ? 0 : baseDeliveryFee;
-
-  // 최종 결제 금액 계산
   const finalPrice = totalPrice + deliveryFee;
 
   return (
     <div>
-      {/* 헤더 컴포넌트 */}
       <HeaderComponent />
 
-      {/* 메인 콘텐츠 */}
       <div style={{ marginTop: "180px", maxWidth: "1200px", margin: "auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "24px" }}>
-          {/* 왼쪽 컬럼 */}
           <div style={{ backgroundColor: "#f9fafb", padding: "16px", borderRadius: "8px" }}>
             <h1 className="text-2xl font-bold mb-6">장바구니</h1>
 
@@ -108,7 +112,11 @@ const Cart = () => {
               <input
                 type="checkbox"
                 checked={cartItems.every((item) => item.isSelected)}
-                onChange={handleSelectAll}
+                onChange={() =>
+                  setCartItems((prevItems) =>
+                    prevItems.map((item) => ({ ...item, isSelected: !cartItems.every((i) => i.isSelected) }))
+                  )
+                }
                 className="w-5 h-5 align-middle"
               />
               <label className="ml-2 text-gray-700">전체 선택</label>
@@ -127,8 +135,8 @@ const Cart = () => {
                   isSelected={item.isSelected}
                   onRemove={() => handleRemoveItem(item.id)}
                   onSelect={() => handleSelectItem(item.id)}
-                  onIncrease={() => handleIncreaseQuantity(item.id)} // 수량 증가 핸들러 전달
-                  onDecrease={() => handleDecreaseQuantity(item.id)} // 수량 감소 핸들러 전달
+                  onIncrease={() => handleIncreaseQuantity(item.id)}
+                  onDecrease={() => handleDecreaseQuantity(item.id)}
                 />
               ))
             ) : (
@@ -136,7 +144,6 @@ const Cart = () => {
             )}
           </div>
 
-          {/* 오른쪽 컬럼 */}
           <div style={{ marginTop: "100px", backgroundColor: "#f9fafb", padding: "16px", borderRadius: "8px" }}>
             <h2 className="text-xl font-bold mb-4">주문 요약</h2>
             <div className="flex justify-between mb-4">
@@ -157,7 +164,16 @@ const Cart = () => {
               <span>최종 결제 금액</span>
               <span>{finalPrice.toLocaleString()}원</span>
             </div>
-            <button style={{ width: "100%", backgroundColor: "#dc2626", color: "#fff", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
+            <button
+              style={{
+                width: "100%",
+                backgroundColor: "#dc2626",
+                color: "#fff",
+                padding: "12px",
+                borderRadius: "8px",
+                textAlign: "center",
+              }}
+            >
               구매하기
             </button>
           </div>

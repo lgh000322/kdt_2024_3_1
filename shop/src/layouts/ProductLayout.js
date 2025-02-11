@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { getBanners } from "../api/bannerApi";
 
 // 전체 상품 화면의 기본 레이아웃
-function ProductLayout({ children }) {
+function ProductLayout({ children, setSearchParams, setNoMoreProducts }) {
   const loginState = useSelector((state) => state.loginSlice);
   const [banner, setBanners] = useState([]);
 
@@ -19,7 +19,10 @@ function ProductLayout({ children }) {
   }, []);
   return (
     <>
-      <HeaderComponent></HeaderComponent>
+      <HeaderComponent
+        setSearchParams={setSearchParams}
+        setNoMoreProducts={setNoMoreProducts}
+      ></HeaderComponent>
       <BannerComponent bannerList={banner}></BannerComponent>
       <div className="flex justify-center items-center mt-8">{children}</div>
     </>
