@@ -180,6 +180,8 @@ public class ProductService {
                                      List<MultipartFile> updateSideImgs,
                                      UpdateProductReq updateProductReq) {
 
+
+
         int totalStock = 0;
 
         Product product = productRepository
@@ -188,7 +190,7 @@ public class ProductService {
 
 
         // 프로덕트 디테일 업데이트 후, 총수량 반환.
-        totalStock = updateProductDetailsAndReturnTotalStock(productId, updateProductReq, totalStock, product);
+        totalStock = updateProductDetailsAndReturnTotalStock(productId, updateProductReq, totalStock);
 
         // product업데이트
         product.updateProduct(updateProductReq.productName(),
@@ -273,7 +275,7 @@ public class ProductService {
     }
 
 
-    private int updateProductDetailsAndReturnTotalStock(Long productId, UpdateProductReq updateProductReq, int totalStock, Product product) {
+    private int updateProductDetailsAndReturnTotalStock(Long productId, UpdateProductReq updateProductReq, int totalStock) {
 
             // 프덕트 디테일 상품 사이즈별 수량 수정
             productDetailService.updateSizeAndStock(updateProductReq.updateProductDetailsInforms());
