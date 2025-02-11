@@ -140,7 +140,7 @@ export const getMembers = async (accessToken, page, size,  role, email , name) =
   }
 };
 
-export const sellerAccept = async (accessToken, page, size, name, authorityId ) => {
+export const sellerAccept = async (accessToken, page, size, name ) => {
   const params = new URLSearchParams();
 
   if (page !== null && page !== undefined) params.append("page", page);
