@@ -35,7 +35,7 @@ function ProductUpdatePage() {
 
   const loginSlice = useSelector((state) => state.loginSlice);
 
-  const { moveToAbs } = useCustomMove();
+  const { moveToProductOne } = useCustomMove();
 
   const { productId } = useParams(); // URL에서 productId 가져오기
 
@@ -46,7 +46,6 @@ function ProductUpdatePage() {
   const [description, setDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
   const editorRef = useRef(null); // TOAST UI Editor reference
-  const [sizeRange, setSizeRange] = useState({ min: "", max: "" });
   const fileInputRef = useRef(null);
   const multiFileInputRef = useRef(null);
 
@@ -78,6 +77,8 @@ function ProductUpdatePage() {
         if (res.code === 200) {
           const data = res.data;
   
+          console.log("받아온 데이터" , data);
+
           // 기본 정보 설정
           setProductName(data.productName);
           setProductCategory(data.productCategory);
@@ -85,7 +86,8 @@ function ProductUpdatePage() {
           setSeasonCategory(data.seasonCategory);
           setDescription(data.description);
           setProductPrice(data.price);
-  
+          
+          
 
           console.log("mainImgId", data.mainImgId);
           // 대표 이미지 설정
@@ -107,7 +109,7 @@ function ProductUpdatePage() {
           if (data.productDetailsList) {
             setSizeQuantities(
               data.productDetailsList.map(detail => ({
-                productDetailsId: detail.productDetailsId,
+                productDetailId: detail.productDetailsId,
                 size: detail.size,
                 quantityBySize: detail.quantityBySize
               }))
@@ -138,10 +140,21 @@ function ProductUpdatePage() {
   // 대표이미지 업로드
   const handleRepresentImageUpload = (e) => {
     const file = e.target.files[0];
+
     if (file) {
+      // 이전 이미지에 fileId가 있다면 삭제 정보 저장
+      if (representImage && representImage.imgId) {
+        const imgInforms = {
+          imgId: representImage.imgId, // 이전 이미지 ID
+          imgUrl: representImage.preview // 이전 이미지 URL
+        };
+        setDeletedMainImgInforms(imgInforms); // 삭제할 이미지 정보 저장
+      }
+  
+      // 새로운 이미지 상태 업데이트
       setRepresentImage({
         file,
-        preview: URL.createObjectURL(file),
+        preview: URL.createObjectURL(file), // 새로 업로드된 이미지의 preview URL
       });
     }
   };
@@ -211,20 +224,49 @@ function ProductUpdatePage() {
   };
 
 
-  // Add this handler function for quantity updates
-const handleQuantityChange = (productDetailsId, newQuantity) => {
-  setSizeQuantities(prevQuantities =>
-    prevQuantities.map(item =>
-      item.productDetailsId === productDetailsId
-        ? { ...item, quantity: parseInt(newQuantity) || 0 }
-        : item
-    )
-  );
-};
+
+  // 수량 변경 핸들러
+  const handleQuantityChange = (productDetailId, value) => {
+  
+      // 사용자가 입력한 값이 숫자가 아니면 0으로 처리
+    const newValue = isNaN(value) || value === "" ? 0 : Math.max(0, parseInt(value));
+
+    // 기존 sizeQuantities에서 해당 productDetailsId를 찾아 업데이트
+    setSizeQuantities((prev) =>
+      prev.map((item) =>
+        item.productDetailId === productDetailId
+          ? { ...item, quantityBySize: newValue }
+          : item
+      )
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+
+      // 유효성 검사
+      if (
+        !productName ||
+        !productCategory ||
+        !personCategory ||
+        !seasonCategory ||
+        !productPrice ||
+        !representImage
+      ) {
+        alert("모든 필드를 올바르게 입력해 주세요.");
+        return;
+      }
+  
     
+
+      // 가격이 숫자 형식인지 확인
+    if (isNaN(productPrice) || productPrice <= 0) {
+      alert("상품 가격은 숫자로 입력해 주세요.");
+      return;
+    }
+
+
     let accessToken = loginSlice.accessToken;
 
     try {
@@ -232,6 +274,15 @@ const handleQuantityChange = (productDetailsId, newQuantity) => {
       
       // FormData 객체 생성
       const formData = new FormData();
+
+
+      console.log("productName", productName);
+      console.log("deletedMainImgInforms", deletedMainImgInforms);
+      console.log("deletedSideImgInforms", deletedSideImgInforms);
+      console.log("productCategory", productCategory);
+      console.log("personCategory", personCategory);
+      console.log("seasonCategory", seasonCategory);
+      console.log("description", description);
 
       const updateProductReq = {
         productName: productName,
@@ -258,6 +309,8 @@ const handleQuantityChange = (productDetailsId, newQuantity) => {
         }
       });
 
+
+
       formData.append(
         "updateProductReq",
         new Blob([JSON.stringify(updateProductReq)], {
@@ -265,9 +318,15 @@ const handleQuantityChange = (productDetailsId, newQuantity) => {
         })
       );
 
-      updateProduct(formData, formData, accessToken).then((res) => {
+      console.log("dfasdf", updateProductReq);
+      
+
+      updateProduct(productId, formData, accessToken).then((res) => {
+
+        console.log("productId", productId);
+
               if (res.code === 200) {
-                moveToAbs();
+                moveToProductOne(productId);
               } else {
                 alert("상품등록에 실패했습니다.");
               }
@@ -283,68 +342,68 @@ const handleQuantityChange = (productDetailsId, newQuantity) => {
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg border relative">
       <h1 className="text-2xl font-bold mb-6">상품 등록</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-         {/* 대표 이미지 업로드 */}
-         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            대표 이미지 업로드
-          </label>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleRepresentImageUpload}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
-          />
-          {representImage && (
-            <div className="mt-4 relative w-60 h-auto">
-              <img
-                src={representImage.preview}
-                alt="대표 이미지"
-                className="w-full h-auto object-cover rounded-lg"
-              />
-              <button
-                type="button"
-                onClick={handleRemoveRepresentImage}
-                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full transition-colors"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* 상품 이미지 업로드 */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            상품 이미지 업로드
-          </label>
-          <input
-            ref={multiFileInputRef}
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
-          />
-          <div className="mt-4 grid grid-cols-3 gap-4">
-            {images.map((image, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={image.preview}
-                  alt={`uploaded-${index}`}
-                  className="w-full h-auto object-cover rounded-lg"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(index)}
-                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full transition-colors"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* 대표 이미지 업로드 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    대표 이미지 업로드
+                  </label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleRepresentImageUpload}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
+                  />
+                  {representImage && (
+                    <div className="mt-4 relative w-60 h-auto">
+                      <img
+                        src={representImage.preview}
+                        alt="대표 이미지"
+                        className="w-full h-auto object-cover rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleRemoveRepresentImage}
+                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full transition-colors"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+        
+                {/* 상품 이미지 업로드 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    상품 이미지 업로드
+                  </label>
+                  <input
+                    ref={multiFileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
+                  />
+                  <div className="mt-4 grid grid-cols-3 gap-4">
+                    {images.map((image, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={image.preview}
+                          alt={`uploaded-${index}`}
+                          className="w-full h-auto object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full transition-colors"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
         {/* 상품명 */}
         <div>
@@ -453,7 +512,7 @@ const handleQuantityChange = (productDetailsId, newQuantity) => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {sizeQuantities.map((item) => (
-                    <tr key={item.productDetailsId}>
+                    <tr key={item.productDetailId}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {item.size}
                       </td>
@@ -462,7 +521,7 @@ const handleQuantityChange = (productDetailsId, newQuantity) => {
                           type="number"
                           min="0"
                           value={item.quantityBySize}
-                          onChange={(e) => handleQuantityChange(item.productDetailsId, e.target.value)}
+                          onChange={(e) => handleQuantityChange(item.productDetailId, e.target.value)}
                           className="w-24 px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         />
                       </td>

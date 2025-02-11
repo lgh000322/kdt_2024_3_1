@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 function SellerProductListPage() {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(0);
-  const { moveToProductOne } = useCustomMove();
+  const { moveToProductOne , moveToModificationPage } = useCustomMove();
   const loginState = useSelector((state) => state.loginSlice);
   const accessToken = loginState.accessToken;
 
@@ -46,7 +46,7 @@ function SellerProductListPage() {
                   {product.price.toLocaleString()}원
                 </p>
                 <button
-                  onClick={() => console.log("상품 업데이트 실행해야함")}
+                  onClick={() => moveToModificationPage(product.productId)}
                   className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 transition-colors"
                 >
                   상품 업데이트

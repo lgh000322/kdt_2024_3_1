@@ -23,6 +23,8 @@ export const updateProduct = async (productId, updateProductInforms, accessToken
     withCredentials: true,
   };
 
+  console.log(productId);
+
   console.log("서버에 보낼 데이터: ", updateProductInforms);
 
 

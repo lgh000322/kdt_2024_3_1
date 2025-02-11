@@ -44,6 +44,10 @@ const useCustomMove = () => {
     navigate({ pathname: "/login/authenticate" });
   };
 
+  const moveToModificationPage = (productId) => {
+    navigate({ pathname: `/product/modification/${productId}` });
+  }
+  
   const moveToLoginPage = () => {
     navigate({ pathname: "/login" });
   };
@@ -88,6 +92,7 @@ const useCustomMove = () => {
     moveToDestination,
     moveToProductPayment,
     moveToPay,
+    moveToModificationPage,
   };
 };
 
