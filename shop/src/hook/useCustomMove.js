@@ -47,6 +47,33 @@ const useCustomMove = () => {
   const moveToLoginPage = () => {
     navigate({ pathname: "/login" });
   };
+
+  const moveToCart = () => {
+    navigate({ pathname: "/cart" });
+  };
+
+  const moveToDestination = () => {
+    navigate({ pathname: "/mypage/shipping-address" });
+  };
+
+  const moveToProductPayment = (productName, totalPrice) => {
+    navigate({
+      pathname: "/productpayment",
+      search: `?productName=${encodeURIComponent(
+        productName
+      )}&totalPrice=${totalPrice}`,
+    });
+  };
+
+  const moveToPay = (productName, price, orderId) => {
+    navigate({
+      pathname: "/checkout",
+      search: `?productName=${encodeURIComponent(
+        productName
+      )}&price=${price}&orderId=${orderId}`,
+    });
+  };
+
   return {
     moveToProduct,
     moveToProductAbs,
@@ -57,6 +84,10 @@ const useCustomMove = () => {
     moveToLoginPage,
     moveToProductOne,
     moveToCheckOut,
+    moveToCart,
+    moveToDestination,
+    moveToProductPayment,
+    moveToPay,
   };
 };
 

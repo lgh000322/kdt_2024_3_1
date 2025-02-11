@@ -18,7 +18,7 @@ function SummerPage() {
 
     setLoading(true);
     if (query) {
-      if (page === 0) {
+      if (page === "0") {
         getProductList(page, 10, "SUMMER", null, null, null, query)
           .then((res) => {
             const data = res.data;

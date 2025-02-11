@@ -18,7 +18,7 @@ function WinterPage() {
 
     setLoading(true);
     if (query) {
-      if (page === 0) {
+      if (page === "0") {
         getProductList(page, 10, "WINTER", null, null, null, query)
           .then((res) => {
             const data = res.data;

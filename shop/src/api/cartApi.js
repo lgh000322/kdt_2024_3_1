@@ -15,15 +15,22 @@ export const getCartItem = async (accessToken, page, size) => {
 };
 
 // 장바구니에 상품 추가
-export const addCartItem = async (accessToken, productId, quantity) => {
+export const addCartItem = async (accessToken, productId, quantity, size, itemPrice) => {
   const header = {
     headers: { Authorization: `Bearer ${accessToken}` },
     withCredentials: true,
   };
 
+  const data = {
+    "productId": productId,
+    "quantity": quantity,
+    "size": size,
+    "itemPrice": itemPrice
+  }
+
   const res = await axios.post(
     `${prefix}`,
-    { productId, quantity },
+    data,
     header
   );
   return res.data;
