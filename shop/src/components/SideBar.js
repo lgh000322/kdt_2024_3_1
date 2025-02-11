@@ -44,7 +44,7 @@ const sellerMenuItems = [
   {
     id: 7,
     title: "상품 등록",
-    path: "/productupload",
+    path: "/product/registration",
     content: "상품 업로드",
   },
   {
