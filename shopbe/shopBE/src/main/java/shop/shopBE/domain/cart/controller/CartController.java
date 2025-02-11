@@ -37,7 +37,7 @@ public class CartController {
         return ResponseEntity.ok().body(ResponseFormat.of("장바구니 아이템 조회 성공.", cartItemList));
     }
 
-    // 장바구니 추가 메서드
+    // 장바구니 추가 메서드1
     @PostMapping
     @Operation(summary = "장바구니 아이템 추가", description = "현재 로그인 한 회원의 장바구니 상품을 추가한다.")
     public ResponseEntity<ResponseFormat<Void>> addCartItem(@RequestBody @Valid AddCartItemInform addCartItemInform,

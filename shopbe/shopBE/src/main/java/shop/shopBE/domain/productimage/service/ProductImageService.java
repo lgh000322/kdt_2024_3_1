@@ -63,6 +63,7 @@ public class ProductImageService {
     public void updateMainImg(Product product, MultipartFile updateMainImg, ImgInforms deleteImgInforms) {
 
         if(deleteImgInforms != null) {
+
             // s3에서 파일 제거
             s3Utils.deleteFile(deleteImgInforms.imgUrl());
             // db에서 제거
