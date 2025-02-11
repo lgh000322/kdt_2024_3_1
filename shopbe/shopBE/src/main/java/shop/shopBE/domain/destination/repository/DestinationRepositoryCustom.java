@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface DestinationRepositoryCustom {
     //배송지 조회
     Optional<List<DestinationListInfo>> findDestinationListByMemberId(Long memberId);
+
+    //memberId로 배송지 리스트 찾기
+    List<Destination> findDestinationsByMemberId(Long memberId);
 }

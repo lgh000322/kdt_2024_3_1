@@ -14,4 +14,5 @@ public interface OrderProductRepositoryCustom {
 
     Optional<OrderHistoryInfoResponse> findOrderHistoryInfoById(Long orderHistoryId);
 
+    Optional<Void> deleteOrderProductsByOrderHistoryId(Long orderHistoryId);
 }

@@ -9,10 +9,5 @@ import shop.shopBE.domain.orderproduct.entity.OrderProduct;
 import java.util.Optional;
 
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Long>, OrderProductRepositoryCustom {
-
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM OrderProduct op WHERE op.orderHistory.id = :orderHistoryId")
-    Optional<Void> deleteByOrderHistoryId(Long orderHistoryId);
-
+    
 }
