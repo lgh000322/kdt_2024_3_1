@@ -57,6 +57,7 @@ public class CartService {
     }
 
 
+    @Transactional
     // 장바구니 상품 업데이트 트랜잭션은 cartItem에서 연다.
     public void updateCartItem(Long cartItemId,
                                UpdateCartItemInform updateCartItemInform) {
@@ -66,6 +67,7 @@ public class CartService {
     }
 
 
+    @Transactional
     // 장바구니 상품 제거 메서드 (1개)
     public void deleteOneCartItem(Long cartItemId) {
         // 카트아이템 이없을경우 예외를 터트림
@@ -74,6 +76,7 @@ public class CartService {
         cartItemService.deleteOneCartItem(cartItemId);
     }
 
+    @Transactional
     // 장바구니 상줌 제거 메서드 (2개 이상)
     public void deleteMultipleCartItems(DeleteCartItems deleteCartItems) {
         findItemAndDelete(deleteCartItems);

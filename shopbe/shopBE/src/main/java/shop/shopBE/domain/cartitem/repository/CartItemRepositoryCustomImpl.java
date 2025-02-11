@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import shop.shopBE.domain.cartitem.response.CartItemInform;
+import shop.shopBE.domain.productimage.entity.enums.ProductImageCategory;
 
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class CartItemRepositoryCustomImpl implements CartItemRepositoryCustom{
                 .join(productImage)
                 .on(productImage.product.eq(product))
                 .where(cartItem.cart.id.eq(cartId),
+                        productImage.productImageCategory.eq(ProductImageCategory.MAIN),
                         cartItem.product.isDeleted.eq(false))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
