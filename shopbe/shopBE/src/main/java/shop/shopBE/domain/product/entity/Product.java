@@ -140,18 +140,16 @@ public class Product {
                               ProductCategory productCategory,
                               SeasonCategory seasonCategory,
                               int totalStock
-<<<<<<< HEAD
     ) {
 
-=======
-                              ) {
-        this.productName = productName;
-        this.description = description;
-        this.price = price;
-        this.personCategory = personCategory;
-        this.productCategory = productCategory;
-        this.seasonCategory = seasonCategory;
-        this.totalStock = totalStock;
->>>>>>> a8da2540babd4ed4c8b30350958cf2406297a813
+                              {
+            this.productName = productName;
+            this.description = description;
+            this.price = price;
+            this.personCategory = personCategory;
+            this.productCategory = productCategory;
+            this.seasonCategory = seasonCategory;
+            this.totalStock = totalStock;
+        }
     }
 }
