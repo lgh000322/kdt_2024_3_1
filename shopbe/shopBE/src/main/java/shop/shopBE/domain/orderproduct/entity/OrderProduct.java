@@ -25,8 +25,8 @@ public class OrderProduct {
 
     private int productTotalPrice;
 
+    @Enumerated(EnumType.STRING)
     private DeliveryStatus currentDeliveryStatus; //배송상태 기록
-
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "order_history_id")

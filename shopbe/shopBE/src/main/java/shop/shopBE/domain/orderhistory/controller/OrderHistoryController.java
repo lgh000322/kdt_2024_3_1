@@ -39,10 +39,10 @@ public class OrderHistoryController {
 
     @PostMapping("/orderHistory")
     @Operation(summary = "상품 주문", description = "상품주문시 주문내역으로 추가")
-    public ResponseEntity<ResponseFormat<Void>> addOrderHistory(@AuthenticationPrincipal AuthToken authToken,
+    public ResponseEntity<ResponseFormat<Long>> addOrderHistory(@AuthenticationPrincipal AuthToken authToken,
                                                                 @RequestBody @Valid OrderRequest orderRequest) {
-        orderHistoryService.orderItems(authToken.getId(), orderRequest);
-        return ResponseEntity.ok().body(ResponseFormat.of("상품 주문에 성공했습니다."));
+        Long orderHistoryId = orderHistoryService.orderItems(authToken.getId(), orderRequest);
+        return ResponseEntity.ok().body(ResponseFormat.of("상품 주문에 성공했습니다.",orderHistoryId));
     }
 
     @DeleteMapping("/orderHistory/{orderHistoryId}")

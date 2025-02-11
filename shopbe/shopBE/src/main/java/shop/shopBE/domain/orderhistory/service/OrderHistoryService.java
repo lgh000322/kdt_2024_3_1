@@ -63,7 +63,7 @@ public class OrderHistoryService {
      * @param orderRequest
      */
     @Transactional
-    public void orderItems(Long memberId, OrderRequest orderRequest) {
+    public Long orderItems(Long memberId, OrderRequest orderRequest) {
         // 회원의 기본키로 회원 조회
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND));
@@ -108,6 +108,8 @@ public class OrderHistoryService {
 
         // List<Entity>를 한번에 저장함
         orderProductRepository.saveAll(orderProducts);
+
+        return savedOrderHistory.getId();
     }
 
     @Transactional
