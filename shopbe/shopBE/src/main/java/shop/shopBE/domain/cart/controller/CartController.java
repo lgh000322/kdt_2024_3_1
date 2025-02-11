@@ -32,7 +32,7 @@ public class CartController {
     @GetMapping
     @Operation(summary = "장바구니 조회", description = "현재 로그인 한 회원의 장바구니 목록을 조회한다.")
     public ResponseEntity<ResponseFormat<List<CartItemInformResp>>> findAllCartItems(@PageableDefault Pageable pageable,
-                                                                                 @AuthenticationPrincipal AuthToken authToken) {
+                                                                                     @AuthenticationPrincipal AuthToken authToken) {
         List<CartItemInformResp> cartItemList = cartService.findCartItemList(pageable, authToken.getId());
         return ResponseEntity.ok().body(ResponseFormat.of("장바구니 아이템 조회 성공.", cartItemList));
     }
@@ -71,7 +71,6 @@ public class CartController {
         cartService.deleteMultipleCartItems(deleteCartItems);
         return ResponseEntity.ok().body(ResponseFormat.of("복수의 장바구니 상품 제거 성공."));
     }
-
 
 
 }
