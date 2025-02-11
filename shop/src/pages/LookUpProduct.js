@@ -58,6 +58,11 @@ const LookUpProduct = () => {
       return;
     }
 
+    if (!selectedSize) {
+      alert("사이즈 선택 후 결제할 수 있습니다.");
+      return;
+    }
+
     moveToProductPayment(
       productName,
       totalPrice,
