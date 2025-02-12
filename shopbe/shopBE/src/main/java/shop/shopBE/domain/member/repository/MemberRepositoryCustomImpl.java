@@ -68,6 +68,6 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     }
 
     private BooleanExpression isNameEq(String name) {
-        return name == null ? null : member.name.eq(name);
+        return name == null ? null : member.name.like("%"+name+"%");
     }
 }

@@ -38,6 +38,5 @@ public class CartItem {
     public void updateCartItem(UpdateCartItemInform updateCartItemInform) {
         this.itemCount = updateCartItemInform.quantity();
         this.itemSize = updateCartItemInform.size();
-        this.itemPrice = updateCartItemInform.itemPrice();
     }
 }
