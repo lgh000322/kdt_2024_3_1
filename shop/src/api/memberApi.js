@@ -10,6 +10,8 @@ const preFix = `${ApiHost}/member`;
 const adminlist = `${ApiHost}/members`;
 const selleraccept = `${ApiHost}/authority`;  
 const selleracceptsubmit = `${ApiHost}/authority`;
+const selleracceptfile = `${ApiHost}/authority/file`;
+
 
 
 // 처음 로그인 했을 때 로그인 한 회원의 정보 조회
@@ -77,14 +79,39 @@ export const logoutRefresh = async () => {
 };
 
 // 전체 회원 조회
-export const getMembers = async (accessToken) => {
+export const getMembers = async (accessToken, page, size,  role, email , name) => {
+  const params = new URLSearchParams();
+
+  if (page !== null && page !== undefined) params.append("page", page);
+  if (size !== null && size !== undefined) params.append("size", size);
+  if (role !== null && role !== undefined){
+    let submitRole;
+    if(role === '관리자'){
+      submitRole='ADMIN';
+    }
+    if(role === '일반 회원'){
+      submitRole='USER';
+    }
+    if(role === '판매자'){
+      submitRole='SELLER';
+    }
+    params.append("role", submitRole);
+  }
+    
+  if (email !== null && email !== undefined)
+    params.append("email", email);
+  if (name !== null && name !== undefined)
+    params.append("name", name);
+
+  const queryString = params.toString(); // URLSearchParams를 문자열로 변환
+
   const header = {
     headers: { Authorization: `Bearer ${accessToken}` },
     withCredentials: true,
   };
 
   try {
-    const res = await axios.get(`${adminlist}`, header);
+    const res = await axios.get(`${adminlist}?${queryString}`, header);
     return res.data;
   } catch (error) {
     if (error.response?.data?.message === "만료된 JWT입니다.") {
@@ -113,18 +140,64 @@ export const getMembers = async (accessToken) => {
   }
 };
 
-export const sellerAccept = async (accessToken) => {
+export const sellerAccept = async (accessToken, page, size, name ) => {
+  const params = new URLSearchParams();
+
+  if (page !== null && page !== undefined) params.append("page", page);
+  if (size !== null && size !== undefined) params.append("size", size);
+  if (name !== null && name !== undefined) params.append("name", name);
+
+  const queryString = params.toString(); // URLSearchParams를 문자열로 변환
+
   const header = {
     headers: { Authorization: `Bearer ${accessToken}` },
     withCredentials: true,
   };
 
-  console.log("Request URL:", adminlist);
-  console.log("Request Headers:", header);
+  try {
+    const res = await axios.get(`${selleraccept}?${queryString}`, header);
+    return res.data;
+  } catch (error) {
+    if (error.response?.data?.message === "만료된 JWT입니다.") {
+      try {
+        const refreshResponse = await refreshTokens();
 
-  const res = await axios.get(`${selleraccept}`, header);
+        if (refreshResponse.code === 200) {
+          const newAccessToken = getCookies("accessToken");
+          const role = getRoleFromAccessToken(newAccessToken);
 
-  return res.data;
+          store.dispatch(refresh({ accessToken: newAccessToken, role: role }));
+
+          const newHeader = {
+            headers: { Authorization: `Bearer ${newAccessToken}` },
+            withCredentials: true,
+          };
+
+          const retryRes = await axios.get(`${selleraccept}`, newHeader);
+          return retryRes.data;
+        }
+      } catch (refreshError) {
+        throw new Error("토큰 갱신 요청 재시도 실패");
+      }
+    }
+    throw new Error("회원 전체 조회 실패");
+  }
+};
+
+export const sellerAcceptFile = async (accessToken, authorityId) => {
+  try {
+    const res = await axios.get(
+      `${selleracceptfile}/${authorityId}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` }, 
+        withCredentials: true, 
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API 요청 실패:", error);
+    throw error;
+  }
 };
 
 export const sellerAcceptSubmit = async (accessToken, authorityId) => {
@@ -140,6 +213,41 @@ export const sellerAcceptSubmit = async (accessToken, authorityId) => {
     return res.data;
   } catch (error) {
     console.error("API 요청 실패:", error);
+    throw error;
+  }
+};
+
+export const sellerAcceptDelete = async (accessToken, authorityId) => {
+  try {
+    const res = await axios.delete(
+      `${selleracceptsubmit}/${authorityId}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` }, 
+        withCredentials: true, 
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API 요청 실패:", error);
+    throw error;
+  }
+};
+
+export const searchMemberData = async (accessToken, { page, size, email }) => {
+  try {
+    const res = await axios.get(`${adminlist}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      params: {
+        page,
+        size,
+        email,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("회원 검색 실패:", error);
     throw error;
   }
 };
