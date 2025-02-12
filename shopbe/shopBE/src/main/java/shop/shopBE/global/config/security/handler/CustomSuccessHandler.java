@@ -40,6 +40,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String isAuthenticated = authToken.isAuthenticated() ? "true" : "false";
 
-        response.sendRedirect("https:/fmanshop.com/login/success?isAuthenticated=" + isAuthenticated);
+        response.sendRedirect("https://fmanshop.com/login/success?isAuthenticated=" + isAuthenticated);
     }
 }
