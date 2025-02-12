@@ -8,8 +8,7 @@ public record UpdateCartItemInform(
         @Min(1)
         int size,         // 상품사이즈
         @Min(1)
-        int quantity,      // 수량
-        @Min(1)
-        int itemPrice      // 장바구니 상품 가격(수량 X 상품단가)
+        int quantity      // 수량
+
 ) {
 }

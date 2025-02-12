@@ -119,6 +119,7 @@ public class OrderHistoryService {
         List<OrderProduct> orderProducts = orderProductRepository.findOrderProductByOrderHistoryId(orderHistoryId)
                 .orElseThrow(() -> new CustomException(OrderProductException.ORDER_PRODUCT_NOT_FOUND));
 
+
         for (OrderProduct orderProduct : orderProducts) {
             // 주문상품의 상태를 변경
             orderProduct.changeDeliveryStatus(deliveryStatus);

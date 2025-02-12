@@ -26,14 +26,14 @@ public class OrderProductController {
     private final OrderProductService orderProductService;
 
     @GetMapping("/orderProduct/{orderHistoryId}")
-    @Operation(summary = "주문상품 상세조회", description = "현재 로그인한 회원의 주문상품 상세조회")
+    @Operation(summary = "주문상품 상세조회", description = "주문내역으로 주문상품 상세조회")
     public ResponseEntity<ResponseFormat<List<OrderProductInfo>>> findOrderProduct(@PathVariable(name = "orderHistoryId") Long orderHistoryId) {
         List<OrderProductInfo> orderInfos = orderProductService.getOrderInfos(orderHistoryId);
         return ResponseEntity.ok().body(ResponseFormat.of("주문 상세조회 성공", orderInfos));
     }
 
     @PutMapping("/orderProduct/{productDetailId}")
-    @Operation(summary = "주문상품 배송상태 업데이트", description = "현재 로그인한 회원의 주문상품 배송상태를 업데이트")
+    @Operation(summary = "주문상품 배송상태 업데이트", description = "주문상품 배송상태를 업데이트(배송전, 배송중, 배송후 등으로 변경)")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ResponseFormat<List<OrderProductInfo>>> updateOrderProductDeliveryState(@PathVariable(name = "productDetailId") Long orderProductDetailId,
                                                                                                   @RequestBody @Valid OrderProductDeliveryInfo orderProductDeliveryInfo) {
@@ -47,15 +47,5 @@ public class OrderProductController {
         orderProductService.deleteByOrderProductId(orderProductId);
         return ResponseEntity.ok().body(ResponseFormat.of("주문 상품 로그를 삭제하는데 성공했습니다."));
     }
-
-    /**
-     * 이거 뭔지 모르겠음..
-     */
-//    @GetMapping("orderProduct/deliverySearch/{orderProductID}")
-//    @Operation(summary = "주문상품 배송조회", description = "현재 로그인한 회원이 주문한 상품의 배송조회")
-//    public ResponseEntity<ResponseFormat<List<OrderProductDeliveryInfo>>> findOrderProductState(@PathVariable(name = "orderProductID") Long orderProductID){
-//        List<OrderProductDeliveryInfo> deliveryStatusHistoryList = orderProductService.getOrderProductDeliveryListByHistoryId(orderProductID);
-//        return ResponseEntity.ok().body(ResponseFormat.of("주문 상품 배송조회 성공", deliveryStatusHistoryList));
-//    }
 
 }
