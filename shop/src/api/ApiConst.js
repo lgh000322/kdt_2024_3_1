@@ -1,1 +1,1 @@
-export const ApiHost = "https://api.fmanshop.com/";
+export const ApiHost = "https://api.fmanshop.com";
