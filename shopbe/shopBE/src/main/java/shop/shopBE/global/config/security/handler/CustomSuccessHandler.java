@@ -32,14 +32,14 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String refreshToken = jwtUtils.createRefreshToken(authToken.getSub(), authToken.getRoles());
 
-        ResponseCookie accessTokenCookie = cookieUtils.createCookie(new Token("accessToken", accessToken), "kdt2024-3-1.vercel.app");
-        ResponseCookie refreshTokenCookie = cookieUtils.createCookie(new Token("refreshToken", refreshToken), "kdt2024-3-1.vercel.app");
+        ResponseCookie accessTokenCookie = cookieUtils.createCookie(new Token("accessToken", accessToken), "fmanshop.com");
+        ResponseCookie refreshTokenCookie = cookieUtils.createCookie(new Token("refreshToken", refreshToken), "fmanshop.com");
 
         response.addHeader("Set-Cookie",accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         String isAuthenticated = authToken.isAuthenticated() ? "true" : "false";
 
-        response.sendRedirect("https://kdt2024-3-1.vercel.app/login/success?isAuthenticated=" + isAuthenticated);
+        response.sendRedirect("https:/fmanshop.com/login/success?isAuthenticated=" + isAuthenticated);
     }
 }
