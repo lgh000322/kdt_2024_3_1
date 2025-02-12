@@ -15,7 +15,8 @@ public enum ProductExceptionCode implements ExceptionCode {
     INVALID_MINUS_LIKE_REQUEST(HttpStatus.BAD_REQUEST, "좋아요가 0개입니다. 더 이상 좋아요를 감소할 수 없습니다."),
     INVALID_OPTION(HttpStatus.BAD_REQUEST, "잘못된 분류 설정입니다."),
     INVALID_PRODUCT_CATEGORY(HttpStatus.BAD_REQUEST, "잘못된 상품 카테고리 입니다."),
-    OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다.");
+    OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다."),
+    INVALID_PRODUCT_BY_SELLER(HttpStatus.BAD_REQUEST, "판매자가 등록한 상품이 아닙니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

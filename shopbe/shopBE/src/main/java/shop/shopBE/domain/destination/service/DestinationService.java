@@ -36,6 +36,11 @@ public class DestinationService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND));
 
+        // 추가되는 기본 배송지 여부가 true라면 다른 배송지들의 기본배송지 여부를 false시킨다.
+        if (addDestinationResponse.isSelectedDestination()) {
+            setAllDefaultDestinationsFalse(memberId);
+        }
+
         // ✅ Repository에서 Destination 객체 생성 (저장 X)
         Destination destination = Destination.createDefaultDestination(
                 addDestinationResponse.destinationName(),
@@ -54,9 +59,16 @@ public class DestinationService {
     @Transactional
     public void updateDestination(UpdateDestinationRequest updateDestinationRequest,Long destinationId) {
 
+        //1. 수정할 배송지 정보를 찾는다.
         Destination destination = destinationRepository.findById(destinationId)
                 .orElseThrow(() -> new CustomException(DestinationException.DESTINATION_NOT_FOUND));
 
+        // 2. 기존 기본 배송지들을 모두 false로 변경
+        if (updateDestinationRequest.isSelectedDestination()) {
+            setAllDefaultDestinationsFalse(destination.getMember().getId());
+        }
+        
+        //3. 수정할 배송지 내용을 업데이트
         destination.updateDestination(updateDestinationRequest);
     }
 
@@ -65,4 +77,18 @@ public class DestinationService {
     public void deleteDestination(Long destinationId) {
         destinationRepository.deleteById(destinationId);
     }
+
+
+    //유저의 기본 배송지들을 모두 false 시키는 메소드(추가 and 수정 될때 사용)
+    private void setAllDefaultDestinationsFalse(Long memberId) {
+        List<Destination> existingDestinations = destinationRepository.findDestinationsByMemberId(memberId);
+
+        for (Destination destination : existingDestinations) {
+            if (destination.isSelectedDestination()) {
+                destination.changeDefaultDestination(false); // 기본 배송지 해제
+//                destinationRepository.save(destination); // 변경 저장
+            }
+        }
+    }
+
 }

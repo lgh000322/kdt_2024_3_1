@@ -20,7 +20,10 @@ public class OrderHistoryRepositoryCustomImpl implements OrderHistoryRepositoryC
         List<OrderHistory> result = queryFactory
                 .select(orderHistory)
                 .from(orderHistory)
-                .where(orderHistory.member.id.eq(memberId))
+                .where(
+                        orderHistory.member.id.eq(memberId),
+                        orderHistory.isDeleted.eq(false)
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

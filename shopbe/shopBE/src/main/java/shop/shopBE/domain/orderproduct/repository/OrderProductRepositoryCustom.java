@@ -1,5 +1,6 @@
 package shop.shopBE.domain.orderproduct.repository;
 
+import org.springframework.data.domain.Pageable;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
 import shop.shopBE.domain.orderproduct.entity.OrderProduct;
@@ -10,8 +11,13 @@ import java.util.Optional;
 
 public interface OrderProductRepositoryCustom {
 
-    Optional<OrderProductInfo> findDetailOrderProductByHistoryId(OrderHistory orderHistory);
+    Optional<OrderProduct> findOrderProductByProductDetailId(Long productDetailId);
 
-    Optional<OrderHistoryInfoResponse> findOrderHistoryInfoById(Long orderHistoryId);
+//    Optional<List<OrderHistoryInfoResponse>> findOrderHistoryInfoByIds(List<Long> orderHistoryIds, Pageable pageable);
 
+    Optional<List<OrderHistoryInfoResponse>> findOrderHistoryInfoByIds(List<OrderHistory> orderHistories);
+
+    Optional<List<OrderProduct>> findOrderProductByOrderHistoryId(Long orderHistoryId);
+
+    Optional<List<OrderProductInfo>> findOrderProductInfoByOrderHistoryId(Long orderHistoryId);
 }

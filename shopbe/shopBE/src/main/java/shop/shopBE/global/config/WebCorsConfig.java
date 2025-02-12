@@ -20,8 +20,8 @@ public class WebCorsConfig implements WebMvcConfigurer {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true); // 서로 다른 도메인 간 쿠키 전달 허용
-        config.setAllowedOrigins(List.of("*")); // 로컬호스트 허용
-        config.setAllowedHeaders(List.of("*")); // 허용할 헤더
+        config.setAllowedOrigins(List.of("https://api.fmanshop.com", "http://localhost:3000"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Cache-Control", "Access-Control-Allow-Origin"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 메서드, OPTIONS는 pre-flight 요청을 위해 허용해야 함.
         config.setMaxAge(3600L); // 최대 캐시 시간
 

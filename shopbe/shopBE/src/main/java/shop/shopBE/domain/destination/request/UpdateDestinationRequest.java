@@ -24,7 +24,6 @@ public record UpdateDestinationRequest(
         @NotNull
         String address, // 주소
 
-
         @NotNull
         Long zipCode, // 우편번호
 

@@ -47,8 +47,8 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND));
     }
 
-    public List<MemberListResponse> getMemberList(Pageable pageable, Role role, String email) {
-        return memberRepository.findAllByPaging(pageable, role, email)
+    public List<MemberListResponse> getMemberList(Pageable pageable, Role role, String email,String name) {
+        return memberRepository.findAllByPaging(pageable, role, email,name)
                 .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND));
     }
 

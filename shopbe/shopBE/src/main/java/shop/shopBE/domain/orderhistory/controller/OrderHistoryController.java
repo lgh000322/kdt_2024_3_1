@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import shop.shopBE.domain.orderhistory.request.OrderRequest;
+import shop.shopBE.domain.orderhistory.request.UpdateDeliveryStatus;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryResponse;
 import shop.shopBE.domain.orderhistory.service.OrderHistoryFadeService;
 import shop.shopBE.domain.orderhistory.service.OrderHistoryService;
@@ -38,10 +39,10 @@ public class OrderHistoryController {
 
     @PostMapping("/orderHistory")
     @Operation(summary = "상품 주문", description = "상품주문시 주문내역으로 추가")
-    public ResponseEntity<ResponseFormat<Void>> addOrderHistory(@AuthenticationPrincipal AuthToken authToken,
+    public ResponseEntity<ResponseFormat<Long>> addOrderHistory(@AuthenticationPrincipal AuthToken authToken,
                                                                 @RequestBody @Valid OrderRequest orderRequest) {
-        orderHistoryService.orderItems(authToken.getId(), orderRequest);
-        return ResponseEntity.ok().body(ResponseFormat.of("상품 주문에 성공했습니다."));
+        Long orderHistoryId = orderHistoryService.orderItems(authToken.getId(), orderRequest);
+        return ResponseEntity.ok().body(ResponseFormat.of("상품 주문에 성공했습니다.",orderHistoryId));
     }
 
     @DeleteMapping("/orderHistory/{orderHistoryId}")
@@ -51,4 +52,11 @@ public class OrderHistoryController {
         return ResponseEntity.ok().body(ResponseFormat.of("주문내역 삭제에 성공했습니다."));
     }
 
+    @PutMapping("/orderHistory/{orderHistoryId}")
+    @Operation(summary = "주문내역 전체(결제) 업데이트", description = "결제정보를 결제전에서 배송전으로 바꾸기 위한 api")
+    public ResponseEntity<ResponseFormat<Void>> updateOrderHistory(@PathVariable(name = "orderHistoryId") Long orderHistoryId,
+                                                                   @RequestBody @Valid UpdateDeliveryStatus updateDeliveryStatus) {
+        orderHistoryService.updateOrderHistory(orderHistoryId, updateDeliveryStatus.deliveryStatus());
+        return ResponseEntity.ok().body(ResponseFormat.of("주문 내역의 상태를 변경하는데 성공했습니다."));
+    }
 }

@@ -4,6 +4,7 @@ public record ProductListViewModel(
         Long productId,
         Long likesId,
         String imageUrl,
-        String title
+        String title,
+        int price
 ) {
 }
