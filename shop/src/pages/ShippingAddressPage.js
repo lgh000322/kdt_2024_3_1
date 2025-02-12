@@ -17,7 +17,7 @@ const initState = {
   zipCode: "",
   isSelectedDestination: false,
 };
-import { getShippingAddresses, updateShippingAddress, addShippingAddress, deleteShippingAddress } from "../api/shippingAddressApi";
+
 
 function ShippingAddressPage() {
   const loginState = useSelector((state) => state.loginSlice);
@@ -142,10 +142,6 @@ function ShippingAddressPage() {
     setEditingAddress({ ...address });
   };
 
-  const handleDelete = (address) => {
-    console.log("🛠 삭제할 데이터:", address);
-    setDeletingAddress({ ...address });
-  }
 
   return (
     <BasicLayout>
