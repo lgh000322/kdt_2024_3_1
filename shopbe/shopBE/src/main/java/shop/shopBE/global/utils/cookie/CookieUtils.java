@@ -2,31 +2,48 @@ package shop.shopBE.global.utils.cookie;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import shop.shopBE.global.utils.cookie.data.CookieData;
+import shop.shopBE.global.utils.jwt.property.JwtProperties;
 
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class CookieUtils {
 
-    public <T extends CookieData> Cookie createCookie(T cookieData) {
-        Cookie cookie = new Cookie(cookieData.getKey(), cookieData.getValue());
+    private final JwtProperties jwtProperties;
+
+
+    public <T extends CookieData> ResponseCookie createCookie(T cookieData, String domainAdr) {
+
+        boolean isHttpOnly;
+        long maxAge;
 
         if (cookieData.getKey().equals("accessToken")) {
             // accessToken인 경우에 자바스크립트로 가져올 수 있게 함.
-            cookie.setHttpOnly(false);
-        } else {
+            isHttpOnly = false;
+            maxAge= jwtProperties.accessTokenExpiration();
+        } else if(cookieData.getKey().equals("refreshToken")){
             // accessToken이 아닌 refreshToken일 경우에 자바스크립트로 가져갈 수 없게 함.
-            cookie.setHttpOnly(true);
+            isHttpOnly = true;
+            maxAge = jwtProperties.refreshTokenExpiration();
+        }else{
+            isHttpOnly=false;
+            maxAge = 0;
         }
-        cookie.setDomain("kdt2024-3-1.vercel.app");  // 실제 도메인으로 변경 필요
-        cookie.setSecure(true);
-        cookie.setMaxAge(cookie.getMaxAge());
-        cookie.setPath("/");
-        cookie.setAttribute("SameSite", "None");
 
-        return cookie;
+        return ResponseCookie
+                .from(cookieData.getKey(), cookieData.getValue())
+                .httpOnly(isHttpOnly)
+                .maxAge((maxAge/1000)) // 초로 변환
+                .domain(domainAdr)
+                .secure(true)
+                .path("/")
+                .sameSite("None")
+                .build();
     }
 
     public Optional<Cookie> getCookies(HttpServletRequest request, String cookieName) {
@@ -36,7 +53,7 @@ public class CookieUtils {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(cookieName)) {
-                    resultCookie=cookie;
+                    resultCookie = cookie;
                     break;
                 }
             }
@@ -50,7 +67,7 @@ public class CookieUtils {
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setAttribute("SameSite","None");
+        refreshTokenCookie.setAttribute("SameSite", "None");
         refreshTokenCookie.setMaxAge(0);
 
         return refreshTokenCookie;

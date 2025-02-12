@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -31,11 +32,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String refreshToken = jwtUtils.createRefreshToken(authToken.getSub(), authToken.getRoles());
 
-        Cookie accessTokenCookie = cookieUtils.createCookie(new Token("accessToken", accessToken));
-        Cookie refreshTokenCookie = cookieUtils.createCookie(new Token("refreshToken", refreshToken));
+        ResponseCookie accessTokenCookie = cookieUtils.createCookie(new Token("accessToken", accessToken), "kdt2024-3-1.vercel.app");
+        ResponseCookie refreshTokenCookie = cookieUtils.createCookie(new Token("refreshToken", refreshToken), "kdt2024-3-1.vercel.app");
 
-        response.addCookie(accessTokenCookie);
-        response.addCookie(refreshTokenCookie);
+        response.addHeader("Set-Cookie",accessTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         String isAuthenticated = authToken.isAuthenticated() ? "true" : "false";
 

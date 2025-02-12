@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import shop.shopBE.domain.member.entity.Member;
 import shop.shopBE.global.exception.custom.CustomException;
@@ -33,10 +34,11 @@ public class RefreshService {
         String accessTokenReissued = jwtUtils.createAccessToken(member.getSub(), List.of(member.getRole().name()));
         String refreshTokenReissued = jwtUtils.createRefreshToken(member.getSub(), List.of(member.getRole().name()));
 
-        Cookie accessTokenCookie = cookieUtils.createCookie(new Token("accessToken", accessTokenReissued));
-        Cookie refreshTokenCookie = cookieUtils.createCookie(new Token("refreshToken", refreshTokenReissued));
 
-        response.addCookie(accessTokenCookie);
-        response.addCookie(refreshTokenCookie);
+        ResponseCookie accessTokenCookie = cookieUtils.createCookie(new Token("accessToken", accessTokenReissued), "kdt2024-3-1.vercel.app");
+        ResponseCookie refreshTokenCookie = cookieUtils.createCookie(new Token("refreshToken", refreshTokenReissued), "kdt2024-3-1.vercel.app");
+
+        response.addHeader("Set-Cookie",accessTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
     }
 }
