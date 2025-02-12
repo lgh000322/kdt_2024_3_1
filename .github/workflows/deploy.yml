@@ -67,5 +67,5 @@ jobs:
             docker stop shop-server || true
             docker rm shop-server || true
             docker pull ${{ steps.login-ecr.outputs.registry }}/shop/server:latest
-            docker run -d -p 8080:8080 --name shop-server ${{ steps.login-ecr.outputs.registry }}/shop/server:latest
+            docker run -d -p 443:443 --name shop-server ${{ steps.login-ecr.outputs.registry }}/shop/server:latest
             docker logs shop-server
