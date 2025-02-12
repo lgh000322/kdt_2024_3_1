@@ -3,8 +3,10 @@ import HeaderComponent from "../components/HeaderComponent";
 import CartItemComponent from "../components/CartItemComponent";
 import { getCartItem, removeCartItem, updateCartItemQuantity } from "../api/cartApi"; // 🛒 API 추가
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
+  const navigate = useNavigate();
   const loginSlice = useSelector((state) => state.loginSlice);
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -81,6 +83,22 @@ const Cart = () => {
     }
   };
 
+  const handlePurchase = () => {
+    const selectedItems = cartItems.filter(item => item.isSelected); // 선택된 상품만 가져오기
+  
+    if (selectedItems.length === 0) {
+      alert("구매할 상품을 선택해주세요.");
+      return;
+    }
+  
+    // 선택한 상품 정보를 쿼리 문자열로 변환
+    const queryParams = selectedItems.map(item => 
+      `productId=${item.productId}&productName=${encodeURIComponent(item.productName)}&productCount=${item.cartItemCount}&totalPrice=${item.cartItemPrice * item.cartItemCount}&imgUrl=${encodeURIComponent(item.imgUrl)}`
+    ).join("&");
+  
+    navigate(`/productpayment?${queryParams}`);
+  };
+
   // 배송비 계산
   const deliveryFee = totalPrice >= deliveryFeeThreshold ? 0 : baseDeliveryFee;
   const finalPrice = totalPrice + deliveryFee;
@@ -137,7 +155,7 @@ const Cart = () => {
               <span>최종 결제 금액</span>
               <span>{finalPrice.toLocaleString()}원</span>
             </div>
-            <button className="w-full bg-red-600 text-white py-3 rounded-lg">구매하기</button>
+            <button className="w-full bg-red-600 text-white py-3 rounded-lg" onClick={handlePurchase}>구매하기</button>
           </div>
         </div>
       </div>

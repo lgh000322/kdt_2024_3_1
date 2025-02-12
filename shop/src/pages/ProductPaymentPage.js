@@ -13,12 +13,14 @@ function ProductPaymentPage() {
   const loginState = useSelector((state) => state.loginSlice);
   const accessToken = loginState.accessToken;
   const [queryParams] = useSearchParams();
+  console.log("URL Params:", queryParams.toString());
   const productName = queryParams.get("productName"); // 선택된 상품의 이름 (쿼리 파라미터에서 가져옴)
   const productCount = queryParams.get("productCount"); // 선택한 상품의 수
   const totalPrice = queryParams.get("totalPrice"); // 선택된 상품의 총 가격 (쿼리 파라미터에서 가져옴)
   const imgUrl = queryParams.get("imgUrl"); // 선택된 상품의 메인이미지 (쿼리 파라미터에서 가져옴)
   const selectedSize = queryParams.get("selectedSize"); // 선택된 상품의 신발 사이즈 (쿼리 파라미터에서 가져옴)
   const productId = queryParams.get("productId"); // 상품의 아이디
+  const selectedProducts = [];
 
   const formattedPrice = new Intl.NumberFormat("ko-KR").format(
     parseInt(totalPrice)
@@ -88,6 +90,18 @@ function ProductPaymentPage() {
       setDestination(list);
     });
   }, [accessToken]);
+
+  queryParams.forEach((value, key) => {
+    if (key === "productId") {
+      selectedProducts.push({
+        productId: value,
+        productName: queryParams.get("productName"),
+        productCount: queryParams.get("productCount"),
+        totalPrice: queryParams.get("totalPrice"),
+        imgUrl: queryParams.get("imgUrl"),
+      });
+    }
+  });
 
   return (
     <BasicLayout>
