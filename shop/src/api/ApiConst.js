@@ -1,1 +1,1 @@
-export const ApiHost = "http://localhost:8080";
+export const ApiHost = "https://api.fmanshop.com/";

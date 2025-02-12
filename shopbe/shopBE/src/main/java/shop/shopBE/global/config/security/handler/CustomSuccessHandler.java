@@ -39,6 +39,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String isAuthenticated = authToken.isAuthenticated() ? "true" : "false";
 
-        response.sendRedirect("http://localhost:3000/login/success?isAuthenticated=" + isAuthenticated);
+        response.sendRedirect("https://kdt2024-3-1-6qr6njsq1-lgh000322s-projects.vercel.app/login/success?isAuthenticated=" + isAuthenticated);
     }
 }
