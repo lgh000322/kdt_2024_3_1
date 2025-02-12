@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import UploadLayout from "../layouts/UploadLayout";
-import { Editor } from "@toast-ui/react-editor";
-import "@toast-ui/editor/dist/toastui-editor.css"; // Editor styles
-import "@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css"; // Plugin styles
-import colorSyntax from "@toast-ui/editor-plugin-color-syntax";
+
 import { useSelector } from "react-redux";
 import useCustomMove from "../hook/useCustomMove";
 import { useParams } from "react-router-dom";
@@ -45,7 +42,6 @@ function ProductUpdatePage() {
   const [seasonCategory, setSeasonCategory] = useState("");
   const [description, setDescription] = useState("");
   const [productPrice, setProductPrice] = useState("");
-  const editorRef = useRef(null); // TOAST UI Editor reference
   const fileInputRef = useRef(null);
   const multiFileInputRef = useRef(null);
 
@@ -65,7 +61,11 @@ function ProductUpdatePage() {
 
 
   useEffect(() => {
+    
+
     const fetchProductDetails = async () => {
+
+    
       try {
         const accessToken = loginSlice.accessToken;
         // console.log("Access Token:", accessToken); // accessToken 값 확인
@@ -116,12 +116,6 @@ function ProductUpdatePage() {
             );
           }
 
-
-          // 에디터에 내용 설정
-          if (editorRef.current) {
-            const editorInstance = editorRef.current.getInstance();
-            editorInstance.setMarkdown(data.description);
-          }
         } else {
           alert("상품 정보를 불러오는데 실패했습니다.");
         }
@@ -533,28 +527,20 @@ function ProductUpdatePage() {
           </div>
         </div>
 
-        {/* 상품 설명란 */}
+        {/* Toast UI Editor를 textarea로 대체 */}
         <div>
-          <label
-            className="block text-sm font-medium mb-2"
-            htmlFor="description"
-          >
-            상품 설명
-          </label>
-          <Editor
-            ref={editorRef}
-            initialValue={description}
-            previewStyle="vertical"
-            height="400px"
-            initialEditType="wysiwyg"
-            useCommandShortcut={true}
-            plugins={[colorSyntax]}
-            onChange={() => {
-              const editorInstance = editorRef.current.getInstance();
-              setDescription(editorInstance.getMarkdown());
-            }}
-          />
-        </div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              상품 설명
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="상품에 대한 설명을 입력하세요"
+              className="block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              rows={10}
+              style={{ resize: 'vertical' }}
+            />
+          </div>
 
         {/* 상품 가격 */}
         <div>
