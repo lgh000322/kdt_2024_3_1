@@ -95,7 +95,7 @@ function OrderDetailPage() {
           {orderDetail.length > 0 ? (
             orderDetail.map((order) => (
               <div
-                key={order.orderId}
+                key={order.productId}
                 className="flex gap-8 items-center p-5 bg-gray-100 rounded-xl mb-4"
               >
                 <div className="flex-shrink-0">
