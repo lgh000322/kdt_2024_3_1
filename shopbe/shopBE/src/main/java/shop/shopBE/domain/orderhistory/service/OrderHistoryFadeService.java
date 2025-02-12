@@ -56,6 +56,7 @@ public class OrderHistoryFadeService {
                     .createdAt(history.getCreatedAt())
                     .imageUrl(infoResponse.mainImageUrl())
                     .content(content)
+                    .price(history.getOrderPrice())
                     .build();
 
             result.add(orderHistoryResponse);
