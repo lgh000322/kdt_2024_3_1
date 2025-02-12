@@ -17,6 +17,7 @@ const initState = {
   zipCode: "",
   isSelectedDestination: false,
 };
+import { getShippingAddresses, updateShippingAddress, addShippingAddress, deleteShippingAddress } from "../api/shippingAddressApi";
 
 function ShippingAddressPage() {
   const loginState = useSelector((state) => state.loginSlice);
@@ -60,6 +61,7 @@ function ShippingAddressPage() {
       handleModifyField({ zipCode: data.zonecode });
     }
   };
+
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -112,6 +114,7 @@ function ShippingAddressPage() {
     } catch (error) {
       console.error("배송지 수정 실패:", error);
     }
+
     window.location.reload();
   };
 
@@ -135,8 +138,14 @@ function ShippingAddressPage() {
 
   const handleEdit = (address) => {
     console.log("🛠 수정할 데이터:", address);
+
     setEditingAddress({ ...address });
   };
+
+  const handleDelete = (address) => {
+    console.log("🛠 삭제할 데이터:", address);
+    setDeletingAddress({ ...address });
+  }
 
   return (
     <BasicLayout>
@@ -338,6 +347,7 @@ function ShippingAddressPage() {
                   >
                     취소
                   </button>
+
                 </div>
               </div>
             ) : (
@@ -374,6 +384,7 @@ function ShippingAddressPage() {
                     삭제
                   </button>
                 </div>
+
               </div>
             )}
           </div>
@@ -382,5 +393,4 @@ function ShippingAddressPage() {
     </BasicLayout>
   );
 }
-
 export default ShippingAddressPage;

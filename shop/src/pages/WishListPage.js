@@ -22,6 +22,7 @@ const WishlistPage = () => {
     // 화면 업데이트를 하기 위한 객체
     const updatedWishlist = wishlist.filter((item) => item.likesId !== likesId);
 
+
     // delete api 실행
     deleteWishItem(accessToken, likesId, productId).then((res) => {
       if (res.code === 200) {

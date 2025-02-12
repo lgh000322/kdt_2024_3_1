@@ -4,6 +4,7 @@ import SubProductLayout from "../layouts/SubProductLayout";
 import { getProductList } from "../api/productApi";
 import { useSearchParams } from "react-router-dom";
 
+
 function SummerPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false); // 로딩 상태 (중복 API 요청 방지)
@@ -94,6 +95,7 @@ function SummerPage() {
       setSearchParams={setSearchParams}
       setNoMoreProducts={setNoMoreProducts}
     >
+
       {/* 상품 그리드 섹션 */}
       <div className="max-w-7xl mx-auto px-4 pt-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

@@ -4,6 +4,12 @@ import ProductCardComponent from "../components/ProductCardComponent";
 import { getProductList } from "../api/productApi";
 import { useSearchParams } from "react-router-dom";
 
+const initState = [
+  { id: 1, title: "상품1", price: 89000, image: "img/logo.png" },
+  { id: 2, title: "상품2", price: 99000, image: "img/logo.png" },
+  { id: 3, title: "상품3", price: 79000, image: "img/logo.png" },
+  { id: 4, title: "상품4", price: 109000, image: "img/logo.png" },
+];
 function MainPage() {
   const [products, setProduct] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -86,6 +92,7 @@ function MainPage() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [searchParams]);
+
 
   return (
     <div>
