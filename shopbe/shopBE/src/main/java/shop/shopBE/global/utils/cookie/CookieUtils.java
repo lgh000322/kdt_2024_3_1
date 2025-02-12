@@ -20,6 +20,7 @@ public class CookieUtils {
             // accessToken이 아닌 refreshToken일 경우에 자바스크립트로 가져갈 수 없게 함.
             cookie.setHttpOnly(true);
         }
+        cookie.setDomain("kdt2024-3-1.vercel.app");  // 실제 도메인으로 변경 필요
         cookie.setSecure(true);
         cookie.setMaxAge(cookie.getMaxAge());
         cookie.setPath("/");
