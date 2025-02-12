@@ -5,23 +5,7 @@ import { useSelector } from "react-redux";
 import useCustomMove from "./../hook/useCustomMove";
 import { logoutRefresh } from "./../api/memberApi";
 
-const adminMyPage = (
-  <Link to="/admin_user">
-    <User className="w-6 h-6 cursor-pointer hover:text-black" />
-  </Link>
-);
 
-const userMyPage = (
-  <Link to="/mypage/order-list">
-    <User className="w-6 h-6 cursor-pointer hover:text-black" />
-  </Link>
-);
-
-const sellerMyPage = (
-  <Link to="/mypage/order-list">
-    <User className="w-6 h-6 cursor-pointer hover:text-black" />
-  </Link>
-);
 
 const HeaderComponent = ({ setSearchParams, setNoMoreProducts }) => {
   // 검색 쿼리를 관리하는 상태
@@ -29,18 +13,7 @@ const HeaderComponent = ({ setSearchParams, setNoMoreProducts }) => {
   const loginState = useSelector((state) => state.loginSlice);
   const { doLogout, moveToLoginPage } = useCustomMove();
   const accessToken = loginState.accessToken;
-  let loginStateJson = JSON.stringify(loginState.role);
-  const jsonObject = JSON.parse(loginStateJson);
-  const roleValue = jsonObject.role[0];
-
-  let linkToMyPage;
-  if (roleValue === "ROLE_SELLER" || roleValue === "SELLER") {
-    linkToMyPage = sellerMyPage;
-  } else if (roleValue === "ROLE_USER" || roleValue === "USER") {
-    linkToMyPage = userMyPage;
-  } else {
-    linkToMyPage = adminMyPage;
-  }
+  
 
   // 검색 처리 함수
   const handleSearch = () => {
@@ -96,7 +69,9 @@ const HeaderComponent = ({ setSearchParams, setNoMoreProducts }) => {
           {/* 아이콘 - 우측 정렬 */}
           {accessToken ? (
             <div className="flex items-center gap-4 flex-shrink-0">
-              {linkToMyPage}
+               <Link to="/mypage/order-list">
+                <User className="w-6 h-6 cursor-pointer hover:text-black" />
+              </Link> 
               <Link to="/cart">
                 <ShoppingCart className="w-6 h-6 cursor-pointer hover:text-black" />
               </Link>
