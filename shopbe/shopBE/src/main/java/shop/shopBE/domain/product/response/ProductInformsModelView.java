@@ -15,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 public class ProductInformsModelView {
 
     private Long productId;
@@ -33,4 +32,24 @@ public class ProductInformsModelView {
     private int totalStock;
     private List<ProductDetails> productDetailsList;  // 사이즈별 id, 사이즈별 재고, 사이즈
 
+
+    public void setSideImgAndDetails(List<ImgInforms> sideImgInforms, List<ProductDetails> productDetailsList) {
+        this.sideImgInforms = sideImgInforms;
+        this.productDetailsList = productDetailsList;
+    }
+
+    public void setProductInformsResp(ProductInformsResp productInformsResp){
+        this.productId = productInformsResp.productId();
+        this.productName = productInformsResp.productName();
+        this.mainImgId = productInformsResp.mainImgId();
+        this.mainImgUrl = productInformsResp.mainImgUrl();
+        this.price = productInformsResp.price();
+        this.personCategory = productInformsResp.personCategory();
+        this.seasonCategory = productInformsResp.seasonCategory();
+        this.productCategory = productInformsResp.productCategory();
+        this.likeCount = productInformsResp.likeCount();
+        this.createAt = productInformsResp.createAt();
+        this.description = productInformsResp.description();
+        this.totalStock = productInformsResp.totalStock();
+    }
 }

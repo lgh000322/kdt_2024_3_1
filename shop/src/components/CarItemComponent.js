@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
 
-
-// 왼쪽상단에 체크박스 추가 필요 (수정필요)
-
-
-
 const CartItemComponent = ({
   imageUrl,                //이미지 주소
   makerName,               // 판매회사이름
@@ -24,7 +19,7 @@ const CartItemComponent = ({
     }
   };
 
-  const totalPrice = basePrice * quantity;
+  const totalPrice = parseInt(basePrice) * quantity;
 
   return (
     <div className="bg-gray-100 rounded-lg p-4 mb-4">
@@ -62,7 +57,7 @@ const CartItemComponent = ({
                   </button>
                 </div>
               </div>
-              <p className="text-lg font-bold text-gray-900">{totalPrice.toLocaleString()}원</p>
+              <p className="text-lg font-bold text-gray-900">{totalPrice.toLocaleString}원</p>
             </div>
             
             {/* 구매 버튼 */}
@@ -82,35 +77,5 @@ const CartItemComponent = ({
     </div>
   );
 };
-
-
-
-// // 사용 예시
-// const CartItemList = () => {
-//   const sampleItems = [
-//     {
-//       imageUrl: "/api/placeholder/96/96",
-//       makerName: "메이커홀딩",
-//       productName: "프리미엄 상품",
-//       initialQuantity: 2,
-//       basePrice: 159000
-//     },
-//     {
-//       imageUrl: "/api/placeholder/96/96",
-//       makerName: "메이커홀딩",
-//       productName: "스탠다드 상품",
-//       initialQuantity: 1,
-//       basePrice: 89000
-//     }
-//   ];
-
-//   return (
-//     <div className="max-w-2xl mx-auto p-4">
-//       {sampleItems.map((item, index) => (
-//         <CartItem key={index} {...item} />
-//       ))}
-//     </div>
-//   );
-// };
 
 export default CartItemComponent;

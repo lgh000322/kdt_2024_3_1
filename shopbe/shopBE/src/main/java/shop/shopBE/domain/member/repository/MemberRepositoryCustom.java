@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface MemberRepositoryCustom {
     Optional<MemberInformation> findMemberInformById(Long memberId);
 
-    Optional<List<MemberListResponse>> findAllByPaging(Pageable pageable, Role role, String email);
+    Optional<List<MemberListResponse>> findAllByPaging(Pageable pageable, Role role, String email,String name);
 
 }
 

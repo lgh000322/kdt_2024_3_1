@@ -44,11 +44,8 @@ public class LikesItemFacadeService {
         Likes likes = likesService.findLikesByMemberId(memberId)
                 .orElseGet(() -> createLikes(memberId));
 
-        // 찜 보관함으로 찜 아이템들을 조회, 페이징 적용, 상품 아이디의 리스트를 가져옴
-        List<Long> productIds = likesItemService.getLikesItems(pageable, likes.getId());
-
         // 상품 아이디의 리스트로 상품의 데이터 조회
-        return productService.getProductListViewModels(productIds);
+        return productService.getProductListViewModels(likes.getId());
     }
 
 

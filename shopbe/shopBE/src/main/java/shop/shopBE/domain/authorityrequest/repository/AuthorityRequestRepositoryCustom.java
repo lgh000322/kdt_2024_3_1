@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AuthorityRequestRepositoryCustom {
-    Optional<List<AuthorityResponseListModel>> findAuthorityRequests(Pageable pageable);
+    Optional<List<AuthorityResponseListModel>> findAuthorityRequests(Pageable pageable,String name);
 
     Optional<AuthorityRequest> findByIdFetchJoin(Long authorityId);
 }

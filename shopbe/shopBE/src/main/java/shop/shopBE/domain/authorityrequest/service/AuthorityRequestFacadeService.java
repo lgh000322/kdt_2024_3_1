@@ -32,8 +32,8 @@ public class AuthorityRequestFacadeService {
         authorityRequestService.updateAuthority(authorityId);
     }
 
-    public List<AuthorityResponseListModel> findAuthorityRequests(Pageable pageable) {
-        return authorityRequestService.findAuthorityRequests(pageable);
+    public List<AuthorityResponseListModel> findAuthorityRequests(Pageable pageable,String name) {
+        return authorityRequestService.findAuthorityRequests(pageable,name);
     }
 
     public void deleteById(Long authorityId) {

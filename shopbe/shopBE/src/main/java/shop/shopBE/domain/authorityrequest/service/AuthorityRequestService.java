@@ -54,8 +54,8 @@ public class AuthorityRequestService {
         authorityRequest.deleteAuthority(true);
     }
 
-    public List<AuthorityResponseListModel> findAuthorityRequests(Pageable pageable) {
-        return authorityRequestRepository.findAuthorityRequests(pageable)
+    public List<AuthorityResponseListModel> findAuthorityRequests(Pageable pageable,String name) {
+        return authorityRequestRepository.findAuthorityRequests(pageable,name)
                 .orElseThrow(() -> new CustomException(AuthorityExceptionCode.AUTHORITY_NOT_EXISTS));
     }
 

@@ -34,11 +34,6 @@ public class LikesItemService {
         product.plusLikeCount();
     }
 
-    public List<Long> getLikesItems(Pageable pageable, Long likesId) {
-        return likesItemRepository.getLikesItems(pageable, likesId)
-                .orElseThrow(() -> new CustomException(LikesItemExceptionCode.LIKES_ITEM_EMPTY));
-    }
-
     @Transactional
     public void deleteById(Long likesItemId, Long productId) {
         // 찜 상품을 제거한다.

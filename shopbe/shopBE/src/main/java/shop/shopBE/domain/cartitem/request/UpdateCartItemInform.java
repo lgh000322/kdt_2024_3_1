@@ -1,15 +1,15 @@
 package shop.shopBE.domain.cartitem.request;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
 
 
 // 장바구니 아이템 수정 dto
 public record UpdateCartItemInform(
-        @NotNull
+        @Min(1)
         int size,         // 상품사이즈
-        @NotNull
+        @Min(1)
         int quantity,      // 수량
-        @NotNull
+        @Min(1)
         int itemPrice      // 장바구니 상품 가격(수량 X 상품단가)
 ) {
 }

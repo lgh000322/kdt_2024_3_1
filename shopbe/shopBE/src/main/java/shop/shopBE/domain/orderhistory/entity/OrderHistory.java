@@ -24,7 +24,7 @@ public class OrderHistory {
     // 상품의 총 가격
     private int orderPrice;
 
-    // 총 주문한 상품의 수
+    // 총 주문한 상품 종류의 수
     private int orderCount;
 
     // 주문 날짜
@@ -41,19 +41,32 @@ public class OrderHistory {
 
     private Long zipCode; //우편번호
 
-    private String deliveryMessage;
+    private String deliveryMessage; // 배송 메시지
+
+    private boolean isDeleted;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    //삭제시 배송지 ID 값을 Null 로 설정
-    public void removeDestination() {
-        this.address = null;
-        this.destinationName = null;
-        this.receiverName = null;
-        this.tel = null;
-        this.zipCode = null;
-        this.deliveryMessage = null;
+    public static OrderHistory createDefaultOrderHistory(int orderPrice, int orderCount, String address, String destinationName, String receiverName, String tel, Long zipCode, String deliveryMessage, Member member) {
+        return OrderHistory.builder()
+                .orderPrice(orderPrice)
+                .orderCount(orderCount)
+                .address(address)
+                .destinationName(destinationName)
+                .receiverName(receiverName)
+                .tel(tel)
+                .zipCode(zipCode)
+                .deliveryMessage(deliveryMessage)
+                .member(member)
+                .orderCount(orderCount)
+                .createdAt(LocalDateTime.now())
+                .build();
     }
+
+    public void delete(){
+        this.isDeleted = true;
+    }
+
 }

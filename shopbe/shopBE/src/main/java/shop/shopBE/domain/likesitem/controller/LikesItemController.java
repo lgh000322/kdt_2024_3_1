@@ -46,8 +46,8 @@ public class LikesItemController {
     @DeleteMapping("/likes/item/{likesItemId}")
     @Operation(summary = "찜 아이템 삭제", description = "현재 로그인 한 회원의 찜 아이템 1개를 삭제한다.")
     public ResponseEntity<ResponseFormat<Void>> deleteLikesItem(@PathVariable(name = "likesItemId") Long likesItemId,
-                                                                @RequestBody @Valid LikesItemDeleteInfo likesItemDeleteInfo) {
-        likesItemFacadeService.deleteById(likesItemId, likesItemDeleteInfo.productId());
+                                                               @RequestParam(name = "productId") Long productId) {
+        likesItemFacadeService.deleteById(likesItemId, productId);
         return ResponseEntity.ok().body(ResponseFormat.of("찜 아이템 삭제에 성공했습니다."));
     }
 }

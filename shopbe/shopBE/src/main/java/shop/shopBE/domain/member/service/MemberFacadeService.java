@@ -33,8 +33,8 @@ public class MemberFacadeService {
         memberService.updateMemberRole(role, memberId);
     }
 
-    public List<MemberListResponseView> getMemberList(Pageable pageable, Role role, String email) {
-        List<MemberListResponse> memberList = memberService.getMemberList(pageable, role, email);
+    public List<MemberListResponseView> getMemberList(Pageable pageable, Role role, String email, String name) {
+        List<MemberListResponse> memberList = memberService.getMemberList(pageable, role, email, name);
         return getViewResponse(memberList);
     }
 

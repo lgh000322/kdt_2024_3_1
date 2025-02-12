@@ -3,6 +3,9 @@ import AdminPageLayout from "../layouts/AdminPageLayout";
 import { useSelector } from "react-redux";
 import { sellerAccept } from "../api/memberApi";
 import { sellerAcceptSubmit } from "../api/memberApi";
+import { sellerAcceptDelete } from "../api/memberApi";
+import { sellerAcceptFile } from "../api/memberApi";
+
 
 function AdminAcceptPage() {
   const loginSlice = useSelector((state) => state.loginSlice);
@@ -11,44 +14,77 @@ function AdminAcceptPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRowIndex, setSelectedRowIndex] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
 
-  useEffect(() => {
-    const accessToken = loginSlice.accessToken;
-    sellerAccept(accessToken).then((res) => {
-      const data = res.data;
-
-      const sortedData = data.sort((a, b) => {
-        a.name.localeCompare(b.name);
-      });
-
-      setFormData(sortedData);
-      setFilteredData(sortedData);
-      setLoading(false);
+const sellerList = async (searchTermValue = "") => {
+  setLoading(true);
+  try {
+    const res = await sellerAccept(
+      loginSlice.accessToken,
+      page,
+      10,
+      searchTermValue // 검색 조건 전달
+    );
+    const sortedData = res.data.sort((a, b) => {
+      if (!a.name) return 1;
+      if (!b.name) return -1;
+      return a.name.localeCompare(b.name);
     });
-  }, [loginSlice.accessToken]);
+    setFormData(sortedData);
+    setFilteredData(sortedData); // 화면에 표시할 데이터 업데이트
+  } catch (err) {
+    console.error("회원 정보 조회 실패:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
-    if (searchTerm === "") {
-      setFilteredData(formData); // 검색어가 없으면 전체 데이터 표시
-    } else {
-      const filtered = formData.filter(
-        (member) =>
-          member.memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          member.title.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredData(filtered);
-    }
-  }, [searchTerm, formData]);
-
+    sellerList();
+  }, []);
   if (loading) return <div>Loading...</div>;
 
   const handleRowClick = (index) => {
     setSelectedRowIndex(index);
   };
 
+  const handleSearch = () => {
+    sellerList(searchTerm); // 검색어를 기반으로 API 호출
+  };
+
+  const handleFile = async () => {
+    if (selectedRowIndex === null) {
+      alert("항목을 선택하세요.");
+      return;
+    }
+    try {
+      const selectedMember = filteredData[selectedRowIndex];
+      const accessToken = loginSlice.accessToken;
+      const response = await sellerAcceptFile(
+        accessToken,
+        selectedMember.authorityId
+      );
+      if (response.code === 200) {
+        alert("성공");
+        setSelectedRowIndex(null); // 선택 초기화
+  
+        const fileData = response.data?.[0]; // data 배열의 첫 번째 항목
+        if (fileData && fileData.imageUrl) {
+          window.open(fileData.imageUrl); 
+        }
+      } else {
+        alert(`승인 실패: ${response.message}`);
+      }
+    } catch (error) {
+      console.error("승인 실패:", error);
+      alert("승인 중 오류가 발생했습니다.");
+    }
+  };
+  
   const handleApprove = async () => {
     if (selectedRowIndex === null) {
-      alert("승인할 항목을 선택하세요.");
+      alert("항목을 선택하세요.");
       return;
     }
 
@@ -65,12 +101,35 @@ function AdminAcceptPage() {
       if (response.code === 200) {
         alert("성공");
 
-        // 승인 후 리스트에서 제거
-        const updatedFormData = formData.filter(
-          (member) => member.id !== selectedMember.id
-        );
-        setFormData(updatedFormData);
-        setFilteredData(updatedFormData);
+        setSelectedRowIndex(null); // 선택 초기화
+      } else {
+        alert(`승인 실패: ${response.message}`);
+      }
+    } catch (error) {
+      console.error("승인 실패:", error);
+      alert("승인 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (selectedRowIndex === null) {
+      alert("항목을 선택하세요.");
+      return;
+    }
+
+    try {
+      const selectedMember = filteredData[selectedRowIndex];
+      const accessToken = loginSlice.accessToken;
+
+      // 선택된 데이터의 authorityId를 사용하여 API 호출
+      const response = await sellerAcceptDelete(
+        accessToken,
+        selectedMember.authorityId
+      );
+
+      if (response.code === 200) {
+        alert("성공");
+
         setSelectedRowIndex(null); // 선택 초기화
       } else {
         alert(`승인 실패: ${response.message}`);
@@ -125,10 +184,9 @@ function AdminAcceptPage() {
           </label>
           <input
             type="text"
-            id="searchTerm"
-            placeholder="등록자 또는 제목을 입력하세요"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="판매자명을 입력해주세요"
+            value={searchTerm} // 검색어 상태와 연결
+            onChange={(e) => setSearchTerm(e.target.value)} // 상태 업데이트
             style={{
               flexGrow: 1,
               padding: "10px",
@@ -137,6 +195,20 @@ function AdminAcceptPage() {
               width: "250px",
             }}
           />
+          <button
+            onClick={handleSearch}
+            style={{
+              backgroundColor: "#007BFF",
+              color: "#fff",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "5px",
+              cursor: "pointer",
+              fontSize: "16px",
+            }}
+          >
+            검색
+          </button>
         </div>
       </div>
 
@@ -181,9 +253,9 @@ function AdminAcceptPage() {
             >
               <tr>
                 {["번호", "등록자", "등록 제목", "등록일", "첨부 파일"].map(
-                  (header) => (
+                  (header, index) => (
                     <th
-                      key={header}
+                      key={index}
                       style={{
                         borderBottom: "2px solid #ddd",
                         padding: "10px",
@@ -223,6 +295,7 @@ function AdminAcceptPage() {
                   </td>
                   <td style={{ padding: "10px", textAlign: "center" }}>
                     <button
+                      onClick={handleFile}
                       style={{
                         backgroundColor: "#007bff",
                         color: "#fff",
@@ -238,16 +311,6 @@ function AdminAcceptPage() {
                   </td>
                 </tr>
               ))}
-              {filteredData.length === 0 && (
-                <tr>
-                  <td
-                    colSpan="6"
-                    style={{ textAlign: "center", padding: "20px" }}
-                  >
-                    검색 결과가 없습니다.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
@@ -278,6 +341,7 @@ function AdminAcceptPage() {
           {/* 거절 버튼은 추가 구현 필요 */}
 
           <button
+            onClick={handleDelete}
             style={{
               backgroundColor: "#dc3545",
               color: "#fff",

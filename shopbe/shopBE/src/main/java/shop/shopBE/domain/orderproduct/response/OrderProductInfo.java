@@ -1,12 +1,18 @@
 package shop.shopBE.domain.orderproduct.response;
 
 
-import java.util.List;
+import shop.shopBE.domain.orderproduct.entity.enums.DeliveryStatus;
+
 
 public record OrderProductInfo(
-        Long orderHistoryId, //주문내역 번호
+        Long productId, // 상품의 아이디
+        Long orderId, // 주문 번호
+        int orderProductCount, // 상품 주문 수량
+        String productName, // 해당 상품의 이름
         String orderName, //주문자 이름
-        String deliveryAddress, //주문주소
+        String deliveryAddress, //주문자 주소
         String phoneNumber, //주문자 전화번호
-        List<DetailOrderProducts> orderDetailProducts
+        DeliveryStatus deliveryStatus, // 현재 주문 상태
+        String imgUrl , // 해당 상품의 대표 이미지
+        int totalPrice // 해당 상품의 총 가격
 ) { }

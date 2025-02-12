@@ -47,6 +47,11 @@ public class Destination {
         this.address = updateDestinationRequest.address();
         this.zipCode = updateDestinationRequest.zipCode();
         this.deliveryMessage = updateDestinationRequest.deliverMessage();
+        this.isSelectedDestination = updateDestinationRequest.isSelectedDestination();
+    }
+
+    public void changeDefaultDestination(boolean isSelected){
+        this.isSelectedDestination = isSelected;
     }
 
     public static Destination createDefaultDestination(String destinationName, String receiverName, String tel, String address, Long zipCode, Member member) {

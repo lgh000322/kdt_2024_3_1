@@ -15,6 +15,7 @@ import shop.shopBE.domain.productimage.response.ImgInforms;
 import shop.shopBE.global.exception.custom.CustomException;
 import shop.shopBE.global.utils.s3.S3Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +63,7 @@ public class ProductImageService {
     public void updateMainImg(Product product, MultipartFile updateMainImg, ImgInforms deleteImgInforms) {
 
         if(deleteImgInforms != null) {
+
             // s3에서 파일 제거
             s3Utils.deleteFile(deleteImgInforms.imgUrl());
             // db에서 제거
@@ -100,11 +102,17 @@ public class ProductImageService {
 
     //사이드 이미지들을 업로드후 파일데이터리스트를 반환.
     private List<FileData> uploadSideImgs(List<MultipartFile> sideImgFiles) {
-        return sideImgFiles.stream().map(file -> {
-                    String originalFilename = file.getOriginalFilename();
-                    String savedFilename = s3Utils.uploadFile(file);
-                    return new FileData(originalFilename, savedFilename);
-                }).toList();
+        List<FileData> result = new ArrayList<>();
+
+        if (sideImgFiles != null && !sideImgFiles.isEmpty()) {
+            result = sideImgFiles.stream().map(file -> {
+                String originalFilename = file.getOriginalFilename();
+                String savedFilename = s3Utils.uploadFile(file);
+                return new FileData(originalFilename, savedFilename);
+            }).toList();
+        }
+
+        return result;
     }
 
     // 메인이미지를 s3에 업로드후 filedata반환.

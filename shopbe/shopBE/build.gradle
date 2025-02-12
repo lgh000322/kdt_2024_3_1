@@ -96,6 +96,9 @@ dependencies {
 	// 테스트 코드에도 적용하려면 추가
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	// aop
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
 
 tasks.named('test') {

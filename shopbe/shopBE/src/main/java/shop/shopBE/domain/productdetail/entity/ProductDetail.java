@@ -28,14 +28,6 @@ public class ProductDetail {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    public static ProductDetail createDefaultProductDetail(Product product, int shoesSize, int sizeStock) {
-        return ProductDetail.builder()
-                .product(product)
-                .shoesSize(shoesSize)
-                .sizeStock(sizeStock)
-                .build();
-    }
-
     public void minusSizeStock(int stock) {
         if(this.sizeStock - stock < 0) {
             throw new CustomException(ProductDetailExceptionCustom.OUT_OF_STOCK);
@@ -48,5 +40,13 @@ public class ProductDetail {
         // 사이즈 0으로 초기화 후 입력받은 재고변경
         this.sizeStock = 0;
         this.sizeStock += stock;
+    }
+
+    public static ProductDetail createDefaultProductDetail(Product product, int shoesSize, int sizeStock) {
+        return ProductDetail.builder()
+                .product(product)
+                .shoesSize(shoesSize)
+                .sizeStock(sizeStock)
+                .build();
     }
 }

@@ -5,24 +5,24 @@ import { logoutRefresh } from "../api/memberApi";
 import useCustomMove from "../hook/useCustomMove";
 
 const sellerMenuItems = [
-  {
-    id: 1,
-    title: "배송관리(판매자)",
-    path: "/mypage/shipping-management",
-    content: "배송관리 관련 콘텐츠",
-  },
-  {
-    id: 2,
-    title: "주문관리(판매자)",
-    path: "/mypage/order-management",
-    content: "주문관리 관련 콘텐츠",
-  },
-  {
-    id: 3,
-    title: "문의내역",
-    path: "/mypage/inquiry",
-    content: "문의내역 관련 콘텐츠",
-  },
+  // {
+  //   id: 1,
+  //   title: "배송관리(판매자)",
+  //   path: "/mypage/address-management",
+  //   content: "배송관리 관련 콘텐츠",
+  // },
+  // {
+  //   id: 2,
+  //   title: "주문관리(판매자)",
+  //   path: "/mypage/order-management",
+  //   content: "주문관리 관련 콘텐츠",
+  // },
+  // {
+  //   id: 3,
+  //   title: "문의내역",
+  //   path: "/mypage/inquiry",
+  //   content: "문의내역 관련 콘텐츠",
+  // },
   {
     id: 4,
     title: "찜리스트",
@@ -38,8 +38,20 @@ const sellerMenuItems = [
   {
     id: 6,
     title: "배송지 관리",
-    path: "/mypage/address-management",
+    path: "/mypage/shipping-address",
     content: "배송지 관리 관련 콘텐츠",
+  },
+  {
+    id: 7,
+    title: "상품 등록",
+    path: "/product/registration",
+    content: "상품 업로드",
+  },
+  {
+    id: 8,
+    title: "등록한 상품 조회",
+    path: "/seller/products",
+    content: "내가 등록한 상품 조회",
   },
 ];
 
@@ -56,12 +68,12 @@ const consumerMenuItems = [
     path: "/mypage/shipping-address",
     content: "배송지 관리 관련 콘텐츠",
   },
-  {
-    id: 3,
-    title: "문의내역",
-    path: "/mypage/inquiry",
-    content: "문의내역 관련 콘텐츠",
-  },
+  // {
+  //   id: 3,
+  //   title: "문의내역",
+  //   path: "/mypage/inquiry",
+  //   content: "문의내역 관련 콘텐츠",
+  // },
   {
     id: 4,
     title: "찜리스트",
@@ -97,21 +109,15 @@ const managerMenuItems = [
   },
   {
     id: 4,
-    title: "통계분석",
-    path: "/admin_statistic",
-    content: "통계분석 관련 콘텐츠",
-  },
-  {
-    id: 5,
-    title: "고객지원(1대1 상담)",
-    path: "/mypage/counsel",
-    content: "고객지원(1대1 상담) 관련 콘텐츠",
-  },
-  {
-    id: 6,
     title: "배너 관리",
     path: "/admin_banner",
     content: "배너관리 관련 콘텐츠",
+  },
+  {
+    id: 5,
+    title: "찜리스트",
+    path: "/mypage/wishlist",
+    content: "찜리스트 관련 콘텐츠",
   },
 ];
 
@@ -124,7 +130,6 @@ const Sidebar = ({ onMenuClick }) => {
     let loginStateJson = JSON.stringify(loginState.role);
     const jsonObject = JSON.parse(loginStateJson);
     const roleValue = jsonObject.role[0];
-    console.log(roleValue);
 
     if (roleValue === "ROLE_SELLER" || roleValue === "SELLER") {
       setMenuItems(sellerMenuItems);

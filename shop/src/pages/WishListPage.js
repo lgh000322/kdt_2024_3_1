@@ -2,36 +2,14 @@ import React, { useEffect, useState } from "react";
 import WishLayout from "../layouts/WishLayout";
 import { deleteWishItem, getWishList } from "../api/wishApi";
 import { useSelector } from "react-redux";
-
-const initState = [
-  {
-    productId: 1,
-    likesId: 1,
-    imageUrl: "/img/logo.png",
-    title: "상품 A",
-    price: 8000,
-  },
-  {
-    productId: 2,
-    likesId: 2,
-    imageUrl: "/img/logo.png",
-    title: "상품 A",
-    price: 8000,
-  },
-  {
-    productId: 3,
-    likesId: 3,
-    imageUrl: "/img/logo.png",
-    title: "상품 A",
-    price: 8000,
-  },
-];
+import useCustomMove from "../hook/useCustomMove";
 
 const WishlistPage = () => {
-  const [wishlist, setWishlist] = useState(initState);
+  const [wishlist, setWishlist] = useState([]);
   const [page, setPage] = useState(0);
   const loginState = useSelector((state) => state.loginSlice);
   const accessToken = loginState.accessToken;
+  const { moveToProductOne } = useCustomMove();
 
   useEffect(() => {
     getWishList(accessToken, page, 10).then((res) => {
@@ -43,6 +21,7 @@ const WishlistPage = () => {
   const removeFromWishlist = (likesId, productId) => {
     // 화면 업데이트를 하기 위한 객체
     const updatedWishlist = wishlist.filter((item) => item.likesId !== likesId);
+
 
     // delete api 실행
     deleteWishItem(accessToken, likesId, productId).then((res) => {
@@ -68,7 +47,10 @@ const WishlistPage = () => {
                 <img
                   src={item.imageUrl}
                   alt={item.title}
-                  className="w-full h-60 object-cover rounded-md"
+                  onClick={() => {
+                    moveToProductOne(item.productId);
+                  }}
+                  className="w-full h-60 object-cover rounded-md cursor-pointer"
                 />
                 <hr className="my-2" />
                 <h3 className="text-lg font-semibold my-1">{item.title}</h3>

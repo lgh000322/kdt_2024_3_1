@@ -1,20 +1,52 @@
 import React, { useState } from "react";
 import { Search, User, ShoppingCart } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useCustomMove from "./../hook/useCustomMove";
 import { logoutRefresh } from "./../api/memberApi";
 
-const HeaderComponent = () => {
+const adminMyPage = (
+  <Link to="/admin_user">
+    <User className="w-6 h-6 cursor-pointer hover:text-black" />
+  </Link>
+);
+
+const userMyPage = (
+  <Link to="/mypage/order-list">
+    <User className="w-6 h-6 cursor-pointer hover:text-black" />
+  </Link>
+);
+
+const sellerMyPage = (
+  <Link to="/mypage/order-list">
+    <User className="w-6 h-6 cursor-pointer hover:text-black" />
+  </Link>
+);
+
+const HeaderComponent = ({ setSearchParams, setNoMoreProducts }) => {
   // 검색 쿼리를 관리하는 상태
   const [searchQuery, setSearchQuery] = useState("");
   const loginState = useSelector((state) => state.loginSlice);
   const { doLogout, moveToLoginPage } = useCustomMove();
   const accessToken = loginState.accessToken;
+  let loginStateJson = JSON.stringify(loginState.role);
+  const jsonObject = JSON.parse(loginStateJson);
+  const roleValue = jsonObject.role[0];
+
+  let linkToMyPage;
+  if (roleValue === "ROLE_SELLER" || roleValue === "SELLER") {
+    linkToMyPage = sellerMyPage;
+  } else if (roleValue === "ROLE_USER" || roleValue === "USER") {
+    linkToMyPage = userMyPage;
+  } else {
+    linkToMyPage = adminMyPage;
+  }
+
   // 검색 처리 함수
   const handleSearch = () => {
-    console.log("검색 실행", searchQuery);
     // 여기에 검색 로직 추가
+    setSearchParams({ page: 0, query: searchQuery }); // 쿼리 파라미터에 query = 검색어 추가
+    setNoMoreProducts(false);
   };
 
   const logoutClick = () => {
@@ -62,14 +94,16 @@ const HeaderComponent = () => {
           </div>
 
           {/* 아이콘 - 우측 정렬 */}
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <Link to="/mypage/order-list">
-              <User className="w-6 h-6 cursor-pointer hover:text-black" />
-            </Link>
-            <Link to="/cart">
-              <ShoppingCart className="w-6 h-6 cursor-pointer hover:text-black" />
-            </Link>
-          </div>
+          {accessToken ? (
+            <div className="flex items-center gap-4 flex-shrink-0">
+              {linkToMyPage}
+              <Link to="/cart">
+                <ShoppingCart className="w-6 h-6 cursor-pointer hover:text-black" />
+              </Link>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
 
         {/* 내비게이션 바 */}
@@ -106,7 +140,7 @@ const HeaderComponent = () => {
               유아
             </Link>
           </div>
-          {loginState.accessToken ? (
+          {accessToken ? (
             <div
               className="whitespace-nowrap text-xl text-gray-600 hover:text-black transition-colors cursor-pointer"
               onClick={logoutClick}

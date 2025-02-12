@@ -48,8 +48,10 @@ public class AuthorityRequestController {
     @GetMapping("/authority")
     @Operation(summary = "권한 허가 신청 목록", description = "관리자만 권한 허가 신청한 사람들의 목록을 확인할 수 있다.")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseFormat<List<AuthorityResponseListModel>>> getAuthorityRequests(@PageableDefault Pageable pageable) {
-        List<AuthorityResponseListModel> result = authorityRequestFacadeService.findAuthorityRequests(pageable);
+    public ResponseEntity<ResponseFormat<List<AuthorityResponseListModel>>> getAuthorityRequests(@PageableDefault Pageable pageable,
+                                                                                                 @RequestParam(name = "name", required = false) String name) {
+
+        List<AuthorityResponseListModel> result = authorityRequestFacadeService.findAuthorityRequests(pageable,name);
         return ResponseEntity.ok().body(ResponseFormat.of("성공", result));
     }
 

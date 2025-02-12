@@ -1,6 +1,7 @@
 package shop.shopBE.domain.authorityrequest.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,7 @@ public class AuthorityRequestRepositoryCustomImpl implements AuthorityRequestRep
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<List<AuthorityResponseListModel>> findAuthorityRequests(Pageable pageable) {
+    public Optional<List<AuthorityResponseListModel>> findAuthorityRequests(Pageable pageable,String name) {
         List<AuthorityResponseListModel> result = queryFactory
                 .select(Projections.constructor(AuthorityResponseListModel.class,
                         authorityRequest.id,
@@ -30,6 +31,7 @@ public class AuthorityRequestRepositoryCustomImpl implements AuthorityRequestRep
                 .from(authorityRequest)
                 .innerJoin(member).on(authorityRequest.member.id.eq(member.id))
                 .where(
+                        isMemberNameLike(name),
                         authorityRequest.isAccepted.eq(false),
                         authorityRequest.isDeleted.eq(false)
                 )
@@ -50,6 +52,10 @@ public class AuthorityRequestRepositoryCustomImpl implements AuthorityRequestRep
                 .fetchOne();
 
         return Optional.ofNullable(result);
+    }
+
+    private BooleanExpression isMemberNameLike(String name) {
+        return name == null ? null : member.name.like("%" + name + "%");
     }
 
 }
