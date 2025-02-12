@@ -1,9 +1,5 @@
 import React, { useState, useRef } from "react";
 import UploadLayout from "../layouts/UploadLayout";
-import { Editor } from "@toast-ui/react-editor";
-import "@toast-ui/editor/dist/toastui-editor.css"; // Editor styles
-import "@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css"; // Plugin styles
-import colorSyntax from "@toast-ui/editor-plugin-color-syntax";
 import { registerProduct } from "../api/productApi";
 import { useSelector } from "react-redux";
 import useCustomMove from "../hook/useCustomMove";
@@ -39,13 +35,10 @@ function ProductUploadPage() {
   const [productPrice, setProductPrice] = useState("");
   const [representImage, setRepresentImage] = useState(null);
   const [images, setImages] = useState([]);
-  // const [hoveredImage, setHoveredImage] = useState(null); // 팝업 이미지 상태
-  // const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const fileInputRef = useRef(null);
   const multiFileInputRef = useRef(null);
-  const editorRef = useRef(null); // TOAST UI Editor reference
   const [sizeRange, setSizeRange] = useState({ min: "", max: "" });
-  const [sizeInterval, setSizeInterval] = useState(""); // 간격 (5 또는 10)
+  const [sizeInterval, setSizeInterval] = useState("");
   const [sizeQuantities, setSizeQuantities] = useState({});
 
   const { moveToProductAbs } = useCustomMove();
@@ -74,16 +67,15 @@ function ProductUploadPage() {
     const { min, max } = sizeRange;
     const minVal = Math.max(0, Number(min)) || 0;
     const maxVal = Math.max(minVal, Number(max)) || minVal;
-    const interval = [5, 10].includes(Number(sizeInterval)) ? Number(sizeInterval) : 5;
+    const interval = [5, 10].includes(Number(sizeInterval))
+      ? Number(sizeInterval)
+      : 5;
     for (let size = minVal; size <= maxVal; size += interval) {
       sizes.push(size);
     }
     return sizes;
   };
 
-  {
-    /* 상품 대표 이미지(단일) */
-  }
   const handleRepresentImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -94,9 +86,6 @@ function ProductUploadPage() {
     }
   };
 
-  {
-    /* 상품 추가 이미지 업로드(다수) */
-  }
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files).map((file) => ({
       file,
@@ -105,9 +94,6 @@ function ProductUploadPage() {
     setImages((prevImages) => [...prevImages, ...files]);
   };
 
-  {
-    /* 대표 이미지 삭제 */
-  }
   const handleRemoveRepresentImage = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -115,13 +101,10 @@ function ProductUploadPage() {
     setRepresentImage(null);
   };
 
-  {
-    /* 상품 이미지 삭제 */
-  }
   const handleRemoveImage = (index) => {
     setImages((prevImages) => {
-      const updatedImages = prevImages.filter((_, i) => i !== index); // 이미지 삭제
-      URL.revokeObjectURL(prevImages[index].preview); // 업로드된 파일 URL 해제
+      const updatedImages = prevImages.filter((_, i) => i !== index);
+      URL.revokeObjectURL(prevImages[index].preview);
       return updatedImages;
     });
   };
@@ -131,11 +114,6 @@ function ProductUploadPage() {
 
     let accessToken = loginSlice.accessToken;
 
-    // TOAST UI Editor에서 Markdown 데이터 가져오기
-    const editorInstance = editorRef.current.getInstance();
-    const markdownContent = editorInstance.getMarkdown();
-
-    // 유효성 검사
     if (
       !productName ||
       !productCategory ||
@@ -148,15 +126,12 @@ function ProductUploadPage() {
       return;
     }
 
-    // 가격이 숫자 형식인지 확인
     if (isNaN(productPrice) || productPrice <= 0) {
       alert("상품 가격은 숫자로 입력해 주세요.");
       return;
     }
 
-    // 사이즈가 있을 경우 사이즈 관련 값이 비어 있지 않은지 체크
     if (sizeRange.min && sizeRange.max && sizeInterval) {
-      // 사이즈별 수량이 하나라도 입력되지 않았다면
       const missingQuantities = renderSizeOptions().some(
         (size) => !sizeQuantities[size] || sizeQuantities[size] <= 0
       );
@@ -166,7 +141,6 @@ function ProductUploadPage() {
       }
     }
 
-    // 사이즈별 수량 맵 생성
     const sizeQuantityMap = renderSizeOptions().reduce((acc, size) => {
       if (sizeQuantities[size]) {
         acc[size] = sizeQuantities[size];
@@ -174,10 +148,7 @@ function ProductUploadPage() {
       return acc;
     }, {});
 
-    console.log("사이즈별 수량 맵:", sizeQuantityMap); // 예시: { 250: 10, 255: 5, 260: 8 }
-
     try {
-      // FormData 객체 생성
       const formData = new FormData();
 
       const addProductInforms = {
@@ -196,30 +167,13 @@ function ProductUploadPage() {
         })
       );
 
-      // 대표 이미지 추가
       if (representImage) {
         formData.append("mainImgFile", representImage.file);
       }
 
-      // 추가 이미지들 추가
-      images.forEach((image, index) => {
+      images.forEach((image) => {
         formData.append(`sideImgFile`, image.file);
       });
-
-      // FormData를 객체로 변환하여 콘솔에 출력 (디버깅용)
-      const formDataObject = {};
-      for (let [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          formDataObject[key] = {
-            fileName: value.name,
-            fileType: value.type,
-            fileSize: value.size,
-          };
-        } else {
-          formDataObject[key] = value;
-        }
-      }
-      console.log("전송될 데이터:", formData);
 
       registerProduct(formData, accessToken).then((res) => {
         if (res.code === 200) {
@@ -234,112 +188,74 @@ function ProductUploadPage() {
     }
   };
 
-  // {/* 상품 대표 이미지 팝업 위치 조정 */}
-  // const handleHoverRepresentImage = (image, event) => {
-  //   const imageRect = event.currentTarget.getBoundingClientRect();
-  //   setHoveredImage(image.preview);
-  //   setPopupPosition({
-  //     x: imageRect.left + 250,
-  //     y: imageRect.top + 180,
-  //   });
-  // };
-
-  // {/* 상품 추가 이미지 팝업 위치 조정 */}
-  // const handleHoverImage = (image, event) => {
-  //   const imageRect = event.currentTarget.getBoundingClientRect();
-  //   setHoveredImage(image.preview);
-  //   setPopupPosition({
-  //     x: imageRect.left + 250,
-  //     y: imageRect.top,
-  //   });
-  // };
-
-  // {/* 상품 이미지 팝업 상호작용 */}
-  // const handleMouseLeave = () => {
-  //   setHoveredImage(null);
-  // };
-
-  {
-    /* 상품 등록 버튼 */
-  }
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   // TOAST UI Editor에서 Markdown 데이터 가져오기
-  //   const editorInstance = editorRef.current.getInstance();
-  //   const markdownContent = editorInstance.getMarkdown();
-  //   alert("상품이 등록되었습니다!");
-  // };
-
   return (
     <UploadLayout>
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg border relative">
         <h1 className="text-2xl font-bold mb-6">상품 등록</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-       {/* 대표 이미지 업로드 */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            대표 이미지 업로드
-          </label>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleRepresentImageUpload}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
-          />
-          {representImage && (
-            <div className="mt-4 relative w-60 h-auto">
-              <img
-                src={representImage.preview}
-                alt="대표 이미지"
-                className="w-full h-auto object-cover rounded-lg"
-              />
-              <button
-                type="button"
-                onClick={handleRemoveRepresentImage}
-                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full transition-colors"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* 상품 이미지 업로드 */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            상품 이미지 업로드
-          </label>
-          <input
-            ref={multiFileInputRef}
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
-          />
-          <div className="mt-4 grid grid-cols-3 gap-4">
-            {images.map((image, index) => (
-              <div key={index} className="relative">
+          {/* 이미지 업로드 섹션은 동일하게 유지 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              대표 이미지 업로드
+            </label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleRepresentImageUpload}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
+            />
+            {representImage && (
+              <div className="mt-4 relative w-60 h-auto">
                 <img
-                  src={image.preview}
-                  alt={`uploaded-${index}`}
+                  src={representImage.preview}
+                  alt="대표 이미지"
                   className="w-full h-auto object-cover rounded-lg"
                 />
                 <button
                   type="button"
-                  onClick={() => handleRemoveImage(index)}
+                  onClick={handleRemoveRepresentImage}
                   className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full transition-colors"
                 >
                   <X size={16} />
                 </button>
               </div>
-            ))}
+            )}
           </div>
-        </div>
 
-          {/* 상품명 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              상품 이미지 업로드
+            </label>
+            <input
+              ref={multiFileInputRef}
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-lg file:bg-gray-50 file:text-gray-700"
+            />
+            <div className="mt-4 grid grid-cols-3 gap-4">
+              {images.map((image, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={image.preview}
+                    alt={`uploaded-${index}`}
+                    className="w-full h-auto object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 나머지 입력 필드들 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               상품명
@@ -353,7 +269,6 @@ function ProductUploadPage() {
             />
           </div>
 
-          {/* 상품 카테고리 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               상품 종류
@@ -362,12 +277,6 @@ function ProductUploadPage() {
               value={productCategory}
               onChange={(e) => setProductCategory(e.target.value)}
               className="block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              style={{
-                position: "relative",
-                zIndex: 10,
-                maxHeight: "50px", // 드롭다운의 최대 높이 설정
-                overflowY: "auto", // 스크롤 활성화
-              }}
             >
               <option value="" disabled>
                 상품을 선택해주세요.
@@ -380,7 +289,6 @@ function ProductUploadPage() {
             </select>
           </div>
 
-          {/* 사람 카테고리 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               성별
@@ -389,10 +297,6 @@ function ProductUploadPage() {
               value={personCategory}
               onChange={(e) => setPersonCategory(e.target.value)}
               className="block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              style={{
-                position: "relative", // select 요소의 상대적 위치 지정
-                zIndex: 10, // 드롭다운 메뉴가 다른 요소들에 가려지지 않도록 설정
-              }}
             >
               <option value="" disabled>
                 성별을 선택해주세요.
@@ -404,7 +308,6 @@ function ProductUploadPage() {
             </select>
           </div>
 
-          {/* 계절 카테고리 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               계절
@@ -413,10 +316,6 @@ function ProductUploadPage() {
               value={seasonCategory}
               onChange={(e) => setSeasonCategory(e.target.value)}
               className="block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              style={{
-                position: "relative", // select 요소의 상대적 위치 지정
-                zIndex: 10, // 드롭다운 메뉴가 다른 요소들에 가려지지 않도록 설정
-              }}
             >
               <option value="" disabled>
                 계절을 선택해주세요.
@@ -427,12 +326,12 @@ function ProductUploadPage() {
             </select>
           </div>
 
+          {/* 사이즈 및 수량 섹션 */}
           <div className="w-full max-w-4xl mx-auto p-4">
             <label className="block text-sm font-medium text-gray-700 mb-4">
               신발 사이즈 및 수량
             </label>
 
-            {/* Size Range Controls - Responsive Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               <div className="w-full">
                 <label className="block text-sm text-gray-700 mb-2">
@@ -482,7 +381,6 @@ function ProductUploadPage() {
               </div>
             </div>
 
-            {/* Error Messages */}
             {sizeInterval &&
               !sizeRange.min &&
               !sizeRange.max &&
@@ -504,8 +402,6 @@ function ProductUploadPage() {
                 </p>
               )}
 
-            {/* Size Quantity Inputs - Responsive Grid */}
-            {/* Size Quantity Inputs - Responsive Grid */}
             {sizeInterval &&
               sizeRange.min &&
               sizeRange.max &&
@@ -521,7 +417,7 @@ function ProductUploadPage() {
                       <label className="text-sm text-gray-700 flex-shrink-0">
                         {size} 사이즈
                       </label>
-                      <div className="flex-grow mx-2" /> {/* Spacer */}
+                      <div className="flex-grow mx-2" />
                       <input
                         type="number"
                         value={sizeQuantities[size] || ""}
@@ -536,30 +432,21 @@ function ProductUploadPage() {
               )}
           </div>
 
-          {/* 상품 설명란 */}
+          {/* Toast UI Editor를 textarea로 대체 */}
           <div>
-            <label
-              className="block text-sm font-medium mb-2"
-              htmlFor="description"
-            >
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               상품 설명
             </label>
-            <Editor
-              ref={editorRef}
-              initialValue={description}
-              previewStyle="vertical"
-              height="400px"
-              initialEditType="wysiwyg"
-              useCommandShortcut={true}
-              plugins={[colorSyntax]}
-              onChange={() => {
-                const editorInstance = editorRef.current.getInstance();
-                setDescription(editorInstance.getMarkdown());
-              }}
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="상품에 대한 설명을 입력하세요"
+              className="block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              rows={10}
+              style={{ resize: "vertical" }}
             />
           </div>
 
-          {/* 상품 가격 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               상품 가격
@@ -578,7 +465,6 @@ function ProductUploadPage() {
             </div>
           </div>
 
-          {/* 등록 버튼 */}
           <div className="flex justify-end space-x-4">
             <button
               type="button"
@@ -587,7 +473,6 @@ function ProductUploadPage() {
               취소
             </button>
             <button
-              onClick={handleSubmit}
               type="submit"
               className="px-6 py-2 bg-blue-500 text-white rounded-lg shadow-sm hover:bg-blue-600"
             >
@@ -595,32 +480,6 @@ function ProductUploadPage() {
             </button>
           </div>
         </form>
-
-        {/* 이미지 팝업 */}
-        {/* {hoveredImage && (
-          <div
-            style={{
-              position: "absolute",
-              top: `${popupPosition.y}px`,
-              left: `${popupPosition.x}px`,
-              border: "1px solid #ddd",
-              backgroundColor: "white",
-              padding: "5px",
-              zIndex: 1000,
-            }}
-            className="shadow-lg rounded"
-          >
-            <img
-              src={hoveredImage}
-              alt="미리보기"
-              style={{
-                width: "300px",
-                height: "auto",
-                objectFit: "cover",
-              }}
-            />
-          </div>
-        )} */}
       </div>
     </UploadLayout>
   );

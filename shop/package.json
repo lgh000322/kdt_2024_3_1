@@ -4,20 +4,16 @@
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.0",
-    "@toast-ui/editor": "^3.2.2",
-    "@toast-ui/editor-plugin-color-syntax": "^3.1.0",
-    "@toast-ui/react-editor": "^3.2.2",
     "@tosspayments/tosspayments-sdk": "^2.3.4",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "lucide-react": "^0.471.1",
-    "react": "^17.0.2",          
+    "react": "^18.3.1",
     "react-cookie": "^7.2.2",
     "react-daum-postcode": "^3.2.0",
     "react-dom": "^18.3.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.1",
-
     "react-scripts": "^5.0.1",
     "redux": "^5.0.1",
     "styled-components": "^6.1.14",
@@ -25,7 +21,7 @@
   },
   "resolutions": {
     "@toast-ui/editor": "^3.2.3"
- },
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
