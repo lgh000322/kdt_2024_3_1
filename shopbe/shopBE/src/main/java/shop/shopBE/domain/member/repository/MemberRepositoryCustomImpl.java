@@ -37,7 +37,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public Optional<List<MemberListResponse>> findAllByPaging(Pageable pageable, Role role, String email,String name) {
+    public Optional<List<MemberListResponse>> findAllByPaging(Pageable pageable, Role role, String email, String name) {
         List<MemberListResponse> result = queryFactory
                 .select(Projections.constructor(MemberListResponse.class,
                         member.name,
@@ -64,10 +64,10 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     }
 
     private BooleanExpression isEmailEq(String email) {
-        return email == null ? null : member.email.eq(email);
+        return email == null ? null : member.email.like("%" + email + "%");
     }
 
     private BooleanExpression isNameEq(String name) {
-        return name == null ? null : member.name.like("%"+name+"%");
+        return name == null ? null : member.name.like("%" + name + "%");
     }
 }
