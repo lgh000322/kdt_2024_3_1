@@ -1,101 +1,111 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import ProductCardComponent from "../components/ProductCardComponent";
 import SubProductLayout from "../layouts/SubProductLayout";
 import { getProductList } from "../api/productApi";
 import { useSearchParams } from "react-router-dom";
 
 function MenPage() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false); // 로딩 상태 (중복 API 요청 방지)
-  const [noMoreProducts, setNoMoreProducts] = useState(false); // 데이터가 없을 때 호출하는 것을 방지
+  const [products, setProduct] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [noMoreProducts, setNoMoreProducts] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  useEffect(() => {
-    let query = searchParams.get("query");
-    let page = searchParams.get("page");
-
-    if (noMoreProducts || loading) return; // 로딩 중일 경우 API 요청 방지
-
+  const loadingRef = useRef(false);
+  const scrollPositionRef = useRef(0);
+  
+  const fetchProducts = useCallback(async (page, query) => {
+    if (loadingRef.current) return;
+    
+    loadingRef.current = true;
     setLoading(true);
-    if (query) {
+    
+    try {
+      // 현재 스크롤 위치 저장
+      scrollPositionRef.current = window.scrollY;
+      
+      const res = await getProductList(page, 10, null, "MEN", null, null, query);
+      const data = res.data;
+      
+      if (data.length === 0 || data.length < 10) {
+        setNoMoreProducts(true);
+      }
+      
       if (page === "0") {
-        getProductList(page, 10, null, "MEN", null, null, query)
-          .then((res) => {
-            const data = res.data;
-            if (data.length === 0) {
-              setNoMoreProducts(true);
-            }
-            setProducts(data);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
+        setProduct(data);
       } else {
-        getProductList(page, 10, null, "MEN", null, null, query)
-          .then((res) => {
-            const data = res.data;
-            if (data.length === 0) {
-              setNoMoreProducts(true);
-            }
-            setProducts((prevProducts) => [...prevProducts, ...data]);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      }
-    } else {
-      getProductList(page, 10, null, "MEN", null, null, null)
-        .then((res) => {
-          const data = res.data;
-          if (data.length === 0) {
-            setNoMoreProducts(true);
-          }
-          setProducts((prevProducts) => [...prevProducts, ...data]); // 새로운 상품을 기존 상품 리스트에 추가
-        })
-        .finally(() => {
-          setLoading(false); // 로딩 완료 후 상태 리셋
+        setProduct(prev => [...prev, ...data]);
+        // 데이터 업데이트 후 스크롤 위치 복원
+        requestAnimationFrame(() => {
+          window.scrollTo(0, scrollPositionRef.current);
         });
+      }
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setLoading(false);
+      loadingRef.current = false;
     }
-  }, [searchParams]);
+  }, []);
 
-  // 스크롤 이벤트를 감지하여 페이지 하단에 도달하면 더 많은 상품을 로드
+  // 초기 데이터 로드 및 검색 처리
   useEffect(() => {
-    if (loading || noMoreProducts) return;
+    const query = searchParams.get("query");
+    const page = searchParams.get("page") || "0";
+    
+    if (noMoreProducts) return;
+    
+    // 페이지가 0일 때는 스크롤 위치 초기화
+    if (page === "0") {
+      window.scrollTo(0, 0);
+    }
+    
+    fetchProducts(page, query);
+  }, [searchParams, fetchProducts]);
 
+  // 무한 스크롤 처리
+  useEffect(() => {
     const handleScroll = () => {
-      const scrollableHeight = document.documentElement.scrollHeight;
-      const currentScroll = window.innerHeight + window.scrollY;
+      if (loadingRef.current || noMoreProducts) return;
 
-      // 페이지 하단에 도달했을 때 더 많은 상품을 불러오기
-      if (currentScroll >= scrollableHeight - 100 && !loading) {
-        console.log(searchParams.get("page"));
-        console.log(searchParams.get("query"));
-        let page = parseInt(searchParams.get("page")) || 0; // 페이지 번호가 없을 경우 0으로 설정
-        let updatedPage = page + 1;
-        let query = searchParams.get("query") || ""; // 쿼리 파라미터 가져오기
+      const scrollHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.scrollY;
+      const clientHeight = window.innerHeight;
 
-        setSearchParams({
-          page: updatedPage,
-          query: query,
-        });
+      if (scrollHeight - scrollTop <= clientHeight + 100) {
+        const currentPage = parseInt(searchParams.get("page") || "0");
+        const query = searchParams.get("query") || "";
+        
+        // 스크롤 위치 저장
+        scrollPositionRef.current = window.scrollY;
+        
+        // URL 파라미터 조용히 업데이트
+        setSearchParams(
+          {
+            page: currentPage + 1,
+            query: query,
+          },
+          { replace: true, preventScrollReset: true }
+        );
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [noMoreProducts, searchParams, setSearchParams]);
 
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+  // 컴포넌트 마운트/언마운트 시 스크롤 위치 관리
+  useEffect(() => {
+    const savedScrollPosition = scrollPositionRef.current;
+    
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      scrollPositionRef.current = savedScrollPosition;
     };
-  }, [searchParams]);
+  }, []);
 
   return (
     <SubProductLayout
       setNoMoreProducts={setNoMoreProducts}
       setSearchParams={setSearchParams}
     >
-
-      {/* 상품 그리드 섹션 */}
       <div className="max-w-7xl mx-auto px-4 pt-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (
@@ -108,6 +118,11 @@ function MenPage() {
               />
             </div>
           ))}
+          {loading && (
+            <div className="col-span-full flex justify-center py-4">
+              <div className="spinner">Loading...</div>
+            </div>
+          )}
         </div>
       </div>
     </SubProductLayout>
