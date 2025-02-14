@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ProductCardComponent from "../components/ProductCardComponent";
 import SubProductLayout from "../layouts/SubProductLayout";
 import { getProductList } from "../api/productApi";
@@ -6,87 +6,81 @@ import { useSearchParams } from "react-router-dom";
 
 
 function WinterPage() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false); // 로딩 상태 (중복 API 요청 방지)
-  const [noMoreProducts, setNoMoreProducts] = useState(false); // 데이터가 없을 때 호출하는 것을 방지
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  useEffect(() => {
-    if (noMoreProducts || loading) return; // 로딩 중일 경우 API 요청 방지
-
-    let query = searchParams.get("query");
-    let page = searchParams.get("page");
-
-    setLoading(true);
-    if (query) {
-      if (page === "0") {
-        getProductList(page, 10, "WINTER", null, null, null, query)
-          .then((res) => {
+  const [products, setProduct] = useState([]);
+      const [loading, setLoading] = useState(false); // 로딩 상태 (중복 API 요청 방지)
+      const [noMoreProducts, setNoMoreProducts] = useState(false); // 데이터가 없을 때 호출하는 것을 방지
+      const [searchParams, setSearchParams] = useSearchParams();
+      const loadingRef = useRef(false); // 로딩 상태를 ref로 관리
+    
+    
+       const fetchProducts = async (page, query) => {
+          if (loadingRef.current) return;
+          
+          loadingRef.current = true;
+          setLoading(true);
+      
+          try {
+            const res = await getProductList(page, 10, "WINTER", null, null, null, query);
             const data = res.data;
-            if (data.length === 0) {
+      
+            if (data.length === 0 || data.length < 10) {
               setNoMoreProducts(true);
             }
-            setProducts(data); // 새로운 상품을 기존 상품 리스트에 추가
-          })
-          .finally(() => {
-            setLoading(false); // 로딩 완료 후 상태 리셋
-          });
-      } else {
-        getProductList(page, 10, "WINTER", null, null, null, query).then(
-          (res) => {
-            const data = res.data;
-            if (data.length === 0) {
-              setNoMoreProducts(true);
+      
+            if (page === "0") {
+              setProduct(data);
+            } else {
+              setProduct(prev => [...prev, ...data]);
             }
-            setProducts((prevProducts) => [...prevProducts, ...data]);
+          } catch (error) {
+            console.error("Failed to fetch products:", error);
+          } finally {
+            setLoading(false);
+            loadingRef.current = false;
           }
-        );
-      }
-    } else {
-      getProductList(page, 10, "WINTER", null, null, null, null)
-        .then((res) => {
-          const data = res.data;
-          if (data.length === 0) {
-            setNoMoreProducts(true);
-          }
-          setProducts((prevProducts) => [...prevProducts, ...data]); // 새로운 상품을 기존 상품 리스트에 추가
-        })
-        .finally(() => {
-          setLoading(false); // 로딩 완료 후 상태 리셋
-        });
-    }
-  }, [searchParams]);
-
-  // 스크롤 이벤트를 감지하여 페이지 하단에 도달하면 더 많은 상품을 로드
-  useEffect(() => {
-    if (loading || noMoreProducts) return;
-
-    const handleScroll = () => {
-      const scrollableHeight = document.documentElement.scrollHeight;
-      const currentScroll = window.innerHeight + window.scrollY;
-
-      // 페이지 하단에 도달했을 때 더 많은 상품을 불러오기
-      if (currentScroll >= scrollableHeight - 100 && !loading) {
-        console.log(searchParams.get("page"));
-        console.log(searchParams.get("query"));
-        let page = parseInt(searchParams.get("page")) || 0; // 페이지 번호가 없을 경우 0으로 설정
-        let updatedPage = page + 1;
-        let query = searchParams.get("query") || ""; // 쿼리 파라미터 가져오기
-
-        setSearchParams({
-          page: updatedPage,
-          query: query,
-        });
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [searchParams]);
+        };
+    
+        // 초기 데이터 로드 및 검색 처리
+        useEffect(() => {
+          const query = searchParams.get("query");
+          const page = searchParams.get("page") || "0";
+          
+          if (noMoreProducts) return;
+          
+          fetchProducts(page, query);
+        }, [searchParams]);
+      
+        // 무한 스크롤 처리
+        useEffect(() => {
+          const handleScroll = () => {
+            if (loadingRef.current || noMoreProducts) return;
+      
+            const scrollHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.scrollY;
+            const clientHeight = window.innerHeight;
+      
+            if (scrollHeight - scrollTop <= clientHeight + 100) {
+              const currentPage = parseInt(searchParams.get("page") || "0");
+              const query = searchParams.get("query") || "";
+              
+              // URL 파라미터 업데이트 대신 직접 다음 페이지 데이터 요청
+              fetchProducts(String(currentPage + 1), query);
+              
+              // URL 파라미터 조용히 업데이트
+              setSearchParams(
+                {
+                  page: currentPage + 1,
+                  query: query,
+                },
+                { replace: true } // replace 옵션을 사용하여 히스토리 스택에 추가하지 않음
+              );
+            }
+          };
+      
+          window.addEventListener("scroll", handleScroll);
+          return () => window.removeEventListener("scroll", handleScroll);
+        }, [noMoreProducts, searchParams]);
+      
 
   return (
     <SubProductLayout
