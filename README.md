@@ -1,4 +1,2 @@
-shop: 프론트
-shopbe: 백엔드
-
-
+# 시연 영상
+https://www.youtube.com/watch?v=nEikI-RRS4g
