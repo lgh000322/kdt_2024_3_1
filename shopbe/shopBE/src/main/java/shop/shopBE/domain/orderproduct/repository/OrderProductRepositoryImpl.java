@@ -7,12 +7,15 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import shop.shopBE.domain.member.entity.QMember;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
 import shop.shopBE.domain.orderhistory.entity.QOrderHistory;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
 import shop.shopBE.domain.orderproduct.entity.OrderProduct;
+import shop.shopBE.domain.orderproduct.entity.enums.DeliveryStatus;
 import shop.shopBE.domain.orderproduct.request.OrderProductDeliveryInfo;
 import shop.shopBE.domain.orderproduct.exception.OrderProductException;
 import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
@@ -148,6 +151,49 @@ public class OrderProductRepositoryImpl implements OrderProductRepositoryCustom 
 
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public Page<OrderProduct> findByCurrentDeliveryStatus(DeliveryStatus deliveryStatus, Pageable pageable) {
+        List<OrderProduct> fetch = queryFactory
+                .select(orderProduct)
+                .from(orderProduct)
+                .join(orderProduct.orderHistory, orderHistory).fetchJoin()
+                .where(orderProduct.currentDeliveryStatus.eq(deliveryStatus))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long count = queryFactory
+                .select(orderProduct.count())
+                .from(orderProduct)
+                .where(orderProduct.currentDeliveryStatus.eq(deliveryStatus))
+                .fetchOne();
+
+        long size = count == null ? 0 : count;
+
+        return new PageImpl<>(fetch, pageable, size);
+    }
+
+//    @Override
+//    public Page<OrderProduct> findByDeliveryStatus(DeliveryStatus deliveryStatus, Pageable pageable) {
+//        List<OrderProduct> fetch = queryFactory
+//                .select(orderProduct)
+//                .from(orderProduct)
+//                .where(orderProduct.currentDeliveryStatus.eq(deliveryStatus))
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetch();
+//
+//        Long total = queryFactory
+//                .select(orderProduct.count())
+//                .from(orderProduct)
+//                .where(orderProduct.currentDeliveryStatus.eq(deliveryStatus))
+//                .fetchOne();
+//
+//        long totalCount = (total != null) ? total : 0L;  // NullPointerException 방지
+//
+//        return new PageImpl<>(fetch, pageable, totalCount);
+//    }
 
 
 }

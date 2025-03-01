@@ -1,5 +1,6 @@
 package shop.shopBE.domain.orderhistory.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.shopBE.domain.destination.entity.Destination;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
@@ -16,4 +17,5 @@ public interface OrderHistoryRepositoryCustom {
     Optional<List<OrderHistory>> findAllByMemberWithPaging(Long memberId, Pageable pageable);
 
     Optional<OrderHistory> findByOrderHistoryId(Long historyId);
+
 }

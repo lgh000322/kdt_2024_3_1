@@ -1,9 +1,11 @@
 package shop.shopBE.domain.orderproduct.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import shop.shopBE.domain.orderhistory.entity.OrderHistory;
 import shop.shopBE.domain.orderhistory.response.OrderHistoryInfoResponse;
 import shop.shopBE.domain.orderproduct.entity.OrderProduct;
+import shop.shopBE.domain.orderproduct.entity.enums.DeliveryStatus;
 import shop.shopBE.domain.orderproduct.response.OrderProductInfo;
 
 import java.util.List;
@@ -20,4 +22,7 @@ public interface OrderProductRepositoryCustom {
     Optional<List<OrderProduct>> findOrderProductByOrderHistoryId(Long orderHistoryId);
 
     Optional<List<OrderProductInfo>> findOrderProductInfoByOrderHistoryId(Long orderHistoryId);
+
+    Page<OrderProduct> findByCurrentDeliveryStatus(DeliveryStatus deliveryStatus, Pageable pageable);
+
 }

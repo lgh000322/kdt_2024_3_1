@@ -10,8 +10,8 @@ import shop.shopBE.global.logtrace.material.LogTrace;
 @EnableAspectJAutoProxy
 public class AopConfig {
 
-    @Bean
-    public LogTraceAspect logTraceAspect(LogTrace logTrace) {
-        return new LogTraceAspect(logTrace);
-    }
+//    @Bean
+//    public LogTraceAspect logTraceAspect(LogTrace logTrace) {
+//        return new LogTraceAspect(logTrace);
+//    }
 }

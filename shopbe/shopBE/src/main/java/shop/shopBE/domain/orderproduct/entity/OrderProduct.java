@@ -28,7 +28,7 @@ public class OrderProduct {
     @Enumerated(EnumType.STRING)
     private DeliveryStatus currentDeliveryStatus; //배송상태 기록
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_history_id")
     private OrderHistory orderHistory;
 
@@ -48,5 +48,9 @@ public class OrderProduct {
 
     public void changeDeliveryStatus(DeliveryStatus deliveryStatus) {
         this.currentDeliveryStatus = deliveryStatus;
+    }
+
+    public void deleteOrderHistory() {
+        this.orderHistory = null;
     }
 }
