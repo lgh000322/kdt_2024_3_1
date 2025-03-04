@@ -28,10 +28,10 @@ public class LikesItemService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new CustomException(ProductExceptionCode.NOT_FOUND));
 
+        product.plusLikeCount();
+
         LikesItem likesItem = LikesItem.createLikesItem(likes, product);
         likesItemRepository.save(likesItem);
-
-        product.plusLikeCount();
     }
 
     @Transactional

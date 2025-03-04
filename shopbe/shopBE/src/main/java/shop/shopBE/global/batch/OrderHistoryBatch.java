@@ -11,6 +11,7 @@ import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
 import org.springframework.batch.item.data.builder.RepositoryItemWriterBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
@@ -24,13 +25,22 @@ import shop.shopBE.domain.orderproduct.repository.OrderProductRepository;
 import java.util.Map;
 
 @Configuration
-@RequiredArgsConstructor
 public class OrderHistoryBatch {
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final OrderProductRepository orderProductRepository;
     private final OrderHistoryRepository orderHistoryRepository;
+
+    public OrderHistoryBatch(JobRepository jobRepository,
+                             @Qualifier(value = "metaTransactionManager") PlatformTransactionManager transactionManager,
+                             OrderProductRepository orderProductRepository,
+                             OrderHistoryRepository orderHistoryRepository) {
+        this.jobRepository = jobRepository;
+        this.transactionManager = transactionManager;
+        this.orderProductRepository = orderProductRepository;
+        this.orderHistoryRepository = orderHistoryRepository;
+    }
 
     @Bean
     public Job deleteOrderProduct() {

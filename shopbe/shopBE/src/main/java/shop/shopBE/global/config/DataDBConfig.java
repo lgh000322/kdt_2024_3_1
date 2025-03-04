@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -23,11 +25,13 @@ import java.util.HashMap;
         transactionManagerRef = "dataTransactionManager"
 )
 @RequiredArgsConstructor
+@Profile("!test")
 public class DataDBConfig {
 
     private final DataDBEnv dataDBEnv;
 
     @Bean
+    @Primary
     public DataSource dataDBSource() {
         HikariDataSource dataSource = (HikariDataSource) DataSourceBuilder.create()
                 .driverClassName(dataDBEnv.driverClassName())
@@ -48,6 +52,7 @@ public class DataDBConfig {
     }
 
     @Bean
+    @Primary
     public LocalContainerEntityManagerFactoryBean dataEntityManager() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
@@ -65,6 +70,7 @@ public class DataDBConfig {
     }
 
     @Bean
+    @Primary
     public PlatformTransactionManager dataTransactionManager() {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
         jpaTransactionManager.setEntityManagerFactory(dataEntityManager().getObject());

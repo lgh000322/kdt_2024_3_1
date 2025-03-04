@@ -21,7 +21,7 @@ import java.util.List;
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    @Transactional
+    @Transactional(transactionManager = "dataTransactionManager")
     public void updateMember(Long memberId,MemberUpdateInfo memberUpdateInfo) {
         Member findMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(MemberExceptionCode.MEMBER_NOT_FOUND)); // 변경 감지에 의한 업데이트

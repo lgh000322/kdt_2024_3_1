@@ -7,6 +7,6 @@ import shop.shopBE.global.utils.database.MetaDBEnv;
 import shop.shopBE.global.utils.jwt.property.JwtProperties;
 
 @Configuration
-@EnableConfigurationProperties(value = {JwtProperties.class, DataDBEnv.class, MetaDBEnv.class})
+@EnableConfigurationProperties(value = {JwtProperties.class, MetaDBEnv.class, DataDBEnv.class})
 public class ConfigurationPropsConfig {
 }

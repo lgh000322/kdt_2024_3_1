@@ -32,14 +32,14 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String refreshToken = jwtUtils.createRefreshToken(authToken.getSub(), authToken.getRoles());
 
-        ResponseCookie accessTokenCookie = cookieUtils.createCookie(new Token("accessToken", accessToken), "fmanshop.com");
-        ResponseCookie refreshTokenCookie = cookieUtils.createCookie(new Token("refreshToken", refreshToken), "fmanshop.com");
+        ResponseCookie accessTokenCookie = cookieUtils.createCookie(new Token("accessToken", accessToken), "localhost");
+        ResponseCookie refreshTokenCookie = cookieUtils.createCookie(new Token("refreshToken", refreshToken), "localhost");
 
         response.addHeader("Set-Cookie",accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         String isAuthenticated = authToken.isAuthenticated() ? "true" : "false";
 
-        response.sendRedirect("https://fmanshop.com/login/success?isAuthenticated=" + isAuthenticated);
+        response.sendRedirect("http://localhost:3000/login/success?isAuthenticated=" + isAuthenticated);
     }
 }
